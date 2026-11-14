@@ -15,6 +15,7 @@ from aca.guard.labels.schema import Label
 from aca.guard.stages.exemplars import ConceptIndex, load_concept
 from aca.guard.stages.stage0 import run_stage0
 from aca.guard.stages.stage1 import run_stage1
+from aca.guard.stages.stage_a import run_stage_a
 
 # Concepts this adapter has curated exemplars for in v1.
 DEFAULT_CONCEPTS = ("AIA-5-1-c",)
@@ -38,6 +39,9 @@ class LocalEmbeddingsAdapter:
     def detect(self, event: Event) -> list[dict]:
         signals = run_stage0(event)
         labels: list[dict] = []
+        # Stage A runs only when there is an artefact/diff to analyse.
+        stage_a = run_stage_a(event.artefact) if event.artefact else None
+
         for concept_id, index in self._indexes.items():
             s1 = run_stage1(event, index, self._embedder, signals)
             evidence = signals.to_evidence_refs()
@@ -46,22 +50,32 @@ class LocalEmbeddingsAdapter:
             if s1.nearest_negative:
                 evidence.append(f"stage1:nearest_negative={s1.nearest_negative}")
 
+            # Fold stage-A artefact elements into the element set for AIA-5-1-c.
+            elements_met = list(s1.elements_met)
+            detector_versions = {
+                "stage0": signals.version,
+                "stage1": s1.version,
+                "embedder": self._embedder.version,
+            }
+            if stage_a is not None and concept_id == "AIA-5-1-c":
+                for el in stage_a.elements_met:
+                    if el not in elements_met:
+                        elements_met.append(el)
+                        evidence.append(f"stageA:{el}")
+                detector_versions["stageA"] = stage_a.version
+
             label = Label(
                 concept_id=concept_id,
                 confidence=round(s1.confidence, 4),
-                elements_met=s1.elements_met,
+                elements_met=elements_met,
                 evidence_refs=evidence,
-                detector_versions={
-                    "stage0": signals.version,
-                    "stage1": s1.version,
-                    "embedder": self._embedder.version,
-                },
+                detector_versions=detector_versions,
                 # pattern_id is only asserted when the full element set is met;
                 # it is still OPA (with signed confirmed-pattern data) that may
                 # turn that into a deny, never this adapter.
                 pattern_id=(
                     index.pattern_id
-                    if index.pattern_id and set(index.elements) <= set(s1.elements_met)
+                    if index.pattern_id and set(index.elements) <= set(elements_met)
                     else None
                 ),
             )

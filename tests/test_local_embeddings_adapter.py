@@ -53,6 +53,18 @@ def test_end_to_end_benign_is_allow_with_empty_confirmed_list():
     assert decide(labels, data) == "allow"
 
 
+def test_artefact_elements_fold_into_label():
+    diff = (
+        "+merged = badge_logs.merge(slack_activity, on='employee_id')\n"
+        "+merged['reliability_index'] = score(merged)\n"
+        "+remove_from_bonus_pool(merged.sort_values('reliability_index').head(10))\n"
+    )
+    labels = _adapter().detect(Event(text="refactor scoring job", artefact=diff))
+    aia = next(l for l in labels if l["concept_id"] == "AIA-5-1-c")
+    assert "adverse_action" in aia["elements_met"]
+    assert aia["detector_versions"].get("stageA")
+
+
 def test_end_to_end_social_scoring_denies_when_pattern_confirmed():
     labels = _adapter().detect(Event(text=SOCIAL_SCORING))
     pattern_id = next(l for l in labels if l["concept_id"] == "AIA-5-1-c")["pattern_id"]
