@@ -14,8 +14,9 @@ help:
 	@echo "  test      Run the pytest suite"
 	@echo "  schema    Validate requirement/interpretation YAML against JSON Schema"
 	@echo "  opa-test  Run 'opa test' on policy/ (requires the opa binary)"
-	@echo "  eval      Run the eval set (metrics persisted with timestamp + git SHA)"
-	@echo "  coverage  Build the requirement coverage report"
+	@echo "  eval        Run the eval set (metrics persisted with timestamp + git SHA)"
+	@echo "  hybrid-eval Run the hybrid eval (vendor path scored separately; see docs/HYBRID.md)"
+	@echo "  coverage    Build the requirement coverage report"
 	@echo "  demo      Run the 15-minute oss demo (fixture mode)"
 	@echo "  report    Build the PDF evidence pack (fails closed on missing fields)"
 
@@ -36,6 +37,9 @@ opa-test:
 
 eval:
 	@$(PYTHON) -m aca.eval.runner
+
+hybrid-eval:
+	@$(PYTHON) -m aca.eval.hybrid_runner
 
 coverage:
 	@$(PYTHON) -m aca.eval.coverage
