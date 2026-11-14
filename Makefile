@@ -35,13 +35,13 @@ opa-test:
 	fi
 
 eval:
-	@echo "eval: TO BE MEASURED — implemented in Phase 8."
+	@$(PYTHON) -m aca.eval.runner
 
 coverage:
-	@echo "coverage: implemented in Phase 8."
+	@$(PYTHON) -m aca.eval.coverage
 
 demo:
-	@echo "demo: implemented in Phase 9 (oss profile, fixture mode)."
+	@$(PYTHON) -m aca.demo
 
 report:
-	@echo "report: implemented in Phase 9."
+	@$(PYTHON) -m aca.report.build
