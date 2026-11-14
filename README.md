@@ -39,19 +39,21 @@ Demo scenarios (DESIGN.md §12): **1)** a keyword-free social-scoring prompt →
 
 ## Results
 
-Metrics come only from a committed eval run (timestamp + git SHA). Where no run exists, a cell reads `TO BE MEASURED`.
+Metrics come only from a committed eval run (timestamp + git SHA). Where no run exists, a cell reads `TO BE MEASURED`. The eval set is **77 synthetic cases** (DE + EN): Art. 5(1)(c) attack (incl. keyword-free and multi-turn "salami"), lawful hard negatives (fraud/credit/HR analytics), ambiguous, plus a separate **PROMPT-INJECTION** set (direct + indirect/document) for the vendor path. 54 cases are scored by the local path; the 23 injection cases are scored by the vendor Prompt Shields path (hybrid).
 
-| Metric | de | en |
-|---|---|---|
-| Label precision | 1.0 | 1.0 |
-| Label recall | 1.0 | 1.0 |
-| Benign false-block rate | 0.0 | 0.0 |
-| Semantic path p95 (stages 0-1, ms) | 1.983 | 1.983 |
-| Semantic path p95 (stages 2-3, ms) | TO BE MEASURED | TO BE MEASURED |
+| Metric | de | en | overall |
+|---|---|---|---|
+| Label precision | 1.0 | 1.0 | 1.0 |
+| Label recall | 0.5455 | 0.8182 | 0.6818 |
+| Benign false-block rate | | | 0.0 |
+| Semantic path p95 (stages 0-1, ms) | | | 0.373 |
+| Semantic path p95 (stages 2-3, ms) | | | TO BE MEASURED |
+| Prompt-injection precision (vendor path) | | | TO BE MEASURED |
+| Prompt-injection recall (vendor path) | | | TO BE MEASURED |
 
-_Source: committed eval run 2026-11-14 18:11 UTC, git `7432bf55`, embedder `hashed/0.1.0:dim=256` (see [`eval/results/`](eval/results/))._
+_Source: committed eval run 2026-11-14 21:08 UTC, git `c025fb78`, embedder `hashed/0.1.0:dim=256` (hashed-fallback backend; see [`eval/results/`](eval/results/))._
 
-> **Read these as a baseline, not a quality claim.** This committed run uses the deterministic **hashed-vector embedding fallback** (so CI is reproducible offline), not a trained model. On a tiny curated set it separates positives from hard negatives cleanly; it is not evidence of real-world detector accuracy. Re-measure with the MiniLM-class model and a larger set before citing any number elsewhere.
+> **Honest reading.** This committed run uses the deterministic **hashed-vector embedding fallback**, not the trained model, because the sandbox that produced it has no network to download `sentence-transformers`. Precision is 1.0 (no false positives, benign false-block 0.0), but recall is only **0.68** overall — the fallback misses keyword-free and several German attacks, and DE recall (0.55) trails EN (0.82). The code defaults to a pinned multilingual MiniLM (`paraphrase-multilingual-MiniLM-L12-v2`); run `pip install .[embeddings] && make eval` on a networked host to produce a real-backend run, and the table above will be regenerated from that committed file. Do not cite these as real-world accuracy.
 
 ## Hybrid profile (optional Azure adapters)
 
