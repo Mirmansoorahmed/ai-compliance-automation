@@ -40,6 +40,27 @@ def test_salami_accumulates_elements_across_turns():
     }
 
 
+def test_accumulate_session_elements_credits_join_across_turns():
+    from aca.guard.stages.stage_s import accumulate_session_elements
+
+    # Each turn names only ONE behaviour source (1 behaviour hit), so no single
+    # turn fires the join element; across the window the sources add up to >= 2,
+    # and the session credits the behaviour-join element.
+    per_turn = [
+        [{"concept_id": "AIA-5-1-c", "elements_met": [], "evidence_refs": ["stage0:behaviour_hits=1"]}],
+        [{"concept_id": "AIA-5-1-c", "elements_met": [], "evidence_refs": ["stage0:behaviour_hits=1"]}],
+        [{"concept_id": "AIA-5-1-c", "elements_met": ["aggregated_score_or_ranking"], "evidence_refs": []}],
+        [{"concept_id": "AIA-5-1-c", "elements_met": ["adverse_action"], "evidence_refs": []}],
+    ]
+    acc, hits = accumulate_session_elements(per_turn, "AIA-5-1-c")
+    assert hits == 2
+    assert acc == {
+        "person_identifiable_behaviour_join",
+        "aggregated_score_or_ranking",
+        "adverse_action",
+    }
+
+
 def test_subjects_are_isolated():
     ctx = SessionContext()
     ctx.add("subj-1", {"concept_id": "C", "elements_met": ["a"], "confidence": 0.1})

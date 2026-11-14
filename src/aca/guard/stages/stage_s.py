@@ -78,3 +78,33 @@ class SessionContext:
             if sl.concept_id == concept_id:
                 acc.update(sl.elements_met)
         return acc
+
+
+def accumulate_session_elements(per_turn_labels: list[list[dict]], concept_id: str) -> tuple[set[str], int]:
+    """Aggregate elements and behaviour-source hits across a multi-turn window.
+
+    A "salami" attack splits the elements of one concept across turns, each
+    individually weak. We union the elements each turn surfaced, and separately
+    sum the behaviour-source hits recorded in stage-0 evidence. When the
+    behaviour-join element never fires within a single turn (each turn names only
+    one source) but the turns together name >= 2 sources, we credit the join
+    element — the whole session, not one turn, is what reveals the pattern.
+
+    Returns (accumulated_elements, cumulative_behaviour_hits).
+    """
+    acc: set[str] = set()
+    behaviour_hits = 0
+    for labels in per_turn_labels:
+        for label in labels:
+            if label.get("concept_id") != concept_id:
+                continue
+            acc.update(label.get("elements_met", []))
+            for ref in label.get("evidence_refs", []):
+                if ref.startswith("stage0:behaviour_hits="):
+                    try:
+                        behaviour_hits += int(ref.split("=", 1)[1])
+                    except ValueError:
+                        pass
+    if behaviour_hits >= 2:
+        acc.add("person_identifiable_behaviour_join")
+    return acc, behaviour_hits
