@@ -66,8 +66,9 @@ Legend: each task ⇒ `[Rn]` traces to `requirements.md`. "Test hook" = the auto
 
 ## Phase 6 — Evidence spans (oss)
 
-- [ ] 6.1 Implement OTel span emitter with decision-record v1 fields; pseudonymised subject; args as key/count/SHA-256; file exporter. **[R10.1, R10.2, R10.3, R10.4]**
+- [x] 6.1 Implement OTel span emitter with decision-record v1 fields; pseudonymised subject; args as key/count/SHA-256; file exporter. **[R10.1, R10.2, R10.3, R10.4]**
   - Test hook: span test asserts required fields present and no clear identity / raw body.
+  - Done: `guard/evidence/` (redact, record, emitter) + `aca.pipeline.DecisionPipeline` wiring Guard→OPA→span; file (JSONL) exporter, optional OTel bridge. Fail-safe records `ask` on Guard outage (no silent allow).
 
 ## Phase 7 — Four-eyes review and feedback (oss)
 

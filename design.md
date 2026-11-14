@@ -143,7 +143,7 @@ Vendor-adapter scores are reported **separately** from the local path in eval ou
 
 ## 9. Evidence, CI, eval, reports
 
-**Evidence (R10).** `guard/evidence/` emits one OTel span per decision with decision-record v1 fields, pseudonymised subject, args as key/count/SHA-256 only, file exporter in `oss`.
+**Evidence (R10).** `guard/evidence/` emits one span per decision carrying the decision-record v1 fields, a pseudonymised (salted) subject and approvers, args reduced to names/count/SHA-256 only, and no clear identity or raw body (a build-time check rejects forbidden fields). The record is OTel-shaped (span name + flat attribute map) so it maps directly onto a real OpenTelemetry span when the SDK is present; the `oss` default is a JSONL **file exporter** (one span per line), a demo/CI sink and hand-off point — this repo is not the long-term store. `aca.pipeline.DecisionPipeline` ties Guard labels → OPA decision → one span; a Guard outage records the fail-safe tier (risky/unknown → `ask`), never a silent allow, using the Guard's `label_with_health` signal to tell "ran clean" from "Guard down".
 
 **CI (R11)** `.github/workflows/ci.yml`: (1) JSON Schema validation of requirements + interpretations incl. cross-file invariants; (2) `opa test`; (3) eval set (attack/benign/ambiguous, DE+EN); (4) coverage report (`% mapped` / `% auto` / `% human` / `% hybrid`), failing below the configured floor (floor is a TARGET). All pass on `oss` with optional adapters absent.
 
