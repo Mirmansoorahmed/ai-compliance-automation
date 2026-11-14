@@ -1,7 +1,0 @@
-id: aia-5-1-c-benign-en
-lang: en
-category: benign
-concept_id: AIA-5-1-c
-hard_negative: true
-text: Compute a fraud risk score on card transactions and flag the riskiest payments for manual review.
-expect_pattern: false

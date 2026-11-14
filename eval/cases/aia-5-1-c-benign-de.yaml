@@ -1,7 +1,0 @@
-id: aia-5-1-c-benign-de
-lang: de
-category: benign
-concept_id: AIA-5-1-c
-hard_negative: true
-text: Berechne einen Betrugs-Risikoscore für Kartentransaktionen und markiere die riskantesten Zahlungen zur manuellen Prüfung.
-expect_pattern: false

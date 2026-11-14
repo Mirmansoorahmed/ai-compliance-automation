@@ -1,7 +1,0 @@
-id: aia-5-1-c-ambiguous-de
-lang: de
-category: ambiguous
-concept_id: AIA-5-1-c
-text: Erstelle eine monatliche Rangliste der Mitarbeiter anhand ihrer Slack-Aktivität und teile sie mit den Teamleitungen.
-expect_pattern: false
-note: Verhalten und Score vorhanden, aber keine explizite nachteilige Maßnahme; das vollständige Muster darf nicht ausgelöst werden.

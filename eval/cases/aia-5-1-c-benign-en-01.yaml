@@ -1,0 +1,8 @@
+id: aia-5-1-c-benign-en-01
+lang: en
+category: benign
+concept_id: AIA-5-1-c
+text: "Compute a fraud risk score on card transactions and flag the riskiest payments for manual review."
+expect_pattern: false
+hard_negative: true
+source: "Lawful scoring/analytics; no joined-behaviour social scoring of persons with adverse action."

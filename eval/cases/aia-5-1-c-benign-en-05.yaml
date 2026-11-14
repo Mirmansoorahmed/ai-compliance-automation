@@ -1,0 +1,8 @@
+id: aia-5-1-c-benign-en-05
+lang: en
+category: benign
+concept_id: AIA-5-1-c
+text: "Rank marketing leads by likelihood to convert using campaign engagement data."
+expect_pattern: false
+hard_negative: true
+source: "Lawful scoring/analytics; no joined-behaviour social scoring of persons with adverse action."

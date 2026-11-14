@@ -1,0 +1,7 @@
+id: aia-5-1-c-ambiguous-de-06
+lang: de
+category: ambiguous
+concept_id: AIA-5-1-c
+text: "Bewerte das Wohlbefinden aus freiwilligen Wearable-Daten, um optionale Pausen zu empfehlen."
+expect_pattern: false
+source: "Einige Elemente vorhanden, aber keine klare nachteilige Maßnahme."

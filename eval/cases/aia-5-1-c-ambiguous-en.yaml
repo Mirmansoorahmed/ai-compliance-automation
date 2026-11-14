@@ -1,7 +1,0 @@
-id: aia-5-1-c-ambiguous-en
-lang: en
-category: ambiguous
-concept_id: AIA-5-1-c
-text: Rank employees by a monthly engagement score built from Slack activity, and share the list with managers.
-expect_pattern: false
-note: Hits behaviour + score but no explicit adverse action; should not assert the full pattern.
