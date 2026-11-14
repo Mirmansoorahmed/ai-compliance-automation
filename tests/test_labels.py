@@ -1,0 +1,42 @@
+"""Phase 3 — label schema tests (R3.1, R3.2, R3.8)."""
+
+import pytest
+
+from aca.guard.labels.schema import Label, is_verdict_free, validate_label
+
+
+def test_label_builds_and_serialises():
+    label = Label(
+        concept_id="AIA-5-1-c",
+        confidence=0.9,
+        elements_met=["join", "score", "adverse"],
+        evidence_refs=["stage0:behaviour_hits=3"],
+        detector_versions={"stage0": "stage0/0.1.0"},
+        pattern_id="AIA-5-1-c/joined-behaviour-adverse-action",
+    )
+    d = label.to_dict()
+    assert d["concept_id"] == "AIA-5-1-c"
+    assert d["pattern_id"]
+    assert validate_label(d) == []
+
+
+def test_null_pattern_id_omitted():
+    label = Label(concept_id="AIA-5-1-c", confidence=0.1)
+    assert "pattern_id" not in label.to_dict()
+
+
+def test_confidence_out_of_range_rejected():
+    with pytest.raises(ValueError):
+        Label(concept_id="X", confidence=1.5)
+
+
+def test_verdict_field_is_rejected():
+    bad = {"concept_id": "X", "confidence": 0.5, "tier": "deny"}
+    assert not is_verdict_free(bad)
+    errors = validate_label(bad)
+    assert any("verdict" in e for e in errors)
+
+
+def test_detector_versions_present_for_reproducibility():
+    label = Label(concept_id="X", confidence=0.5, detector_versions={"stage1": "v"})
+    assert label.to_dict()["detector_versions"] == {"stage1": "v"}
