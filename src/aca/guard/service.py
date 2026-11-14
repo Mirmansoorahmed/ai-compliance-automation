@@ -63,10 +63,25 @@ class SemanticGuard:
 
     def label(self, event: Event) -> list[dict]:
         """Run all adapters and return merged labels (labels only)."""
+        labels, _healthy = self.label_with_health(event)
+        return labels
+
+    def label_with_health(self, event: Event) -> tuple[list[dict], bool]:
+        """Return (labels, healthy).
+
+        ``healthy`` is False when *every* adapter raised, i.e. the Guard could
+        not classify the event at all. The pipeline needs this to tell "ran
+        clean, nothing concerning" (healthy, no labels) apart from "the Guard is
+        down" (unhealthy) so it can apply the fail-safe tier and never a silent
+        allow.
+        """
         labels: list[dict] = []
+        failures = 0
         for adapter in self._adapters:
             try:
                 labels.extend(adapter.detect(event))
             except Exception as exc:  # one adapter failing must not break others
+                failures += 1
                 log.warning("adapter %r raised, skipping: %s", adapter.name, exc)
-        return labels
+        healthy = failures < len(self._adapters) if self._adapters else False
+        return labels, healthy

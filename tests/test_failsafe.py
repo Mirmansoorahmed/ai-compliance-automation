@@ -66,3 +66,21 @@ def test_guard_with_all_adapters_failing_returns_empty_not_error():
     # With no labels, OPA sees nothing to escalate; the gateway applies the
     # fail-safe tier for the tool class instead (never a silent allow).
     assert failsafe_tier("risky") == "ask"
+
+
+def test_label_with_health_reports_unhealthy_when_all_adapters_fail():
+    guard = SemanticGuard(adapters=[_raising_adapter(TimeoutError("t"))])
+    labels, healthy = guard.label_with_health(Event(text="hello"))
+    assert labels == []
+    assert healthy is False
+
+
+def test_label_with_health_is_healthy_when_one_adapter_succeeds():
+    from aca.guard.adapters.local_embeddings import LocalEmbeddingsAdapter
+    from aca.guard.embeddings import HashedEmbedder
+
+    good = LocalEmbeddingsAdapter(embedder=HashedEmbedder(dim=128))
+    guard = SemanticGuard(adapters=[_raising_adapter(RuntimeError("500")), good])
+    labels, healthy = guard.label_with_health(Event(text="hello"))
+    assert healthy is True
+    assert labels  # the good adapter produced at least one label
