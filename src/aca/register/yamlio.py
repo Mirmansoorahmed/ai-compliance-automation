@@ -11,7 +11,11 @@ requirement/interpretation files use:
 - ``#`` line comments
 
 If PyYAML happens to be installed, it is used instead (it is a strict
-superset of what we need). The subset parser is the guaranteed path.
+superset of what we need). To keep results identical with and without PyYAML,
+the PyYAML path uses a loader with the timestamp resolver removed, so values
+like ``effective_from: 2026-11-14`` load as strings (as the subset parser does)
+rather than as ``datetime.date`` objects. The subset parser is the guaranteed
+path.
 
 This is deliberately small and strict: it raises on anything it does not
 understand rather than guessing, so a malformed register file fails loudly.
@@ -26,6 +30,28 @@ try:  # pragma: no cover - exercised only when PyYAML is installed
     import yaml as _pyyaml
 except Exception:  # pragma: no cover
     _pyyaml = None
+
+
+def _build_string_date_loader():  # pragma: no cover - requires PyYAML
+    """A SafeLoader that does not coerce dates/times into datetime objects.
+
+    PyYAML's default resolver turns ``2026-11-14`` into ``datetime.date`` and
+    ``...T...`` strings into ``datetime.datetime``. Our schema expects plain
+    strings, so we drop the ``tag:yaml.org,2002:timestamp`` implicit resolver.
+    The result matches the dependency-free subset parser exactly.
+    """
+
+    class _StringDateLoader(_pyyaml.SafeLoader):
+        pass
+
+    timestamp_tag = "tag:yaml.org,2002:timestamp"
+    for first_char, resolvers in list(_StringDateLoader.yaml_implicit_resolvers.items()):
+        filtered = [(tag, regexp) for (tag, regexp) in resolvers if tag != timestamp_tag]
+        _StringDateLoader.yaml_implicit_resolvers[first_char] = filtered
+    return _StringDateLoader
+
+
+_STRING_DATE_LOADER = _build_string_date_loader() if _pyyaml is not None else None
 
 
 class YamlError(ValueError):
@@ -160,8 +186,12 @@ def _parse_subset(text: str) -> Any:
     return value
 
 
-def load_yaml(path: str | Path) -> Any:
-    text = Path(path).read_text(encoding="utf-8")
-    if _pyyaml is not None:  # pragma: no cover
-        return _pyyaml.safe_load(text)
+def loads_yaml(text: str) -> Any:
+    """Parse YAML text. Dates load as strings on both the PyYAML and subset path."""
+    if _pyyaml is not None:  # pragma: no cover - exercised only when PyYAML present
+        return _pyyaml.load(text, Loader=_STRING_DATE_LOADER)
     return _parse_subset(text)
+
+
+def load_yaml(path: str | Path) -> Any:
+    return loads_yaml(Path(path).read_text(encoding="utf-8"))
