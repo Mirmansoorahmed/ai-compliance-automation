@@ -1,0 +1,45 @@
+# AI Compliance Automation — Makefile
+# Core component: Semantic Guard (emits labels; OPA decides).
+# The oss profile runs on the Python standard library alone.
+
+PYTHON ?= python3
+PROFILE ?= oss
+
+.PHONY: help test opa-test schema eval coverage demo report all
+
+help:
+	@echo "Targets:"
+	@echo "  test      Run the pytest suite"
+	@echo "  schema    Validate requirement/interpretation YAML against JSON Schema"
+	@echo "  opa-test  Run 'opa test' on policy/ (requires the opa binary)"
+	@echo "  eval      Run the eval set (metrics persisted with timestamp + git SHA)"
+	@echo "  coverage  Build the requirement coverage report"
+	@echo "  demo      Run the 15-minute oss demo (fixture mode)"
+	@echo "  report    Build the PDF evidence pack (fails closed on missing fields)"
+
+test:
+	@$(PYTHON) -m pytest
+
+schema:
+	@$(PYTHON) -m aca.register.validate requirements interpretations
+
+opa-test:
+	@if command -v opa >/dev/null 2>&1; then \
+		opa test policy -v ; \
+	else \
+		echo "opa binary not found — install OPA to run 'opa test'." ; \
+		echo "Policy logic is also mirrored in tests/test_policy_mirror.py (pytest)." ; \
+		exit 1 ; \
+	fi
+
+eval:
+	@echo "eval: TO BE MEASURED — implemented in Phase 8."
+
+coverage:
+	@echo "coverage: implemented in Phase 8."
+
+demo:
+	@echo "demo: implemented in Phase 9 (oss profile, fixture mode)."
+
+report:
+	@echo "report: implemented in Phase 9."
