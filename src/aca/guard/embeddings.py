@@ -2,18 +2,21 @@
 
 Two backends behind one interface:
 
-- ``SentenceTransformerEmbedder`` — a small, CPU-only sentence-transformers
-  model (default: all-MiniLM-L6-v2). Used when the package and model are
-  available locally.
+- ``SentenceTransformerEmbedder`` — a small, CPU-only, multilingual
+  sentence-transformers model. The default is pinned to
+  ``sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2`` (a MiniLM-class
+  model that handles German and English), so stage 1 separates DE and EN
+  exemplars with real semantics, not just character n-grams. The model name is
+  recorded in the embedder ``version`` so every eval run says which backend
+  produced it.
 - ``HashedEmbedder`` — a deterministic hashed bag-of-character-ngrams vector,
-  used as the fallback when the model cannot be downloaded (e.g. in CI or an
-  offline sandbox). It is reproducible: the same text always maps to the same
-  vector, so stage-1 tests are stable without a network.
+  the fallback when the model cannot be loaded (e.g. CI / an offline sandbox).
+  Reproducible: the same text always maps to the same vector.
 
-``build_embedder`` picks the real model when possible and falls back to the
-hashed embedder when ``allow_hashed_fallback`` is set (the oss default). The
-fallback is not as good as a trained model; it is enough to separate curated
-positive and hard-negative exemplars in tests, and it never blocks CI.
+``build_embedder`` prefers the real model and falls back to the hashed embedder
+only when ``allow_hashed_fallback`` is set (the oss default). The fallback is a
+baseline, not a trained-model result; runs record which backend was used so a
+number is never mistaken for the other.
 """
 
 from __future__ import annotations
@@ -70,10 +73,14 @@ class HashedEmbedder:
         return vec
 
 
+# Pinned default model: multilingual MiniLM (handles DE + EN), small and CPU-OK.
+DEFAULT_MODEL = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+
+
 class SentenceTransformerEmbedder:  # pragma: no cover - requires the model
     """Wraps a small CPU-only sentence-transformers model when available."""
 
-    def __init__(self, model: str) -> None:
+    def __init__(self, model: str = DEFAULT_MODEL) -> None:
         from sentence_transformers import SentenceTransformer  # type: ignore
 
         self._model = SentenceTransformer(model, device="cpu")
@@ -81,11 +88,11 @@ class SentenceTransformerEmbedder:  # pragma: no cover - requires the model
         self.version = f"st:{model}"
 
     def embed(self, text: str) -> list[float]:
-        return [float(x) for x in self._model.encode(text, normalize_embeddings=False)]
+        return [float(x) for x in self._model.encode(text, normalize_embeddings=True)]
 
 
 def build_embedder(
-    model: str = "sentence-transformers/all-MiniLM-L6-v2",
+    model: str = DEFAULT_MODEL,
     *,
     allow_hashed_fallback: bool = True,
     dim: int = 256,
@@ -94,7 +101,8 @@ def build_embedder(
 
     Raises if the model is unavailable and the fallback is disabled, so a
     profile that *requires* the real model fails loudly rather than silently
-    degrading.
+    degrading. The returned embedder's ``version`` records which backend was
+    chosen, so a committed eval run always states its provenance.
     """
     try:  # pragma: no cover - exercised only when the package is installed
         return SentenceTransformerEmbedder(model)

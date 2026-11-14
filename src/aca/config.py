@@ -26,7 +26,7 @@ class ConfigError(ValueError):
 
 @dataclass(frozen=True)
 class EmbeddingConfig:
-    model: str = "sentence-transformers/all-MiniLM-L6-v2"
+    model: str = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
     allow_hashed_fallback: bool = True
     dim: int = 256
 

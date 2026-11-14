@@ -13,7 +13,7 @@ adapters = ["local_embeddings", "prompt_shields"]
 judge_enabled = false  # stage-3 judge is off by default even on hybrid
 
 [guard.embeddings]
-model = "sentence-transformers/all-MiniLM-L6-v2"
+model = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
 allow_hashed_fallback = true
 dim = 256
 

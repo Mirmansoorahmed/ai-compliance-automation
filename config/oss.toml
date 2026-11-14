@@ -8,9 +8,11 @@ adapters = ["local_embeddings"]
 judge_enabled = false
 
 [guard.embeddings]
-# Prefer a small CPU-only sentence-transformers model when installed;
-# otherwise use the deterministic hashed-vector fallback (reproducible in CI).
-model = "sentence-transformers/all-MiniLM-L6-v2"
+# Prefer a small, CPU-only, multilingual MiniLM model (handles DE + EN) when
+# sentence-transformers and the model are installed; otherwise use the
+# deterministic hashed-vector fallback (reproducible in CI). The run records
+# which backend was used.
+model = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
 allow_hashed_fallback = true
 dim = 256
 

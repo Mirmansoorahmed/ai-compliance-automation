@@ -15,9 +15,11 @@ dependencies = []
 [project.optional-dependencies]
 # Real local embedding model (small, CPU-only). When absent, the Guard falls
 # back to a deterministic hashed-vector embedder so CI stays reproducible.
+# Pinned so a real-backend eval run is reproducible. Model:
+# sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2 (CPU, DE+EN).
 embeddings = [
-    "sentence-transformers>=2.2",
-    "numpy>=1.24",
+    "sentence-transformers==3.0.1",
+    "numpy>=1.24,<2",
 ]
 # Hybrid-profile and richer-tooling extras (not needed for oss CI).
 hybrid = [
