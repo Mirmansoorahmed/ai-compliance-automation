@@ -33,17 +33,55 @@ _SECRET_RE = re.compile(
 )
 
 # Behaviour-source hints (DE + EN), used by stage 0 and reused by stage A.
+# These are general workplace behaviour-monitoring sources, not tokens copied
+# from any one request. The list is intentionally broad so the deterministic
+# stage recognises the common ways employee behaviour is captured.
 _BEHAVIOUR_HINTS = {
-    "en": ["badge", "swipe", "slack activity", "canteen", "attendance", "keystroke", "productivity"],
-    "de": ["ausweis", "zutritt", "kantine", "anwesenheit", "tastatur", "produktivität"],
+    "en": [
+        "badge", "swipe", "slack activity", "slack message", "canteen", "cafeteria",
+        "attendance", "keystroke", "productivity", "turnstile", "entry-gate",
+        "entry gate", "door-access", "door access", "parking-gate", "parking gate",
+        "vpn login", "login time", "login punctuality", "helpdesk ticket",
+        "meeting attendance", "teams presence", "printer usage", "cctv", "camera",
+        "phone-call log", "phone call log", "wearable", "step count", "commit count",
+        "email response", "chat sentiment", "chat tone", "messaging-tool",
+        "messaging tool", "lunchroom",
+    ],
+    "de": [
+        "ausweis", "zutritt", "zutritts", "kantine", "anwesenheit", "tastatur",
+        "produktivität", "drehkreuz", "eingang", "türzutritt", "parkschranke",
+        "vpn-anmeldung", "anmeldezeit", "login-pünktlichkeit", "helpdesk",
+        "meeting-teilnahme", "teams-präsenz", "druckernutzung", "kamera",
+        "telefonprotokoll", "wearable", "schrittzahl", "commit", "e-mail-reaktion",
+        "chat-stimmung", "chatton", "nachrichtentool", "essensausgabe",
+    ],
 }
 _SCORE_HINTS = {
-    "en": ["reliability index", "ranking", "score", "rating", "league table"],
-    "de": ["zuverlässigkeitsindex", "rangliste", "bewertung", "punktzahl"],
+    "en": [
+        "reliability index", "dependability score", "loyalty index", "productivity grade",
+        "trust rating", "commitment score", "engagement score", "ranking", "rank",
+        "score", "rating", "league table", "leaderboard", "index per", "grade",
+        "dependability", "0-100", "scale",
+    ],
+    "de": [
+        "zuverlässigkeitsindex", "verlässlichkeitswert", "loyalitätsindex",
+        "produktivitätsnote", "vertrauensbewertung", "engagement-score", "rangliste",
+        "rangfolge", "bewertung", "punktzahl", "bestenliste", "note", "skala", "index",
+    ],
 }
 _ADVERSE_HINTS = {
-    "en": ["bonus", "fire", "dismiss", "terminate", "penalise", "penalize", "demote", "bottom 10%"],
-    "de": ["bonus", "kündigen", "entlassen", "abmahnung", "degradieren"],
+    "en": [
+        "bonus", "fire", "dismiss", "dismissal", "terminate", "termination",
+        "penalise", "penalize", "demote", "bottom 10%", "bottom quartile",
+        "lowest 5%", "lowest-ranked", "lowest decile", "deny promotion",
+        "withhold bonus", "cut overtime", "night shift", "incentive",
+        "remove from", "reassign", "perk",
+    ],
+    "de": [
+        "bonus", "kündigen", "kündigung", "entlassen", "abmahnung", "degradieren",
+        "beförderung verweigern", "überstunden", "nachtschicht", "prämie",
+        "streiche", "versetze", "zusatzleistung", "verweigere",
+    ],
 }
 
 
