@@ -1,0 +1,25 @@
+# Profile: oss (default). Runs fully offline with no cloud account.
+# CI must pass with this profile and all optional adapters absent.
+profile = "oss"
+
+[guard]
+# Adapters enabled on the oss profile. local_embeddings is required.
+adapters = ["local_embeddings"]
+judge_enabled = false
+
+[guard.embeddings]
+# Prefer a small CPU-only sentence-transformers model when installed;
+# otherwise use the deterministic hashed-vector fallback (reproducible in CI).
+model = "sentence-transformers/all-MiniLM-L6-v2"
+allow_hashed_fallback = true
+dim = 256
+
+[identity]
+# No cloud IdP required. Tests use a fixture token; Keycloak optional.
+provider = "fixture"
+
+[evidence]
+exporter = "file"
+
+[api]
+fixture_mode = true
