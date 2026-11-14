@@ -117,6 +117,13 @@ One protocol: `detect(event) -> labels[]`. Backends: `local_embeddings` (require
 
 Vendor-adapter scores are reported **separately** from the local path in eval output (R4.5, R12.5). Prompt Shields is documented as detecting jailbreak/injection, not legal-element fit (R4.6).
 
+**Hybrid adapters (Phase 10, implemented).** All sit behind the `detect(event) -> labels[]` protocol, read config from environment variables only (no repo secrets), and share a small stdlib `urllib` transport (`guard/adapters/http_transport.py`) with a typed error model (timeout / 401·403 auth / 429 rate-limit / 5xx). On no credentials they report `available() is False` and are skipped; on a live failure they raise, so the Guard marks them failed and the pipeline applies the fail-safe tier (never a silent allow).
+- `prompt_shields` (`guard/adapters/prompt_shields.py`): Azure AI Content Safety. Emits a label under the **separate** concept `PROMPT-INJECTION`, so OPA (which only knows legal concepts) never treats it as an Art. 5 finding and it is scored separately.
+- `judge` (`guard/adapters/judge.py`): stage-3 Azure OpenAI / Foundry, **off by default** (`judge_enabled`), pinned deployment + pinned `RUBRIC`, structured-JSON → labels, with a `StubJudge` for offline tests and clean fallback to stages 0-1 when unavailable.
+- `lakera` / `aws_placeholder` (`guard/adapters/stubs.py`): protocol-conformant, inert (always `[]`).
+- Identity (`identity/provider.py`): `FixtureIdentityProvider` (default, Keycloak/fixture token) and optional `EntraIdentityProvider` that normalises group claims and degrades to fixture when its env config is absent.
+The hybrid eval (`eval/hybrid_runner.py`, `make hybrid-eval`) scores the vendor path separately and renders `TO BE MEASURED` until a real credentialed run exists. Runbook: `docs/HYBRID.md`.
+
 ---
 
 ## 6. OPA policy

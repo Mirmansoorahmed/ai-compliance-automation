@@ -53,6 +53,17 @@ _Source: committed eval run 2026-11-14 18:11 UTC, git `7432bf55`, embedder `hash
 
 > **Read these as a baseline, not a quality claim.** This committed run uses the deterministic **hashed-vector embedding fallback** (so CI is reproducible offline), not a trained model. On a tiny curated set it separates positives from hard negatives cleanly; it is not evidence of real-world detector accuracy. Re-measure with the MiniLM-class model and a larger set before citing any number elsewhere.
 
+## Hybrid profile (optional Azure adapters)
+
+The `hybrid` profile adds feature-flagged Azure adapters behind the same adapter interfaces: **Prompt Shields** (Azure AI Content Safety — one jailbreak/injection *signal*, scored separately under a `PROMPT-INJECTION` concept, never a legal verdict), an optional **stage-3 LLM judge** (Azure OpenAI / Foundry, off by default), and an optional **Entra ID** identity provider. All degrade cleanly: no credentials → skipped; a live failure (timeout/401/403/429/5xx) → the tool degrades to `ask`, never a silent allow. Credentials come from environment variables only — no secrets in the repo. Runbook, env vars, cost notes, and the exact command: [`docs/HYBRID.md`](docs/HYBRID.md).
+
+| Hybrid metric | value |
+|---|---|
+| Prompt Shields precision / recall (scored separately) | TO BE MEASURED |
+| Stage 2–3 (vendor/judge) p95 | TO BE MEASURED |
+
+_No hybrid number is published until a real credentialed run exists (see [`docs/HYBRID.md`](docs/HYBRID.md)). A budget alert on the Azure for Students subscription is a prerequisite before any hybrid call._
+
 ## Limitations
 
 - Lab and synthetic data; mappings are illustrative; no conformity claim and no automation of indeterminate legal concepts.

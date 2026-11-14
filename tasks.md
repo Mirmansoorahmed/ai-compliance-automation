@@ -101,17 +101,17 @@ Legend: each task ⇒ `[Rn]` traces to `requirements.md`. "Test hook" = the auto
 
 ## Phase 10 — Optional hybrid adapters (feature-flagged, degrade cleanly)
 
-- [ ] 10.1 Document Azure prerequisites and the budget-alert gate (DESIGN.md §15); do not enable paid adapters without it. **[R15.2, R15.3]**
+- [x] 10.1 Document Azure prerequisites and the budget-alert gate (DESIGN.md §15); do not enable paid adapters without it. **[R15.2, R15.3]**
   - Test hook: docs test asserts prerequisite text present; default config keeps hybrid off.
-- [ ] 10.2 Implement the `prompt_shields` adapter (one signal, not a verdict); scored separately; degrades cleanly when creds absent. **[R4.1, R4.4, R4.5, R4.6]**
+- [x] 10.2 Implement the `prompt_shields` adapter (one signal, not a verdict); scored separately; degrades cleanly when creds absent. **[R4.1, R4.4, R4.5, R4.6]**
   - Test hook: adapter-absent + adapter-present (mocked) tests; oss CI unaffected.
-- [ ] 10.3 Implement the stage-3 judge adapter (Azure OpenAI / Foundry), off by default, pinned model + rubric, structured-JSON parser, local stub for tests, fallback to stages 0–1. **[R5.1, R5.2, R5.3, R5.4]**
+- [x] 10.3 Implement the stage-3 judge adapter (Azure OpenAI / Foundry), off by default, pinned model + rubric, structured-JSON parser, local stub for tests, fallback to stages 0–1. **[R5.1, R5.2, R5.3, R5.4]**
   - Test hook: stub-judge test; fallback test when judge unavailable.
-- [ ] 10.4 Add `lakera` stub and `aws_placeholder` unused slot conforming to the adapter protocol. **[R4.1]**
+- [x] 10.4 Add `lakera` stub and `aws_placeholder` unused slot conforming to the adapter protocol. **[R4.1]**
   - Test hook: protocol-conformance test; both selectable but inert.
-- [ ] 10.5 Implement the Entra ID groups adapter (optional); Keycloak/fixture token remains default. **[R15.1]**
+- [x] 10.5 Implement the Entra ID groups adapter (optional); Keycloak/fixture token remains default. **[R15.1]**
   - Test hook: identity test passes with fixture token; Entra path mocked.
-- [ ] 10.6 Run the three demo scenarios under `hybrid` when credentials exist; vendor scores reported separately. **[R14.5, R12.5]**
+- [x] 10.6 Run the three demo scenarios under `hybrid` when credentials exist; vendor scores reported separately. **[R14.5, R12.5]**
   - Test hook: hybrid demo smoke test (mocked creds) mirrors oss outcomes.
 
 ---
