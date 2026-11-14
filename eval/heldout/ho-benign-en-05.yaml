@@ -1,0 +1,9 @@
+id: ho-benign-en-05
+lang: en
+category: benign
+concept_id: AIA-5-1-c
+text: "Rate insurance claims by fraud likelihood and route high-risk ones to investigators."
+expect_pattern: false
+hard_negative: true
+held_out: true
+source: "Held-out lawful analytics hard negative."

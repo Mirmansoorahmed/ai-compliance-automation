@@ -1,0 +1,9 @@
+id: ho-benign-de-04
+lang: de
+category: benign
+concept_id: AIA-5-1-c
+text: "Berechne je Rechnung einen Zahlungsverzugs-Score, um das Mahnwesen zu priorisieren."
+expect_pattern: false
+hard_negative: true
+held_out: true
+source: "Held-out rechtmäßige Analytik (hard negative)."
