@@ -60,10 +60,13 @@ class CaseResult:
     lang: str
     category: str
     expect_pattern: bool
-    detected_pattern: bool
+    detected_pattern: bool  # strict: full pattern asserted
     confidence: float
     elements_met: list[str]
     stage01_latency_ms: float
+    tier: str = "allow"           # OPA tier for this case's labels
+    routed_to_review: bool = False  # tier in {deny, four-eyes, ask}
+    partial: bool = False          # a partial pattern (>=2 of 3) was emitted
 
 
 @dataclass
@@ -77,14 +80,16 @@ class EvalReport:
     n_scored_cases: int
     per_language: dict
     benign_false_block_rate: float | None
+    benign_routed_to_ask_rate: float | None
     latency_ms: dict
     prompt_injection: dict
+    held_out: dict
     vendor_path: dict | None
     cases: list[dict] = field(default_factory=list)
 
     def to_dict(self) -> dict:
         return {
-            "schema": "eval-report/v1",
+            "schema": "eval-report/v2",
             "generated_ts": self.generated_ts,
             "git_sha": self.git_sha,
             "profile": self.profile,
@@ -94,8 +99,10 @@ class EvalReport:
             "n_scored_cases": self.n_scored_cases,
             "per_language": self.per_language,
             "benign_false_block_rate": self.benign_false_block_rate,
+            "benign_routed_to_ask_rate": self.benign_routed_to_ask_rate,
             "latency_ms": self.latency_ms,
             "prompt_injection": self.prompt_injection,
+            "held_out": self.held_out,
             "vendor_path": self.vendor_path,
             "cases": self.cases,
         }
@@ -108,49 +115,67 @@ def load_cases(cases_dir: Path | None = None) -> list[dict]:
     return [load_yaml(p) for p in sorted(base.glob("*.yaml"))]
 
 
-def _run_case(case: dict, adapter: LocalEmbeddingsAdapter) -> CaseResult:
+def _run_case(case: dict, adapter: LocalEmbeddingsAdapter, policy_data) -> CaseResult:
+    from aca.guard.stages.exemplars import load_concept
+    from aca.guard.stages.stage_s import accumulate_session_elements
+    from aca.policy.decide import decide
+
     concept_id = case.get("concept_id", "AIA-5-1-c")
     lang = case.get("lang", "en")
+    required = set(load_concept(concept_id, adapter._embedder).elements)
 
     start = time.perf_counter()
     if case.get("multi_turn"):
-        # Feed turns through a session; accumulate elements across the window.
-        session = SessionContext(ttl_seconds=900)
-        subject = f"eval-{case['id']}"
-        last_conf = 0.0
-        last_pattern_id = None
-        for turn in case.get("turns", []):
-            labels = adapter.detect(Event(text=turn, language=lang))
-            for label in labels:
-                session.add(subject, label)
-                if label["concept_id"] == concept_id:
-                    last_conf = max(last_conf, label.get("confidence", 0.0))
-                    last_pattern_id = last_pattern_id or label.get("pattern_id")
-        accumulated = session.accumulated_elements(subject, concept_id)
-        # Pattern asserted if the accumulated element set is complete.
-        from aca.guard.stages.exemplars import load_concept
-
-        required = set(load_concept(concept_id, adapter._embedder).elements)
-        detected = required <= accumulated
+        # Feed turns; aggregate elements AND behaviour-source hits across the
+        # session window so split ("salami") requests combine (item 3).
+        per_turn = [
+            adapter.detect(Event(text=turn, language=lang))
+            for turn in case.get("turns", [])
+        ]
+        accumulated, _hits = accumulate_session_elements(per_turn, concept_id)
+        confidence = max(
+            (l.get("confidence", 0.0) for labels in per_turn for l in labels
+             if l.get("concept_id") == concept_id),
+            default=0.0,
+        )
         elements_met = sorted(accumulated)
-        confidence = last_conf
+        met_count = len(required & accumulated)
+        full_match = met_count == len(required)
+        partial = (not full_match) and met_count >= 2 and len(required) >= 3
+        # Build one synthesised session label for the policy decision.
+        label = {
+            "concept_id": concept_id,
+            "confidence": confidence,
+            "elements_met": elements_met,
+            "elements_total": len(required),
+            "partial_pattern": partial,
+        }
+        if full_match:
+            label["pattern_id"] = load_concept(concept_id, adapter._embedder).pattern_id
+        labels = [label]
     else:
         labels = adapter.detect(Event(text=case.get("text", ""), language=lang))
         label = next((l for l in labels if l["concept_id"] == concept_id), None)
-        detected = bool(label and label.get("pattern_id"))
+        full_match = bool(label and label.get("pattern_id"))
+        partial = bool(label and label.get("partial_pattern"))
         confidence = label.get("confidence", 0.0) if label else 0.0
         elements_met = label.get("elements_met", []) if label else []
     latency_ms = (time.perf_counter() - start) * 1000.0
+
+    tier = decide(labels, policy_data)
 
     return CaseResult(
         id=case["id"],
         lang=lang,
         category=case.get("category", "unknown"),
         expect_pattern=bool(case.get("expect_pattern", False)),
-        detected_pattern=detected,
+        detected_pattern=bool(full_match),
         confidence=round(confidence, 4),
         elements_met=elements_met,
         stage01_latency_ms=round(latency_ms, 3),
+        tier=tier,
+        routed_to_review=tier in ("deny", "four-eyes", "ask"),
+        partial=bool(partial),
     )
 
 
@@ -161,11 +186,35 @@ def _prf(results: list[CaseResult]) -> dict:
     tn = sum(1 for r in results if not r.expect_pattern and not r.detected_pattern)
     precision = tp / (tp + fp) if (tp + fp) else None
     recall = tp / (tp + fn) if (tp + fn) else None
+    # Routed-to-review recall: of the attacks (expect_pattern), how many were
+    # routed to a human (deny/four-eyes/ask) rather than allowed. The partial
+    # rule lifts this above strict recall without touching strict recall.
+    attacks = [r for r in results if r.expect_pattern]
+    routed = sum(1 for r in attacks if r.routed_to_review)
+    routed_to_review = round(routed / len(attacks), 4) if attacks else None
     return {
         "tp": tp, "fp": fp, "fn": fn, "tn": tn,
         "precision": round(precision, 4) if precision is not None else None,
         "recall": round(recall, 4) if recall is not None else None,
+        "routed_to_review": routed_to_review,
         "n": len(results),
+    }
+
+
+def _benign_rates(results: list["CaseResult"]) -> dict:
+    """False-block (strict) and routed-to-ask rates on benign/ambiguous cases."""
+    benign = [r for r in results if r.category in ("benign", "ambiguous")]
+    if not benign:
+        return {"benign_false_block_rate": None, "benign_routed_to_ask_rate": None, "n_benign": 0}
+    # Strict false block = a benign case that asserts the FULL pattern (deny tier
+    # once confirmed). Routed-to-ask = benign case sent to a human (the cost of
+    # the partial rule; should stay low).
+    false_blocks = sum(1 for r in benign if r.detected_pattern)
+    routed_ask = sum(1 for r in benign if r.routed_to_review)
+    return {
+        "benign_false_block_rate": round(false_blocks / len(benign), 4),
+        "benign_routed_to_ask_rate": round(routed_ask / len(benign), 4),
+        "n_benign": len(benign),
     }
 
 
@@ -180,22 +229,34 @@ def run_eval(
     embedder = build_embedder(allow_hashed_fallback=True, dim=dim)
     adapter = LocalEmbeddingsAdapter(embedder=embedder, dim=dim)
 
+    # Eval uses the production thresholds with an EMPTY confirmed-pattern list
+    # (the default), so a full match routes to four-eyes and a partial to ask —
+    # never an auto-deny during measurement.
+    from aca.policy.decide import PolicyData, load_policy_data
+
+    base_policy = load_policy_data()
+    policy_data = PolicyData(thresholds=base_policy.thresholds, confirmed_prohibited_patterns=[])
+
     all_cases = load_cases(cases_dir)
     # The local path scores the legal concept (AIA-5-1-c). PROMPT-INJECTION cases
     # are for the vendor path (Prompt Shields) and are reported separately.
     aia_cases = [c for c in all_cases if c.get("concept_id") == "AIA-5-1-c"]
     injection_cases = [c for c in all_cases if c.get("concept_id") == "PROMPT-INJECTION"]
 
-    results = [_run_case(c, adapter) for c in aia_cases]
+    results = [_run_case(c, adapter, policy_data) for c in aia_cases]
 
     per_language = {}
     for lang in sorted({r.lang for r in results}):
         per_language[lang] = _prf([r for r in results if r.lang == lang])
     per_language["overall"] = _prf(results)
 
-    benign = [r for r in results if r.category in ("benign", "ambiguous")]
-    false_blocks = sum(1 for r in benign if r.detected_pattern)
-    benign_false_block_rate = round(false_blocks / len(benign), 4) if benign else None
+    benign_rates = _benign_rates(results)
+    benign_false_block_rate = benign_rates["benign_false_block_rate"]
+    benign_routed_to_ask_rate = benign_rates["benign_routed_to_ask_rate"]
+
+    # Held-out set: NEW cases not used while tuning stage-0 vocab/exemplars,
+    # scored separately so improvements are not just fit to the training texts.
+    held_out = _score_held_out(adapter, policy_data, root)
 
     stage01 = [r.stage01_latency_ms for r in results]
     latency = {
@@ -235,11 +296,37 @@ def run_eval(
         n_scored_cases=len(results),
         per_language=per_language,
         benign_false_block_rate=benign_false_block_rate,
+        benign_routed_to_ask_rate=benign_routed_to_ask_rate,
         latency_ms=latency,
         prompt_injection=prompt_injection,
+        held_out=held_out,
         vendor_path=None,  # no vendor adapter on oss; scored separately when present
         cases=[r.__dict__ for r in results],
     )
+
+
+def _score_held_out(adapter: LocalEmbeddingsAdapter, policy_data, root: Path) -> dict:
+    """Score the held-out set (eval/heldout/) separately from the tuning set."""
+    held_dir = root / "eval" / "heldout"
+    if not held_dir.exists():
+        return {"n_cases": 0, "note": "no held-out set present"}
+    cases = load_cases(held_dir)
+    aia = [c for c in cases if c.get("concept_id") == "AIA-5-1-c"]
+    results = [_run_case(c, adapter, policy_data) for c in aia]
+    per_language = {}
+    for lang in sorted({r.lang for r in results}):
+        per_language[lang] = _prf([r for r in results if r.lang == lang])
+    per_language["overall"] = _prf(results)
+    benign_rates = _benign_rates(results)
+    return {
+        "n_cases": len(cases),
+        "n_scored_cases": len(results),
+        "per_language": per_language,
+        "benign_false_block_rate": benign_rates["benign_false_block_rate"],
+        "benign_routed_to_ask_rate": benign_rates["benign_routed_to_ask_rate"],
+        "note": "NEW cases not used while tuning; scored separately (no fit to these texts).",
+        "cases": [r.__dict__ for r in results],
+    }
 
 
 def write_report(report: EvalReport, *, results_dir: Path | None = None) -> Path:
@@ -262,9 +349,17 @@ def main(argv: list[str] | None = None) -> int:  # pragma: no cover - CLI glue
     print(f"  git_sha={report.git_sha}  backend={report.embedder_backend}  "
           f"cases={report.n_cases} scored={report.n_scored_cases}")
     for lang, m in report.per_language.items():
-        print(f"  [{lang}] precision={m['precision']} recall={m['recall']} n={m['n']}")
-    print(f"  benign_false_block_rate={report.benign_false_block_rate}")
+        print(f"  [{lang}] precision={m['precision']} strict_recall={m['recall']} "
+              f"routed_to_review={m['routed_to_review']} n={m['n']}")
+    print(f"  benign_false_block_rate={report.benign_false_block_rate} "
+          f"benign_routed_to_ask_rate={report.benign_routed_to_ask_rate}")
     print(f"  stage_0_1_p95_ms={report.latency_ms['stage_0_1_p95_ms']}")
+    ho = report.held_out
+    if ho.get("per_language"):
+        o = ho["per_language"]["overall"]
+        print(f"  held-out: n={ho['n_cases']} precision={o['precision']} "
+              f"strict_recall={o['recall']} routed_to_review={o['routed_to_review']} "
+              f"false_block={ho['benign_false_block_rate']}")
     print(f"  prompt_injection: {report.prompt_injection['n_cases']} cases "
           f"(precision/recall {report.prompt_injection['precision']})")
     return 0

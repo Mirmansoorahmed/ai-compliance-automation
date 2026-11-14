@@ -72,6 +72,30 @@ def test_prompt_injection_scored_separately_as_to_be_measured():
     assert pi["recall"] == "TO BE MEASURED"
 
 
+def test_routed_to_review_is_at_least_strict_recall():
+    # Every full-pattern detection routes to review, and partials add to it, so
+    # routed_to_review must never be below strict recall.
+    report = run_eval(repo_root=REPO)
+    o = report.per_language["overall"]
+    assert o["routed_to_review"] >= o["recall"]
+
+
+def test_held_out_set_is_scored_separately():
+    report = run_eval(repo_root=REPO)
+    ho = report.held_out
+    assert ho["n_cases"] >= 15
+    assert "per_language" in ho
+    assert "overall" in ho["per_language"]
+    # Held-out carries its own false-block rate.
+    assert "benign_false_block_rate" in ho
+
+
+def test_benign_false_block_stays_zero_and_routed_to_ask_reported():
+    report = run_eval(repo_root=REPO)
+    assert report.benign_false_block_rate == 0.0
+    assert report.benign_routed_to_ask_rate is not None
+
+
 def test_runner_scores_vendor_path_separately_null_on_oss():
     report = run_eval(repo_root=REPO)
     # Vendor/judge path is off on oss -> reported separately as null / not measured.
