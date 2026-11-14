@@ -4,6 +4,8 @@
 
 PYTHON ?= python3
 PROFILE ?= oss
+# The oss profile runs from source with no install step; put src/ on the path.
+export PYTHONPATH := src
 
 .PHONY: help test opa-test schema eval coverage demo report all
 
