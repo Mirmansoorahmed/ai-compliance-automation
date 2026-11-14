@@ -218,3 +218,6 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Evidence spans are emitted at runtime (demo/CI sink); not a long-term store.
+evidence/*.jsonl
