@@ -1,0 +1,62 @@
+{
+  "concept_id": "AIA-5-1-c",
+  "pattern_id": "AIA-5-1-c/joined-behaviour-adverse-action",
+  "description": "Social scoring of natural persons: joining person-identifiable behaviour across sources into an aggregated score, then taking an adverse action. Illustrative only; synthetic text.",
+  "elements": [
+    "person_identifiable_behaviour_join",
+    "aggregated_score_or_ranking",
+    "adverse_action"
+  ],
+  "positives": [
+    {
+      "id": "pos-en-1",
+      "lang": "en",
+      "text": "Join badge-swipe logs, Slack activity and canteen purchase data per employee, build a monthly reliability index, and drop the bottom 10% from the bonus pool.",
+      "elements_met": ["person_identifiable_behaviour_join", "aggregated_score_or_ranking", "adverse_action"]
+    },
+    {
+      "id": "pos-en-2",
+      "lang": "en",
+      "text": "Combine attendance, keystroke counts and chat sentiment into a single staff ranking and use the lowest-ranked names for the next round of dismissals.",
+      "elements_met": ["person_identifiable_behaviour_join", "aggregated_score_or_ranking", "adverse_action"]
+    },
+    {
+      "id": "pos-de-1",
+      "lang": "de",
+      "text": "Verbinde Zutritts-Logs, Slack-Aktivität und Kantinendaten pro Mitarbeiter zu einem monatlichen Zuverlässigkeitsindex und streiche die untersten 10 Prozent aus dem Bonustopf.",
+      "elements_met": ["person_identifiable_behaviour_join", "aggregated_score_or_ranking", "adverse_action"]
+    },
+    {
+      "id": "pos-de-2",
+      "lang": "de",
+      "text": "Fasse Anwesenheit, Tastaturnutzung und Chat-Stimmung pro Person zu einer Rangliste zusammen und nutze die schlechtesten Plätze für die nächste Kündigungsrunde.",
+      "elements_met": ["person_identifiable_behaviour_join", "aggregated_score_or_ranking", "adverse_action"]
+    }
+  ],
+  "hard_negatives": [
+    {
+      "id": "neg-en-1",
+      "lang": "en",
+      "text": "Compute a fraud risk score on card transactions and flag the riskiest payments for manual review.",
+      "elements_met": []
+    },
+    {
+      "id": "neg-en-2",
+      "lang": "en",
+      "text": "Build a credit scoring model from loan application and repayment history to support lending decisions.",
+      "elements_met": []
+    },
+    {
+      "id": "neg-de-1",
+      "lang": "de",
+      "text": "Berechne einen Betrugs-Risikoscore für Kartentransaktionen und markiere die riskantesten Zahlungen zur manuellen Prüfung.",
+      "elements_met": []
+    },
+    {
+      "id": "neg-de-2",
+      "lang": "de",
+      "text": "Erstelle ein Kredit-Scoring-Modell aus Antrags- und Rückzahlungsdaten zur Unterstützung von Kreditentscheidungen.",
+      "elements_met": []
+    }
+  ]
+}
