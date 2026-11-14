@@ -72,10 +72,13 @@ class EvalReport:
     git_sha: str
     profile: str
     embedder: str
+    embedder_backend: str
     n_cases: int
+    n_scored_cases: int
     per_language: dict
     benign_false_block_rate: float | None
     latency_ms: dict
+    prompt_injection: dict
     vendor_path: dict | None
     cases: list[dict] = field(default_factory=list)
 
@@ -86,10 +89,13 @@ class EvalReport:
             "git_sha": self.git_sha,
             "profile": self.profile,
             "embedder": self.embedder,
+            "embedder_backend": self.embedder_backend,
             "n_cases": self.n_cases,
+            "n_scored_cases": self.n_scored_cases,
             "per_language": self.per_language,
             "benign_false_block_rate": self.benign_false_block_rate,
             "latency_ms": self.latency_ms,
+            "prompt_injection": self.prompt_injection,
             "vendor_path": self.vendor_path,
             "cases": self.cases,
         }
@@ -174,12 +180,18 @@ def run_eval(
     embedder = build_embedder(allow_hashed_fallback=True, dim=dim)
     adapter = LocalEmbeddingsAdapter(embedder=embedder, dim=dim)
 
-    cases = load_cases(cases_dir)
-    results = [_run_case(c, adapter) for c in cases]
+    all_cases = load_cases(cases_dir)
+    # The local path scores the legal concept (AIA-5-1-c). PROMPT-INJECTION cases
+    # are for the vendor path (Prompt Shields) and are reported separately.
+    aia_cases = [c for c in all_cases if c.get("concept_id") == "AIA-5-1-c"]
+    injection_cases = [c for c in all_cases if c.get("concept_id") == "PROMPT-INJECTION"]
+
+    results = [_run_case(c, adapter) for c in aia_cases]
 
     per_language = {}
     for lang in sorted({r.lang for r in results}):
         per_language[lang] = _prf([r for r in results if r.lang == lang])
+    per_language["overall"] = _prf(results)
 
     benign = [r for r in results if r.category in ("benign", "ambiguous")]
     false_blocks = sum(1 for r in benign if r.detected_pattern)
@@ -194,15 +206,37 @@ def run_eval(
         "stage_2_3_note": "not measured (vendor/judge path off on oss profile)",
     }
 
+    # PROMPT-INJECTION set: the local path does not detect injection (that is the
+    # vendor Prompt Shields path), so on oss these are counted but NOT scored —
+    # precision/recall are TO BE MEASURED until a credentialed hybrid run.
+    pi_by = {"injection": 0, "clean": 0}
+    for c in injection_cases:
+        cat = c.get("category")
+        if cat in pi_by:
+            pi_by[cat] += 1
+    prompt_injection = {
+        "n_cases": len(injection_cases),
+        "by_category": pi_by,
+        "scored_by": "vendor Prompt Shields path (hybrid)",
+        "precision": "TO BE MEASURED",
+        "recall": "TO BE MEASURED",
+        "note": "Local path does not label injection; run make hybrid-eval with Azure creds.",
+    }
+
+    backend = "sentence-transformers" if embedder.version.startswith("st:") else "hashed-fallback"
+
     return EvalReport(
         generated_ts=time.time(),
         git_sha=_git_sha(root),
         profile=profile,
         embedder=embedder.version,
-        n_cases=len(results),
+        embedder_backend=backend,
+        n_cases=len(all_cases),
+        n_scored_cases=len(results),
         per_language=per_language,
         benign_false_block_rate=benign_false_block_rate,
         latency_ms=latency,
+        prompt_injection=prompt_injection,
         vendor_path=None,  # no vendor adapter on oss; scored separately when present
         cases=[r.__dict__ for r in results],
     )
@@ -225,11 +259,14 @@ def main(argv: list[str] | None = None) -> int:  # pragma: no cover - CLI glue
     report = run_eval()
     path = write_report(report)
     print(f"eval report written: {path}")
-    print(f"  git_sha={report.git_sha}  cases={report.n_cases}")
+    print(f"  git_sha={report.git_sha}  backend={report.embedder_backend}  "
+          f"cases={report.n_cases} scored={report.n_scored_cases}")
     for lang, m in report.per_language.items():
         print(f"  [{lang}] precision={m['precision']} recall={m['recall']} n={m['n']}")
     print(f"  benign_false_block_rate={report.benign_false_block_rate}")
     print(f"  stage_0_1_p95_ms={report.latency_ms['stage_0_1_p95_ms']}")
+    print(f"  prompt_injection: {report.prompt_injection['n_cases']} cases "
+          f"(precision/recall {report.prompt_injection['precision']})")
     return 0
 
 

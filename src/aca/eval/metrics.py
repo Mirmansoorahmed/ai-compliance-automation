@@ -54,20 +54,32 @@ def provenance_line(run: dict | None) -> str:
     return f"_Source: committed eval run {stamp}, git {sha}, embedder `{embedder}`._"
 
 
+def _cell(run: dict | None, lang: str, key: str) -> str:
+    if run is None:
+        return TO_BE_MEASURED
+    val = (run.get("per_language", {}).get(lang, {}) or {}).get(key)
+    return TO_BE_MEASURED if val is None else str(val)
+
+
 def results_table(run: dict | None) -> list[str]:
     """Markdown lines for a results table, with provenance or TO BE MEASURED."""
     lines = [
-        "| Metric | de | en |",
-        "|---|---|---|",
+        "| Metric | de | en | overall |",
+        "|---|---|---|---|",
     ]
-    pl = (run or {}).get("per_language", {})
     for metric, key in (("Label precision", "precision"), ("Label recall", "recall")):
-        de = metric_or_to_be_measured({"v": pl.get("de", {}).get(key)} if run else None, ["v"])
-        en = metric_or_to_be_measured({"v": pl.get("en", {}).get(key)} if run else None, ["v"])
-        lines.append(f"| {metric} | {de} | {en} |")
+        lines.append(
+            f"| {metric} | {_cell(run, 'de', key)} | {_cell(run, 'en', key)} "
+            f"| {_cell(run, 'overall', key)} |"
+        )
     fbr = metric_or_to_be_measured(run, ["benign_false_block_rate"])
     p95 = metric_or_to_be_measured(run, ["latency_ms", "stage_0_1_p95_ms"])
-    lines.append(f"| Benign false-block rate | {fbr} | {fbr} |")
-    lines.append(f"| Semantic path p95 (stages 0-1, ms) | {p95} | {p95} |")
-    lines.append(f"| Semantic path p95 (stages 2-3, ms) | {TO_BE_MEASURED} | {TO_BE_MEASURED} |")
+    lines.append(f"| Benign false-block rate | | | {fbr} |")
+    lines.append(f"| Semantic path p95 (stages 0-1, ms) | | | {p95} |")
+    lines.append(f"| Semantic path p95 (stages 2-3, ms) | | | {TO_BE_MEASURED} |")
+    # Prompt-injection set is scored by the vendor path (hybrid) -> TBM on oss.
+    pi_prec = metric_or_to_be_measured(run, ["prompt_injection", "precision"])
+    pi_rec = metric_or_to_be_measured(run, ["prompt_injection", "recall"])
+    lines.append(f"| Prompt-injection precision (vendor path) | | | {pi_prec} |")
+    lines.append(f"| Prompt-injection recall (vendor path) | | | {pi_rec} |")
     return lines
