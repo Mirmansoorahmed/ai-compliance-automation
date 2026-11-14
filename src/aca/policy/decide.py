@@ -62,12 +62,27 @@ def decide(labels: list[dict], data: PolicyData) -> str:
             continue
 
         concept_id = label.get("concept_id")
+        elements_met = label.get("elements_met") or []
+        elements_total = label.get("elements_total")
+
+        # A FULL legal-element match (all elements present) routes to four-eyes
+        # regardless of similarity confidence: the elements themselves are the
+        # signal. This prevents a correctly-detected attack from being allowed
+        # just because an embedding score was low.
+        if elements_total and len(set(elements_met)) >= elements_total:
+            consider("four-eyes")
+
+        # A PARTIAL pattern (some-but-not-all elements) routes to ask (human
+        # review), never allow, regardless of confidence.
+        if label.get("partial_pattern"):
+            consider("ask")
+
         th = data.thresholds.get(concept_id)
         if not th:
             continue
         confidence = float(label.get("confidence", 0.0))
-        elements_met = label.get("elements_met") or []
 
+        # Pure-similarity fallback for cases where elements were not marked.
         if confidence >= th["high"] and len(elements_met) >= th.get("min_elements", 1):
             consider("four-eyes")
         elif confidence >= th["low"]:

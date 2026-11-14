@@ -64,20 +64,28 @@ class LocalEmbeddingsAdapter:
                         evidence.append(f"stageA:{el}")
                 detector_versions["stageA"] = stage_a.version
 
+            total = len(index.elements)
+            met_count = len(set(index.elements) & set(elements_met))
+            full_match = total > 0 and met_count == total
+            # Partial pattern: >= 2 of the concept's elements present but not all.
+            # OPA maps this to `ask` (four-eyes) — a conservative routing to a
+            # human, never an allow. It is a signal, not a verdict.
+            partial = (not full_match) and met_count >= 2 and total >= 3
+            if partial:
+                evidence.append(f"partial_pattern:{met_count}/{total}")
+
             label = Label(
                 concept_id=concept_id,
                 confidence=round(s1.confidence, 4),
                 elements_met=elements_met,
                 evidence_refs=evidence,
                 detector_versions=detector_versions,
+                elements_total=total,
+                partial_pattern=partial,
                 # pattern_id is only asserted when the full element set is met;
                 # it is still OPA (with signed confirmed-pattern data) that may
                 # turn that into a deny, never this adapter.
-                pattern_id=(
-                    index.pattern_id
-                    if index.pattern_id and set(index.elements) <= set(elements_met)
-                    else None
-                ),
+                pattern_id=(index.pattern_id if full_match and index.pattern_id else None),
             )
             labels.append(label.to_dict())
         return labels

@@ -35,6 +35,12 @@ class Label:
     evidence_refs: list[str] = field(default_factory=list)
     detector_versions: dict[str, str] = field(default_factory=dict)
     pattern_id: str | None = None
+    # Count of the concept's total legal elements, so OPA can tell a full match
+    # (all elements) from a partial one (some, but not all). This is a *signal*,
+    # not a verdict — OPA still decides allow/ask/four-eyes/deny.
+    elements_total: int | None = None
+    # True when some-but-not-all elements are present (a "partial pattern").
+    partial_pattern: bool = False
 
     def __post_init__(self) -> None:
         if not (0.0 <= float(self.confidence) <= 1.0):
@@ -47,6 +53,10 @@ class Label:
         # Omit a null pattern_id for cleaner payloads.
         if d.get("pattern_id") is None:
             d.pop("pattern_id")
+        if d.get("elements_total") is None:
+            d.pop("elements_total")
+        if not d.get("partial_pattern"):
+            d.pop("partial_pattern")
         return d
 
 

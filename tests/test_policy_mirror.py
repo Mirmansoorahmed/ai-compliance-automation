@@ -34,6 +34,29 @@ def test_four_eyes_on_high_conf_enough_elements():
     assert decide(labels, TEST_DATA) == "four-eyes"
 
 
+def test_four_eyes_on_full_elements_even_at_low_confidence():
+    # All elements present -> four-eyes regardless of similarity confidence.
+    labels = [{
+        "concept_id": "AIA-5-1-c",
+        "elements_met": ["join", "score", "adverse"],
+        "elements_total": 3,
+        "confidence": 0.1,
+    }]
+    assert decide(labels, TEST_DATA) == "four-eyes"
+
+
+def test_ask_on_partial_pattern_even_at_low_confidence():
+    # >= 2 of 3 elements -> partial_pattern -> ask (never allow), regardless of
+    # the confidence threshold.
+    labels = [{
+        "concept_id": "AIA-5-1-c",
+        "elements_met": ["join", "score"],
+        "confidence": 0.1,
+        "partial_pattern": True,
+    }]
+    assert decide(labels, TEST_DATA) == "ask"
+
+
 def test_ask_on_low_conf():
     labels = [{"concept_id": "AIA-5-1-c", "elements_met": ["join"], "confidence": 0.5}]
     assert decide(labels, TEST_DATA) == "ask"

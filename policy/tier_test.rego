@@ -34,6 +34,31 @@ test_four_eyes_on_high_conf_enough_elements if {
 		with data.confirmed_prohibited_patterns as fixture_data.confirmed_prohibited_patterns
 }
 
+# A full element match routes to four-eyes even at low similarity confidence.
+test_four_eyes_on_full_elements_low_conf if {
+	tier.tier == "four-eyes" with input as {"labels": [{
+		"concept_id": "AIA-5-1-c",
+		"elements_met": ["join", "score", "adverse"],
+		"elements_total": 3,
+		"confidence": 0.1,
+	}]}
+		with data.thresholds as fixture_data.thresholds
+		with data.confirmed_prohibited_patterns as fixture_data.confirmed_prohibited_patterns
+}
+
+# A partial pattern (some-but-not-all elements) routes to ask even when the
+# confidence is below the low threshold — never allow.
+test_ask_on_partial_pattern_low_conf if {
+	tier.tier == "ask" with input as {"labels": [{
+		"concept_id": "AIA-5-1-c",
+		"elements_met": ["join", "score"],
+		"confidence": 0.1,
+		"partial_pattern": true,
+	}]}
+		with data.thresholds as fixture_data.thresholds
+		with data.confirmed_prohibited_patterns as fixture_data.confirmed_prohibited_patterns
+}
+
 test_ask_on_low_conf if {
 	tier.tier == "ask" with input as {"labels": [{
 		"concept_id": "AIA-5-1-c",

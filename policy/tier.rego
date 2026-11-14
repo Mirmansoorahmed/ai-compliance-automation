@@ -26,7 +26,16 @@ deny_match if {
 	l.pattern_id in data.confirmed_prohibited_patterns
 }
 
-# --- four-eyes: concept present at high confidence with enough elements met ---
+# --- four-eyes: a full legal-element match, OR concept present at high
+# confidence with enough elements. A full element match routes to four-eyes
+# regardless of similarity confidence — the elements themselves are the signal,
+# so a correctly-detected attack is never allowed on a low embedding score. ---
+four_eyes_match if {
+	some l in input.labels
+	l.elements_total
+	count(l.elements_met) >= l.elements_total
+}
+
 four_eyes_match if {
 	some l in input.labels
 	th := data.thresholds[l.concept_id]
@@ -34,11 +43,18 @@ four_eyes_match if {
 	count(l.elements_met) >= th.min_elements
 }
 
-# --- ask: concept present at or above the low threshold ---
+# --- ask: concept present at or above the low threshold, OR a partial pattern
+# (some-but-not-all legal elements). A partial pattern always routes to a human
+# review, never to allow, regardless of confidence. ---
 ask_match if {
 	some l in input.labels
 	th := data.thresholds[l.concept_id]
 	l.confidence >= th.low
+}
+
+ask_match if {
+	some l in input.labels
+	l.partial_pattern == true
 }
 
 tier := "deny" if {

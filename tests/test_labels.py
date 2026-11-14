@@ -40,3 +40,20 @@ def test_verdict_field_is_rejected():
 def test_detector_versions_present_for_reproducibility():
     label = Label(concept_id="X", confidence=0.5, detector_versions={"stage1": "v"})
     assert label.to_dict()["detector_versions"] == {"stage1": "v"}
+
+
+def test_partial_pattern_and_total_are_signals_not_verdicts():
+    label = Label(
+        concept_id="AIA-5-1-c", confidence=0.4,
+        elements_met=["join", "score"], elements_total=3, partial_pattern=True,
+    )
+    d = label.to_dict()
+    assert d["partial_pattern"] is True
+    assert d["elements_total"] == 3
+    assert validate_label(d) == []  # partial_pattern/elements_total are not verdicts
+
+
+def test_partial_and_total_omitted_when_default():
+    d = Label(concept_id="X", confidence=0.1).to_dict()
+    assert "partial_pattern" not in d
+    assert "elements_total" not in d
