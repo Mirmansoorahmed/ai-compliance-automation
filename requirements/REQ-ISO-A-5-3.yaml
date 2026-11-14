@@ -1,0 +1,10 @@
+# Illustrative mapping only. Title is in our own words; not copied standard text.
+id: REQ-ISO-A-5-3
+source: ISO/IEC 27001:2022
+citation: A.5.3
+title: Splitting duties so one person cannot both act and hide it
+mode: auto
+owner: isms-lead
+status: active
+elements:
+  - Acting party and approving party are distinct

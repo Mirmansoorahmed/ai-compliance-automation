@@ -1,0 +1,11 @@
+# Illustrative mapping only. Title is in our own words; not copied statute text.
+id: REQ-AIA-5-1-f
+source: EU AI Act
+citation: Art. 5(1)(f)
+title: Emotion inference at work
+mode: hybrid
+owner: ai-governance-lead
+status: active
+elements:
+  - Inference of emotional state of a person
+  - Context is the workplace or an education setting

@@ -1,0 +1,10 @@
+# Illustrative mapping only. Title is in our own words; not copied standard text.
+id: REQ-ISO-A-8-15
+source: ISO/IEC 27001:2022
+citation: A.8.15
+title: Producing security logs
+mode: auto
+owner: isms-lead
+status: active
+elements:
+  - OTel spans carry the required decision-record fields

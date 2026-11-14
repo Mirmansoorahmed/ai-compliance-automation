@@ -1,0 +1,12 @@
+# Illustrative mapping only. Title is in our own words; not copied statute text.
+id: REQ-AIA-5-1-c
+source: EU AI Act
+citation: Art. 5(1)(c)
+title: Social scoring of natural persons
+mode: hybrid
+owner: ai-governance-lead
+status: active
+elements:
+  - Person-identifiable behaviour data joined across sources
+  - An aggregated score or ranking of individuals
+  - An adverse or detrimental action taken on the score

@@ -1,0 +1,11 @@
+# Illustrative mapping only. Title is in our own words; not copied standard text.
+id: REQ-ISO-A-5-34
+source: ISO/IEC 27001:2022
+citation: A.5.34
+title: Privacy and protection of personal data
+mode: hybrid
+owner: isms-lead
+status: active
+elements:
+  - Personal data present in the request or artefact
+  - Purpose and legal basis are human questions
