@@ -40,16 +40,60 @@ def build_adapters(config: Config):
         if name == "local_embeddings":
             continue
         try:
-            adapters.append(_build_optional(name, config))
+            adapter = _build_optional(name, config)
         except Exception as exc:  # degrade cleanly (R4.4)
             log.warning("optional adapter %r unavailable, skipping: %s", name, exc)
+            continue
+        if adapter is None:
+            continue
+        # An optional adapter that reports itself unavailable (no creds) is
+        # simply not added — the oss path is unaffected.
+        if hasattr(adapter, "available") and not adapter.available():
+            log.info("optional adapter %r present but unavailable (no creds); skipping", name)
+            continue
+        adapters.append(adapter)
+
+    # Stage-3 judge is off by default; only added when judge_enabled is set and
+    # a live backend is available (credentials present).
+    if config.judge_enabled:
+        try:
+            judge = _build_judge()
+            if judge is not None and judge.available():
+                adapters.append(judge)
+            else:
+                log.info("judge enabled but no backend available; falling back to stages 0-1")
+        except Exception as exc:
+            log.warning("judge unavailable, skipping: %s", exc)
+
     return adapters
 
 
 def _build_optional(name: str, config: Config):
-    # Optional adapters land in Phase 10. Until then, selecting one on a profile
-    # raises here and is skipped cleanly by build_adapters.
-    raise NotImplementedError(f"optional adapter {name!r} not implemented until Phase 10")
+    """Construct an optional adapter by name. Returns None for unknown names."""
+    if name == "prompt_shields":
+        from aca.guard.adapters.prompt_shields import PromptShieldsAdapter
+
+        return PromptShieldsAdapter()
+    if name == "lakera":
+        from aca.guard.adapters.stubs import LakeraStubAdapter
+
+        return LakeraStubAdapter()
+    if name == "aws_placeholder":
+        from aca.guard.adapters.stubs import AwsPlaceholderAdapter
+
+        return AwsPlaceholderAdapter()
+    log.warning("unknown optional adapter %r; skipping", name)
+    return None
+
+
+def _build_judge():
+    from aca.guard.adapters.azure_env import read_azure_openai_env
+    from aca.guard.adapters.judge import AzureOpenAIJudge, JudgeAdapter
+
+    env = read_azure_openai_env()
+    if not env.available:
+        return None
+    return JudgeAdapter(AzureOpenAIJudge(env=env), enabled=True)
 
 
 class SemanticGuard:
