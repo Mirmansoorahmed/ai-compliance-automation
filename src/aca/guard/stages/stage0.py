@@ -78,9 +78,11 @@ _ADVERSE_HINTS = {
         "remove from", "reassign", "perk",
     ],
     "de": [
-        "bonus", "kündigen", "kündigung", "entlassen", "abmahnung", "degradieren",
-        "beförderung verweigern", "überstunden", "nachtschicht", "prämie",
-        "streiche", "versetze", "zusatzleistung", "verweigere",
+        # Stems so conjugated forms match (entlasse/entlassen, kündige/kündigen).
+        "bonus", "kündig", "entlass", "abmahnung", "degradier",
+        "beförderung verweiger", "überstunden", "nachtschicht", "prämie",
+        "streich", "versetz", "zusatzleistung", "verweiger",
+        "schlechtesten", "untersten", "unterste", "strafe",
     ],
 }
 
