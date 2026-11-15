@@ -78,6 +78,19 @@ The `hybrid` profile adds feature-flagged Azure adapters behind the same adapter
 
 _No hybrid number is published until a real credentialed run exists (see [`docs/HYBRID.md`](docs/HYBRID.md)). A budget alert on the Azure for Students subscription is a prerequisite before any hybrid call._
 
+## Agent security framework
+
+ACA maps onto a three-layer model for securing AI agents — **Information**, **Instructions**, **Actions** — plus a **Testing** discipline. The full mapping gives, for every control, the ACA file that implements it, the test that proves it, and an honest status: [`docs/AGENT-SECURITY-FRAMEWORK.md`](docs/AGENT-SECURITY-FRAMEWORK.md). Status is scoped to **ACA's own code** — controls that belong to the deterministic gateway (a separate repo) are marked Gap (ACA), not credited.
+
+| Layer | Implemented | Partial | Gap |
+|---|---|---|---|
+| 1 — Information | Log redaction | Context minimization; egress/DLP (signals only) | Least-privilege enforcement; permission-preserving RAG |
+| 2 — Instructions | Injection detection (Prompt Shields); structured extraction (judge) | Trusted/untrusted separation; defense-in-depth fallback | — |
+| 3 — Actions | Risk-tiered human-in-the-loop (decision tier) | Approver authority (policy changes only) | Tool allowlist; narrow wrappers + backend authz; approval↔args-hash binding |
+| Testing | — | Routing/decision evals; model/tool regression (provenance + held-out) | Red-teaming harness (AgentDojo / garak) |
+
+Runtime-hardening gaps are roadmapped to a planned **Agent Hardening Sandbox**; adversarial-testing gaps to the planned **LLM Red-Teaming Pipeline**. Neither is implemented here.
+
 ## Limitations
 
 - Lab and synthetic data; mappings are illustrative; no conformity claim and no automation of indeterminate legal concepts.
