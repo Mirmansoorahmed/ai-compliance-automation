@@ -85,7 +85,7 @@ ACA maps onto a three-layer model for securing AI agents — **Information**, **
 | Layer | Implemented | Partial | Gap |
 |---|---|---|---|
 | 1 — Information | Log redaction | Context minimization; egress/DLP (signals only) | Least-privilege enforcement; permission-preserving RAG |
-| 2 — Instructions | Injection detection (Prompt Shields); structured extraction (judge) | Trusted/untrusted separation; defense-in-depth fallback | — |
+| 2 — Instructions | Injection detection (Prompt Shields) | Trusted/untrusted separation; structured extraction (judge); defense-in-depth fallback | — |
 | 3 — Actions | Risk-tiered human-in-the-loop (decision tier) | Approver authority (policy changes only) | Tool allowlist; narrow wrappers + backend authz; approval↔args-hash binding |
 | Testing | — | Routing/decision evals; model/tool regression (provenance + held-out) | Red-teaming harness (AgentDojo / garak) |
 
