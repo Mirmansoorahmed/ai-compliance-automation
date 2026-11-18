@@ -102,9 +102,9 @@ def render_text(inputs: ReportInputs) -> str:
     else:
         lines.extend(results_table(inputs.eval_run))
     lines.append(provenance_line(inputs.eval_run))
-    lines.append("NOTE: the committed oss run uses a deterministic hashed-vector")
-    lines.append("embedding fallback, not a trained model — a reproducible baseline,")
-    lines.append("not a claim about real detector quality.")
+    lines.append("NOTE: the embedder used for this run is recorded in the source")
+    lines.append("line above; the figures are a small-set baseline, not a claim")
+    lines.append("about real-world detector quality (see the held-out split).")
     lines.append("")
     lines.append("=" * 72)
     lines.append("4. Decision log excerpt (from fixture spans)")

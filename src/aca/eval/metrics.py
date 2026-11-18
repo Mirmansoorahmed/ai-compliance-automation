@@ -5,10 +5,11 @@ come from a committed eval run with a timestamp and git SHA. These helpers load
 the latest committed run and format metrics with their provenance, or render
 ``TO BE MEASURED`` when no committed run exists.
 
-``IMPORTANT``: the committed oss run uses the deterministic hashed-vector
-embedding fallback, not a trained model, so its precision/recall/latency are a
-reproducible baseline — NOT a claim about real detector quality. Reports label
-the embedder used so this is explicit.
+``IMPORTANT``: the committed oss run uses the real multilingual MiniLM model on
+CPU (the embedder is recorded in each run's ``embedder`` / ``embedder_backend``
+fields). The figures are still a small-set baseline, NOT a claim about
+real-world detector quality — the held-out split is the more honest indicator.
+Reports label the embedder used so this is explicit.
 """
 
 from __future__ import annotations

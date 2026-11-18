@@ -97,7 +97,7 @@ Runtime-hardening gaps are roadmapped to a planned **Agent Hardening Sandbox**; 
 ## Limitations
 
 - Lab and synthetic data; mappings are illustrative; no conformity claim and no automation of indeterminate legal concepts.
-- Committed metrics use the hashed fallback embedder (see note above); stages 2–3 and vendor paths are not measured on `oss`.
+- Committed metrics use the real multilingual MiniLM model on CPU (`oss` profile); stages 2-3 and vendor paths are not measured on `oss`.
 - A low-cost Azure lab subscription with a budget alert gates the hybrid profile, but Prompt Shields / Azure OpenAI / Entra limits are unverified — a budget alert is a prerequisite before any hybrid call ([`docs/DESIGN.md` §15](docs/DESIGN.md)).
 - This repo does not implement the sibling projects (audit logging, red-teaming, multi-agent) and does not change the gateway.
 
