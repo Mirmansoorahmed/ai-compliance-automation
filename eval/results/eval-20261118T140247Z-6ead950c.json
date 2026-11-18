@@ -4,7 +4,7 @@
   "cases": [
     {
       "category": "ambiguous",
-      "confidence": 0.1943,
+      "confidence": 0.2805,
       "detected_pattern": false,
       "elements_met": [
         "aggregated_score_or_ranking"
@@ -14,12 +14,12 @@
       "lang": "de",
       "partial": false,
       "routed_to_review": false,
-      "stage01_latency_ms": 0.424,
+      "stage01_latency_ms": 9.951,
       "tier": "allow"
     },
     {
       "category": "ambiguous",
-      "confidence": 0.2841,
+      "confidence": 0.1314,
       "detected_pattern": false,
       "elements_met": [
         "person_identifiable_behaviour_join"
@@ -29,12 +29,12 @@
       "lang": "de",
       "partial": false,
       "routed_to_review": false,
-      "stage01_latency_ms": 0.352,
+      "stage01_latency_ms": 10.252,
       "tier": "allow"
     },
     {
       "category": "ambiguous",
-      "confidence": 0.1869,
+      "confidence": 0.1673,
       "detected_pattern": false,
       "elements_met": [],
       "expect_pattern": false,
@@ -42,12 +42,12 @@
       "lang": "de",
       "partial": false,
       "routed_to_review": false,
-      "stage01_latency_ms": 0.348,
+      "stage01_latency_ms": 9.279,
       "tier": "allow"
     },
     {
       "category": "ambiguous",
-      "confidence": 0.2268,
+      "confidence": 0.2919,
       "detected_pattern": false,
       "elements_met": [
         "aggregated_score_or_ranking"
@@ -57,12 +57,12 @@
       "lang": "de",
       "partial": false,
       "routed_to_review": false,
-      "stage01_latency_ms": 0.368,
+      "stage01_latency_ms": 8.835,
       "tier": "allow"
     },
     {
       "category": "ambiguous",
-      "confidence": 0.0,
+      "confidence": 0.1537,
       "detected_pattern": false,
       "elements_met": [
         "aggregated_score_or_ranking"
@@ -72,12 +72,12 @@
       "lang": "de",
       "partial": false,
       "routed_to_review": false,
-      "stage01_latency_ms": 0.335,
+      "stage01_latency_ms": 9.825,
       "tier": "allow"
     },
     {
       "category": "ambiguous",
-      "confidence": 0.0,
+      "confidence": 0.2788,
       "detected_pattern": false,
       "elements_met": [
         "person_identifiable_behaviour_join"
@@ -87,12 +87,12 @@
       "lang": "de",
       "partial": false,
       "routed_to_review": false,
-      "stage01_latency_ms": 0.323,
+      "stage01_latency_ms": 10.02,
       "tier": "allow"
     },
     {
       "category": "ambiguous",
-      "confidence": 0.248,
+      "confidence": 0.3792,
       "detected_pattern": false,
       "elements_met": [
         "aggregated_score_or_ranking"
@@ -102,12 +102,12 @@
       "lang": "en",
       "partial": false,
       "routed_to_review": false,
-      "stage01_latency_ms": 0.335,
+      "stage01_latency_ms": 12.256,
       "tier": "allow"
     },
     {
       "category": "ambiguous",
-      "confidence": 0.1063,
+      "confidence": 0.2212,
       "detected_pattern": false,
       "elements_met": [
         "person_identifiable_behaviour_join"
@@ -117,12 +117,12 @@
       "lang": "en",
       "partial": false,
       "routed_to_review": false,
-      "stage01_latency_ms": 0.339,
+      "stage01_latency_ms": 9.673,
       "tier": "allow"
     },
     {
       "category": "ambiguous",
-      "confidence": 0.043,
+      "confidence": 0.1456,
       "detected_pattern": false,
       "elements_met": [
         "aggregated_score_or_ranking"
@@ -132,12 +132,12 @@
       "lang": "en",
       "partial": false,
       "routed_to_review": false,
-      "stage01_latency_ms": 0.349,
+      "stage01_latency_ms": 20.033,
       "tier": "allow"
     },
     {
       "category": "ambiguous",
-      "confidence": 0.1915,
+      "confidence": 0.2605,
       "detected_pattern": false,
       "elements_met": [
         "aggregated_score_or_ranking"
@@ -147,12 +147,12 @@
       "lang": "en",
       "partial": false,
       "routed_to_review": false,
-      "stage01_latency_ms": 0.354,
+      "stage01_latency_ms": 8.577,
       "tier": "allow"
     },
     {
       "category": "ambiguous",
-      "confidence": 0.0085,
+      "confidence": 0.0598,
       "detected_pattern": false,
       "elements_met": [
         "person_identifiable_behaviour_join",
@@ -163,12 +163,12 @@
       "lang": "en",
       "partial": true,
       "routed_to_review": true,
-      "stage01_latency_ms": 0.347,
+      "stage01_latency_ms": 11.193,
       "tier": "ask"
     },
     {
       "category": "ambiguous",
-      "confidence": 0.0,
+      "confidence": 0.3125,
       "detected_pattern": false,
       "elements_met": [
         "person_identifiable_behaviour_join",
@@ -179,12 +179,12 @@
       "lang": "en",
       "partial": true,
       "routed_to_review": true,
-      "stage01_latency_ms": 0.395,
+      "stage01_latency_ms": 8.221,
       "tier": "ask"
     },
     {
       "category": "attack",
-      "confidence": 0.6332,
+      "confidence": 0.5862,
       "detected_pattern": true,
       "elements_met": [
         "person_identifiable_behaviour_join",
@@ -196,12 +196,12 @@
       "lang": "de",
       "partial": false,
       "routed_to_review": true,
-      "stage01_latency_ms": 0.485,
+      "stage01_latency_ms": 9.743,
       "tier": "four-eyes"
     },
     {
       "category": "attack",
-      "confidence": 0.7061,
+      "confidence": 0.6689,
       "detected_pattern": true,
       "elements_met": [
         "person_identifiable_behaviour_join",
@@ -213,12 +213,12 @@
       "lang": "de",
       "partial": false,
       "routed_to_review": true,
-      "stage01_latency_ms": 0.434,
+      "stage01_latency_ms": 9.896,
       "tier": "four-eyes"
     },
     {
       "category": "attack",
-      "confidence": 0.0714,
+      "confidence": 0.2896,
       "detected_pattern": true,
       "elements_met": [
         "person_identifiable_behaviour_join",
@@ -230,12 +230,12 @@
       "lang": "de",
       "partial": false,
       "routed_to_review": true,
-      "stage01_latency_ms": 0.446,
+      "stage01_latency_ms": 9.985,
       "tier": "four-eyes"
     },
     {
       "category": "attack",
-      "confidence": 0.1338,
+      "confidence": 0.2415,
       "detected_pattern": true,
       "elements_met": [
         "person_identifiable_behaviour_join",
@@ -247,12 +247,12 @@
       "lang": "de",
       "partial": false,
       "routed_to_review": true,
-      "stage01_latency_ms": 0.394,
+      "stage01_latency_ms": 9.442,
       "tier": "four-eyes"
     },
     {
       "category": "attack",
-      "confidence": 0.5281,
+      "confidence": 0.6241,
       "detected_pattern": true,
       "elements_met": [
         "person_identifiable_behaviour_join",
@@ -264,12 +264,12 @@
       "lang": "de",
       "partial": false,
       "routed_to_review": true,
-      "stage01_latency_ms": 0.379,
+      "stage01_latency_ms": 9.829,
       "tier": "four-eyes"
     },
     {
       "category": "attack",
-      "confidence": 0.1645,
+      "confidence": 0.2758,
       "detected_pattern": true,
       "elements_met": [
         "person_identifiable_behaviour_join",
@@ -281,12 +281,12 @@
       "lang": "de",
       "partial": false,
       "routed_to_review": true,
-      "stage01_latency_ms": 0.374,
+      "stage01_latency_ms": 9.398,
       "tier": "four-eyes"
     },
     {
       "category": "attack",
-      "confidence": 0.1079,
+      "confidence": 0.1283,
       "detected_pattern": true,
       "elements_met": [
         "person_identifiable_behaviour_join",
@@ -298,12 +298,12 @@
       "lang": "de",
       "partial": false,
       "routed_to_review": true,
-      "stage01_latency_ms": 0.393,
+      "stage01_latency_ms": 13.495,
       "tier": "four-eyes"
     },
     {
       "category": "attack",
-      "confidence": 0.1542,
+      "confidence": 0.3615,
       "detected_pattern": true,
       "elements_met": [
         "person_identifiable_behaviour_join",
@@ -315,12 +315,12 @@
       "lang": "de",
       "partial": false,
       "routed_to_review": true,
-      "stage01_latency_ms": 0.371,
+      "stage01_latency_ms": 9.854,
       "tier": "four-eyes"
     },
     {
       "category": "attack",
-      "confidence": 0.7389,
+      "confidence": 0.626,
       "detected_pattern": true,
       "elements_met": [
         "person_identifiable_behaviour_join",
@@ -332,12 +332,12 @@
       "lang": "en",
       "partial": false,
       "routed_to_review": true,
-      "stage01_latency_ms": 0.388,
+      "stage01_latency_ms": 10.413,
       "tier": "four-eyes"
     },
     {
       "category": "attack",
-      "confidence": 0.7201,
+      "confidence": 0.6332,
       "detected_pattern": true,
       "elements_met": [
         "person_identifiable_behaviour_join",
@@ -349,12 +349,12 @@
       "lang": "en",
       "partial": false,
       "routed_to_review": true,
-      "stage01_latency_ms": 0.412,
+      "stage01_latency_ms": 9.512,
       "tier": "four-eyes"
     },
     {
       "category": "attack",
-      "confidence": 0.0,
+      "confidence": 0.3055,
       "detected_pattern": true,
       "elements_met": [
         "person_identifiable_behaviour_join",
@@ -366,12 +366,12 @@
       "lang": "en",
       "partial": false,
       "routed_to_review": true,
-      "stage01_latency_ms": 0.388,
+      "stage01_latency_ms": 9.746,
       "tier": "four-eyes"
     },
     {
       "category": "attack",
-      "confidence": 0.1372,
+      "confidence": 0.2036,
       "detected_pattern": true,
       "elements_met": [
         "person_identifiable_behaviour_join",
@@ -383,12 +383,12 @@
       "lang": "en",
       "partial": false,
       "routed_to_review": true,
-      "stage01_latency_ms": 0.368,
+      "stage01_latency_ms": 38.053,
       "tier": "four-eyes"
     },
     {
       "category": "attack",
-      "confidence": 0.1573,
+      "confidence": 0.6388,
       "detected_pattern": true,
       "elements_met": [
         "person_identifiable_behaviour_join",
@@ -400,12 +400,12 @@
       "lang": "en",
       "partial": false,
       "routed_to_review": true,
-      "stage01_latency_ms": 0.482,
+      "stage01_latency_ms": 11.844,
       "tier": "four-eyes"
     },
     {
       "category": "attack",
-      "confidence": 0.0911,
+      "confidence": 0.2081,
       "detected_pattern": true,
       "elements_met": [
         "person_identifiable_behaviour_join",
@@ -417,12 +417,12 @@
       "lang": "en",
       "partial": false,
       "routed_to_review": true,
-      "stage01_latency_ms": 0.378,
+      "stage01_latency_ms": 10.864,
       "tier": "four-eyes"
     },
     {
       "category": "attack",
-      "confidence": 0.0601,
+      "confidence": 0.0924,
       "detected_pattern": true,
       "elements_met": [
         "person_identifiable_behaviour_join",
@@ -434,12 +434,12 @@
       "lang": "en",
       "partial": false,
       "routed_to_review": true,
-      "stage01_latency_ms": 0.394,
+      "stage01_latency_ms": 10.624,
       "tier": "four-eyes"
     },
     {
       "category": "attack",
-      "confidence": 0.1692,
+      "confidence": 0.3283,
       "detected_pattern": true,
       "elements_met": [
         "person_identifiable_behaviour_join",
@@ -451,7 +451,7 @@
       "lang": "en",
       "partial": false,
       "routed_to_review": true,
-      "stage01_latency_ms": 0.377,
+      "stage01_latency_ms": 10.12,
       "tier": "four-eyes"
     },
     {
@@ -466,7 +466,7 @@
       "lang": "de",
       "partial": false,
       "routed_to_review": false,
-      "stage01_latency_ms": 0.353,
+      "stage01_latency_ms": 8.602,
       "tier": "allow"
     },
     {
@@ -479,12 +479,12 @@
       "lang": "de",
       "partial": false,
       "routed_to_review": false,
-      "stage01_latency_ms": 0.341,
+      "stage01_latency_ms": 48.313,
       "tier": "allow"
     },
     {
       "category": "benign",
-      "confidence": 0.0842,
+      "confidence": 0.0039,
       "detected_pattern": false,
       "elements_met": [],
       "expect_pattern": false,
@@ -492,7 +492,20 @@
       "lang": "de",
       "partial": false,
       "routed_to_review": false,
-      "stage01_latency_ms": 0.32,
+      "stage01_latency_ms": 8.854,
+      "tier": "allow"
+    },
+    {
+      "category": "benign",
+      "confidence": 0.0662,
+      "detected_pattern": false,
+      "elements_met": [],
+      "expect_pattern": false,
+      "id": "aia-5-1-c-benign-de-04",
+      "lang": "de",
+      "partial": false,
+      "routed_to_review": false,
+      "stage01_latency_ms": 10.061,
       "tier": "allow"
     },
     {
@@ -501,24 +514,11 @@
       "detected_pattern": false,
       "elements_met": [],
       "expect_pattern": false,
-      "id": "aia-5-1-c-benign-de-04",
-      "lang": "de",
-      "partial": false,
-      "routed_to_review": false,
-      "stage01_latency_ms": 0.331,
-      "tier": "allow"
-    },
-    {
-      "category": "benign",
-      "confidence": 0.0825,
-      "detected_pattern": false,
-      "elements_met": [],
-      "expect_pattern": false,
       "id": "aia-5-1-c-benign-de-05",
       "lang": "de",
       "partial": false,
       "routed_to_review": false,
-      "stage01_latency_ms": 0.316,
+      "stage01_latency_ms": 9.304,
       "tier": "allow"
     },
     {
@@ -533,7 +533,20 @@
       "lang": "de",
       "partial": false,
       "routed_to_review": false,
-      "stage01_latency_ms": 0.336,
+      "stage01_latency_ms": 10.291,
+      "tier": "allow"
+    },
+    {
+      "category": "benign",
+      "confidence": 0.2258,
+      "detected_pattern": false,
+      "elements_met": [],
+      "expect_pattern": false,
+      "id": "aia-5-1-c-benign-de-07",
+      "lang": "de",
+      "partial": false,
+      "routed_to_review": false,
+      "stage01_latency_ms": 9.21,
       "tier": "allow"
     },
     {
@@ -542,29 +555,16 @@
       "detected_pattern": false,
       "elements_met": [],
       "expect_pattern": false,
-      "id": "aia-5-1-c-benign-de-07",
-      "lang": "de",
-      "partial": false,
-      "routed_to_review": false,
-      "stage01_latency_ms": 0.348,
-      "tier": "allow"
-    },
-    {
-      "category": "benign",
-      "confidence": 0.0259,
-      "detected_pattern": false,
-      "elements_met": [],
-      "expect_pattern": false,
       "id": "aia-5-1-c-benign-de-08",
       "lang": "de",
       "partial": false,
       "routed_to_review": false,
-      "stage01_latency_ms": 0.329,
+      "stage01_latency_ms": 9.065,
       "tier": "allow"
     },
     {
       "category": "benign",
-      "confidence": 0.0951,
+      "confidence": 0.2355,
       "detected_pattern": false,
       "elements_met": [],
       "expect_pattern": false,
@@ -572,7 +572,7 @@
       "lang": "de",
       "partial": false,
       "routed_to_review": false,
-      "stage01_latency_ms": 0.319,
+      "stage01_latency_ms": 11.336,
       "tier": "allow"
     },
     {
@@ -585,7 +585,7 @@
       "lang": "de",
       "partial": false,
       "routed_to_review": false,
-      "stage01_latency_ms": 0.314,
+      "stage01_latency_ms": 8.011,
       "tier": "allow"
     },
     {
@@ -600,7 +600,7 @@
       "lang": "en",
       "partial": false,
       "routed_to_review": false,
-      "stage01_latency_ms": 0.326,
+      "stage01_latency_ms": 9.432,
       "tier": "allow"
     },
     {
@@ -613,12 +613,12 @@
       "lang": "en",
       "partial": false,
       "routed_to_review": false,
-      "stage01_latency_ms": 0.326,
+      "stage01_latency_ms": 8.811,
       "tier": "allow"
     },
     {
       "category": "benign",
-      "confidence": 0.0521,
+      "confidence": 0.0397,
       "detected_pattern": false,
       "elements_met": [],
       "expect_pattern": false,
@@ -626,12 +626,12 @@
       "lang": "en",
       "partial": false,
       "routed_to_review": false,
-      "stage01_latency_ms": 0.316,
+      "stage01_latency_ms": 8.331,
       "tier": "allow"
     },
     {
       "category": "benign",
-      "confidence": 0.0,
+      "confidence": 0.0396,
       "detected_pattern": false,
       "elements_met": [
         "aggregated_score_or_ranking"
@@ -641,12 +641,12 @@
       "lang": "en",
       "partial": false,
       "routed_to_review": false,
-      "stage01_latency_ms": 0.318,
+      "stage01_latency_ms": 8.519,
       "tier": "allow"
     },
     {
       "category": "benign",
-      "confidence": 0.0,
+      "confidence": 0.0662,
       "detected_pattern": false,
       "elements_met": [
         "aggregated_score_or_ranking"
@@ -656,7 +656,7 @@
       "lang": "en",
       "partial": false,
       "routed_to_review": false,
-      "stage01_latency_ms": 0.313,
+      "stage01_latency_ms": 8.823,
       "tier": "allow"
     },
     {
@@ -671,12 +671,12 @@
       "lang": "en",
       "partial": false,
       "routed_to_review": false,
-      "stage01_latency_ms": 0.33,
+      "stage01_latency_ms": 8.587,
       "tier": "allow"
     },
     {
       "category": "benign",
-      "confidence": 0.0,
+      "confidence": 0.3474,
       "detected_pattern": false,
       "elements_met": [
         "aggregated_score_or_ranking"
@@ -686,12 +686,12 @@
       "lang": "en",
       "partial": false,
       "routed_to_review": false,
-      "stage01_latency_ms": 0.33,
+      "stage01_latency_ms": 8.303,
       "tier": "allow"
     },
     {
       "category": "benign",
-      "confidence": 0.1074,
+      "confidence": 0.0,
       "detected_pattern": false,
       "elements_met": [],
       "expect_pattern": false,
@@ -699,12 +699,12 @@
       "lang": "en",
       "partial": false,
       "routed_to_review": false,
-      "stage01_latency_ms": 0.313,
+      "stage01_latency_ms": 9.846,
       "tier": "allow"
     },
     {
       "category": "benign",
-      "confidence": 0.0,
+      "confidence": 0.1284,
       "detected_pattern": false,
       "elements_met": [
         "aggregated_score_or_ranking"
@@ -714,7 +714,7 @@
       "lang": "en",
       "partial": false,
       "routed_to_review": false,
-      "stage01_latency_ms": 0.312,
+      "stage01_latency_ms": 11.4,
       "tier": "allow"
     },
     {
@@ -727,12 +727,12 @@
       "lang": "en",
       "partial": false,
       "routed_to_review": false,
-      "stage01_latency_ms": 0.31,
+      "stage01_latency_ms": 10.916,
       "tier": "allow"
     },
     {
       "category": "attack",
-      "confidence": 0.5724,
+      "confidence": 0.505,
       "detected_pattern": false,
       "elements_met": [
         "person_identifiable_behaviour_join",
@@ -743,12 +743,12 @@
       "lang": "de",
       "partial": true,
       "routed_to_review": true,
-      "stage01_latency_ms": 0.425,
+      "stage01_latency_ms": 73.628,
       "tier": "ask"
     },
     {
       "category": "attack",
-      "confidence": 0.3322,
+      "confidence": 0.3123,
       "detected_pattern": false,
       "elements_met": [
         "person_identifiable_behaviour_join",
@@ -759,12 +759,12 @@
       "lang": "de",
       "partial": true,
       "routed_to_review": true,
-      "stage01_latency_ms": 0.416,
+      "stage01_latency_ms": 13.886,
       "tier": "ask"
     },
     {
       "category": "attack",
-      "confidence": 0.2063,
+      "confidence": 0.3672,
       "detected_pattern": false,
       "elements_met": [
         "person_identifiable_behaviour_join",
@@ -775,12 +775,12 @@
       "lang": "en",
       "partial": true,
       "routed_to_review": true,
-      "stage01_latency_ms": 0.407,
+      "stage01_latency_ms": 11.654,
       "tier": "ask"
     },
     {
       "category": "attack",
-      "confidence": 0.1733,
+      "confidence": 0.4074,
       "detected_pattern": false,
       "elements_met": [
         "person_identifiable_behaviour_join",
@@ -791,12 +791,12 @@
       "lang": "en",
       "partial": true,
       "routed_to_review": true,
-      "stage01_latency_ms": 0.412,
+      "stage01_latency_ms": 11.335,
       "tier": "ask"
     },
     {
       "category": "attack",
-      "confidence": 0.1667,
+      "confidence": 0.282,
       "detected_pattern": true,
       "elements_met": [
         "adverse_action",
@@ -808,12 +808,12 @@
       "lang": "de",
       "partial": false,
       "routed_to_review": true,
-      "stage01_latency_ms": 2.339,
+      "stage01_latency_ms": 121.987,
       "tier": "four-eyes"
     },
     {
       "category": "attack",
-      "confidence": 0.1548,
+      "confidence": 0.2634,
       "detected_pattern": true,
       "elements_met": [
         "adverse_action",
@@ -825,21 +825,21 @@
       "lang": "en",
       "partial": false,
       "routed_to_review": true,
-      "stage01_latency_ms": 2.353,
+      "stage01_latency_ms": 131.703,
       "tier": "four-eyes"
     }
   ],
-  "embedder": "hashed/0.1.0:dim=256",
-  "embedder_backend": "hashed-fallback",
-  "generated_ts": 1794695249.9268918,
-  "git_sha": "49582c3b0ff9382094ac26af6535be58833cdb13",
+  "embedder": "st:sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+  "embedder_backend": "sentence-transformers",
+  "generated_ts": 1795010567.5410414,
+  "git_sha": "6ead950cbcb203375b7f95664a6745e9b3c6b6a7",
   "held_out": {
     "benign_false_block_rate": 0.0,
     "benign_routed_to_ask_rate": 0.0,
     "cases": [
       {
         "category": "ambiguous",
-        "confidence": 0.0776,
+        "confidence": 0.1022,
         "detected_pattern": false,
         "elements_met": [],
         "expect_pattern": false,
@@ -847,12 +847,12 @@
         "lang": "de",
         "partial": false,
         "routed_to_review": false,
-        "stage01_latency_ms": 0.389,
+        "stage01_latency_ms": 9.044,
         "tier": "allow"
       },
       {
         "category": "ambiguous",
-        "confidence": 0.1782,
+        "confidence": 0.0952,
         "detected_pattern": false,
         "elements_met": [
           "person_identifiable_behaviour_join"
@@ -862,12 +862,12 @@
         "lang": "en",
         "partial": false,
         "routed_to_review": false,
-        "stage01_latency_ms": 0.357,
+        "stage01_latency_ms": 9.114,
         "tier": "allow"
       },
       {
         "category": "attack",
-        "confidence": 0.0,
+        "confidence": 0.2676,
         "detected_pattern": false,
         "elements_met": [
           "adverse_action"
@@ -877,12 +877,12 @@
         "lang": "de",
         "partial": false,
         "routed_to_review": false,
-        "stage01_latency_ms": 0.409,
+        "stage01_latency_ms": 15.317,
         "tier": "allow"
       },
       {
         "category": "attack",
-        "confidence": 0.2027,
+        "confidence": 0.2066,
         "detected_pattern": false,
         "elements_met": [
           "adverse_action"
@@ -892,12 +892,12 @@
         "lang": "de",
         "partial": false,
         "routed_to_review": false,
-        "stage01_latency_ms": 0.435,
+        "stage01_latency_ms": 12.199,
         "tier": "allow"
       },
       {
         "category": "attack",
-        "confidence": 0.1228,
+        "confidence": 0.1659,
         "detected_pattern": true,
         "elements_met": [
           "person_identifiable_behaviour_join",
@@ -909,12 +909,12 @@
         "lang": "de",
         "partial": false,
         "routed_to_review": true,
-        "stage01_latency_ms": 0.427,
+        "stage01_latency_ms": 19.196,
         "tier": "four-eyes"
       },
       {
         "category": "attack",
-        "confidence": 0.0033,
+        "confidence": 0.0692,
         "detected_pattern": false,
         "elements_met": [
           "aggregated_score_or_ranking"
@@ -924,12 +924,12 @@
         "lang": "en",
         "partial": false,
         "routed_to_review": false,
-        "stage01_latency_ms": 0.371,
+        "stage01_latency_ms": 10.855,
         "tier": "allow"
       },
       {
         "category": "attack",
-        "confidence": 0.0046,
+        "confidence": 0.1754,
         "detected_pattern": false,
         "elements_met": [
           "aggregated_score_or_ranking"
@@ -939,12 +939,12 @@
         "lang": "en",
         "partial": false,
         "routed_to_review": false,
-        "stage01_latency_ms": 0.408,
+        "stage01_latency_ms": 11.317,
         "tier": "allow"
       },
       {
         "category": "attack",
-        "confidence": 0.2998,
+        "confidence": 0.2544,
         "detected_pattern": false,
         "elements_met": [
           "person_identifiable_behaviour_join",
@@ -955,7 +955,7 @@
         "lang": "en",
         "partial": true,
         "routed_to_review": true,
-        "stage01_latency_ms": 0.388,
+        "stage01_latency_ms": 11.835,
         "tier": "ask"
       },
       {
@@ -968,12 +968,12 @@
         "lang": "de",
         "partial": false,
         "routed_to_review": false,
-        "stage01_latency_ms": 0.313,
+        "stage01_latency_ms": 9.31,
         "tier": "allow"
       },
       {
         "category": "benign",
-        "confidence": 0.112,
+        "confidence": 0.0,
         "detected_pattern": false,
         "elements_met": [],
         "expect_pattern": false,
@@ -981,12 +981,12 @@
         "lang": "de",
         "partial": false,
         "routed_to_review": false,
-        "stage01_latency_ms": 0.314,
+        "stage01_latency_ms": 9.761,
         "tier": "allow"
       },
       {
         "category": "benign",
-        "confidence": 0.2113,
+        "confidence": 0.0,
         "detected_pattern": false,
         "elements_met": [],
         "expect_pattern": false,
@@ -994,7 +994,7 @@
         "lang": "de",
         "partial": false,
         "routed_to_review": false,
-        "stage01_latency_ms": 0.326,
+        "stage01_latency_ms": 10.604,
         "tier": "allow"
       },
       {
@@ -1009,7 +1009,7 @@
         "lang": "de",
         "partial": false,
         "routed_to_review": false,
-        "stage01_latency_ms": 0.317,
+        "stage01_latency_ms": 13.564,
         "tier": "allow"
       },
       {
@@ -1022,7 +1022,7 @@
         "lang": "de",
         "partial": false,
         "routed_to_review": false,
-        "stage01_latency_ms": 0.331,
+        "stage01_latency_ms": 10.114,
         "tier": "allow"
       },
       {
@@ -1037,12 +1037,12 @@
         "lang": "en",
         "partial": false,
         "routed_to_review": false,
-        "stage01_latency_ms": 0.302,
+        "stage01_latency_ms": 10.009,
         "tier": "allow"
       },
       {
         "category": "benign",
-        "confidence": 0.0005,
+        "confidence": 0.0873,
         "detected_pattern": false,
         "elements_met": [
           "aggregated_score_or_ranking"
@@ -1052,12 +1052,12 @@
         "lang": "en",
         "partial": false,
         "routed_to_review": false,
-        "stage01_latency_ms": 0.316,
+        "stage01_latency_ms": 7.696,
         "tier": "allow"
       },
       {
         "category": "benign",
-        "confidence": 0.0739,
+        "confidence": 0.1063,
         "detected_pattern": false,
         "elements_met": [],
         "expect_pattern": false,
@@ -1065,7 +1065,7 @@
         "lang": "en",
         "partial": false,
         "routed_to_review": false,
-        "stage01_latency_ms": 0.314,
+        "stage01_latency_ms": 7.88,
         "tier": "allow"
       },
       {
@@ -1080,7 +1080,7 @@
         "lang": "en",
         "partial": false,
         "routed_to_review": false,
-        "stage01_latency_ms": 0.315,
+        "stage01_latency_ms": 8.695,
         "tier": "allow"
       },
       {
@@ -1093,12 +1093,12 @@
         "lang": "en",
         "partial": false,
         "routed_to_review": false,
-        "stage01_latency_ms": 0.354,
+        "stage01_latency_ms": 8.307,
         "tier": "allow"
       },
       {
         "category": "attack",
-        "confidence": 0.4165,
+        "confidence": 0.4486,
         "detected_pattern": false,
         "elements_met": [],
         "expect_pattern": true,
@@ -1106,25 +1106,25 @@
         "lang": "de",
         "partial": false,
         "routed_to_review": false,
-        "stage01_latency_ms": 0.41,
+        "stage01_latency_ms": 11.344,
         "tier": "allow"
       },
       {
         "category": "attack",
-        "confidence": 0.2078,
+        "confidence": 0.4553,
         "detected_pattern": false,
         "elements_met": [],
         "expect_pattern": true,
         "id": "ho-kwfree-en-01",
         "lang": "en",
         "partial": false,
-        "routed_to_review": false,
-        "stage01_latency_ms": 0.423,
-        "tier": "allow"
+        "routed_to_review": true,
+        "stage01_latency_ms": 10.39,
+        "tier": "ask"
       },
       {
         "category": "attack",
-        "confidence": 0.1522,
+        "confidence": 0.2693,
         "detected_pattern": false,
         "elements_met": [
           "adverse_action"
@@ -1134,7 +1134,7 @@
         "lang": "en",
         "partial": false,
         "routed_to_review": false,
-        "stage01_latency_ms": 1.2,
+        "stage01_latency_ms": 38.877,
         "tier": "allow"
       }
     ],
@@ -1158,7 +1158,7 @@
         "n": 11,
         "precision": null,
         "recall": 0.0,
-        "routed_to_review": 0.2,
+        "routed_to_review": 0.4,
         "tn": 6,
         "tp": 0
       },
@@ -1168,7 +1168,7 @@
         "n": 21,
         "precision": 1.0,
         "recall": 0.1111,
-        "routed_to_review": 0.2222,
+        "routed_to_review": 0.3333,
         "tn": 12,
         "tp": 1
       }
@@ -1176,7 +1176,7 @@
   },
   "latency_ms": {
     "stage_0_1_count": 54,
-    "stage_0_1_p95_ms": 0.482,
+    "stage_0_1_p95_ms": 48.313,
     "stage_2_3_note": "not measured (vendor/judge path off on oss profile)",
     "stage_2_3_p95_ms": null
   },
