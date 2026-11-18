@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://ai-coding-compliance-guardrails-eu/schemas/catalog-check.schema.json",
+  "title": "Catalog check",
+  "description": "One compliance check in policy/catalog/catalog.yaml. Source and enforcement points are mandatory; the decision is one of BLOCK | ASK | WARN | ALLOW.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["law", "grp", "id", "src", "url", "title", "trigger", "en", "de", "dec", "art", "det", "sem", "ep", "status"],
+  "properties": {
+    "law": { "type": "string" },
+    "grp": { "type": "string" },
+    "id": { "type": "string", "pattern": "^[A-Za-z0-9-]+$" },
+    "src": { "type": "string", "pattern": "\\S" },
+    "url": { "type": "string" },
+    "title": { "type": "string", "pattern": "\\S" },
+    "trigger": { "type": "string" },
+    "en": { "type": "string" },
+    "de": { "type": "string" },
+    "dec": { "type": "string", "enum": ["BLOCK", "ASK", "WARN", "ALLOW"] },
+    "art": { "type": "string" },
+    "det": { "type": "string" },
+    "sem": { "type": "string" },
+    "ep": { "type": "string", "pattern": "\\S" },
+    "status": { "type": "string" }
+  }
+}
