@@ -1,0 +1,364 @@
+{
+  "checks": {
+    "AIA-10": {
+      "dec": "WARN"
+    },
+    "AIA-11": {
+      "dec": "WARN"
+    },
+    "AIA-12": {
+      "dec": "WARN"
+    },
+    "AIA-13": {
+      "dec": "WARN"
+    },
+    "AIA-14": {
+      "dec": "WARN"
+    },
+    "AIA-15": {
+      "dec": "WARN"
+    },
+    "AIA-17": {
+      "dec": "WARN"
+    },
+    "AIA-26-1": {
+      "dec": "WARN"
+    },
+    "AIA-26-11": {
+      "dec": "WARN"
+    },
+    "AIA-26-7": {
+      "dec": "WARN"
+    },
+    "AIA-27": {
+      "dec": "WARN"
+    },
+    "AIA-3-1": {
+      "dec": "ALLOW"
+    },
+    "AIA-4": {
+      "dec": "ALLOW"
+    },
+    "AIA-43-49": {
+      "dec": "WARN"
+    },
+    "AIA-5-1-a": {
+      "dec": "BLOCK"
+    },
+    "AIA-5-1-b": {
+      "dec": "BLOCK"
+    },
+    "AIA-5-1-ba": {
+      "dec": "BLOCK"
+    },
+    "AIA-5-1-bb": {
+      "dec": "BLOCK"
+    },
+    "AIA-5-1-c": {
+      "dec": "BLOCK"
+    },
+    "AIA-5-1-d": {
+      "dec": "BLOCK"
+    },
+    "AIA-5-1-e": {
+      "dec": "BLOCK"
+    },
+    "AIA-5-1-f": {
+      "dec": "BLOCK"
+    },
+    "AIA-5-1-g": {
+      "dec": "BLOCK"
+    },
+    "AIA-5-1-h": {
+      "dec": "BLOCK"
+    },
+    "AIA-50-1": {
+      "dec": "WARN"
+    },
+    "AIA-50-2": {
+      "dec": "WARN"
+    },
+    "AIA-50-3": {
+      "dec": "WARN"
+    },
+    "AIA-50-4a": {
+      "dec": "WARN"
+    },
+    "AIA-50-4b": {
+      "dec": "WARN"
+    },
+    "AIA-53": {
+      "dec": "ASK"
+    },
+    "AIA-55": {
+      "dec": "ASK"
+    },
+    "AIA-6-1": {
+      "dec": "ASK"
+    },
+    "AIA-6-3": {
+      "dec": "ASK"
+    },
+    "AIA-72": {
+      "dec": "WARN"
+    },
+    "AIA-73": {
+      "dec": "WARN"
+    },
+    "AIA-86": {
+      "dec": "WARN"
+    },
+    "AIA-9": {
+      "dec": "WARN"
+    },
+    "AIA-A3-1a": {
+      "dec": "WARN"
+    },
+    "AIA-A3-1b": {
+      "dec": "WARN"
+    },
+    "AIA-A3-1c": {
+      "dec": "WARN"
+    },
+    "AIA-A3-2": {
+      "dec": "WARN"
+    },
+    "AIA-A3-3a": {
+      "dec": "WARN"
+    },
+    "AIA-A3-3b": {
+      "dec": "WARN"
+    },
+    "AIA-A3-3c": {
+      "dec": "WARN"
+    },
+    "AIA-A3-3d": {
+      "dec": "WARN"
+    },
+    "AIA-A3-4a": {
+      "dec": "WARN"
+    },
+    "AIA-A3-4b": {
+      "dec": "WARN"
+    },
+    "AIA-A3-5a": {
+      "dec": "WARN"
+    },
+    "AIA-A3-5b": {
+      "dec": "WARN"
+    },
+    "AIA-A3-5c": {
+      "dec": "WARN"
+    },
+    "AIA-A3-5d": {
+      "dec": "WARN"
+    },
+    "AIA-A3-6a-e": {
+      "dec": "ASK"
+    },
+    "AIA-A3-7a-d": {
+      "dec": "ASK"
+    },
+    "AIA-A3-8a": {
+      "dec": "ASK"
+    },
+    "AIA-A3-8b": {
+      "dec": "ASK"
+    },
+    "AIA-ROLE": {
+      "dec": "ASK"
+    },
+    "AIA-UC-DECL": {
+      "dec": "WARN"
+    },
+    "DE-BDSG-26": {
+      "dec": "ASK"
+    },
+    "DE-BETRVG-87": {
+      "dec": "ASK"
+    },
+    "DORA-17": {
+      "dec": "WARN"
+    },
+    "DORA-28": {
+      "dec": "ASK"
+    },
+    "GDPR-10": {
+      "dec": "ASK"
+    },
+    "GDPR-13-14": {
+      "dec": "WARN"
+    },
+    "GDPR-22": {
+      "dec": "ASK"
+    },
+    "GDPR-25": {
+      "dec": "WARN"
+    },
+    "GDPR-28": {
+      "dec": "ASK"
+    },
+    "GDPR-30": {
+      "dec": "WARN"
+    },
+    "GDPR-32": {
+      "dec": "BLOCK"
+    },
+    "GDPR-33-34": {
+      "dec": "WARN"
+    },
+    "GDPR-35": {
+      "dec": "WARN"
+    },
+    "GDPR-44": {
+      "dec": "ASK"
+    },
+    "GDPR-5-1b": {
+      "dec": "ASK"
+    },
+    "GDPR-5-1c": {
+      "dec": "WARN"
+    },
+    "GDPR-5-1e": {
+      "dec": "WARN"
+    },
+    "GDPR-6": {
+      "dec": "WARN"
+    },
+    "GDPR-9": {
+      "dec": "ASK"
+    },
+    "ISO42-A10": {
+      "dec": "ALLOW"
+    },
+    "ISO42-A2": {
+      "dec": "ALLOW"
+    },
+    "ISO42-A3": {
+      "dec": "ALLOW"
+    },
+    "ISO42-A4": {
+      "dec": "ALLOW"
+    },
+    "ISO42-A5": {
+      "dec": "ALLOW"
+    },
+    "ISO42-A6": {
+      "dec": "ALLOW"
+    },
+    "ISO42-A7": {
+      "dec": "ALLOW"
+    },
+    "ISO42-A8": {
+      "dec": "ALLOW"
+    },
+    "ISO42-A9": {
+      "dec": "ALLOW"
+    },
+    "ISO42-C10": {
+      "dec": "ALLOW"
+    },
+    "ISO42-C4": {
+      "dec": "ALLOW"
+    },
+    "ISO42-C5": {
+      "dec": "ALLOW"
+    },
+    "ISO42-C6-1-2": {
+      "dec": "ALLOW"
+    },
+    "ISO42-C6-1-3": {
+      "dec": "ALLOW"
+    },
+    "ISO42-C6-1-4": {
+      "dec": "ALLOW"
+    },
+    "ISO42-C6-2": {
+      "dec": "ALLOW"
+    },
+    "ISO42-C7": {
+      "dec": "ALLOW"
+    },
+    "ISO42-C9": {
+      "dec": "ALLOW"
+    },
+    "SEC-ASI01": {
+      "dec": "WARN"
+    },
+    "SEC-ASI02": {
+      "dec": "ASK"
+    },
+    "SEC-ASI03": {
+      "dec": "BLOCK"
+    },
+    "SEC-ASI04": {
+      "dec": "ASK"
+    },
+    "SEC-ASI05": {
+      "dec": "BLOCK"
+    },
+    "SEC-ASI06": {
+      "dec": "BLOCK"
+    },
+    "SEC-ASI07": {
+      "dec": "WARN"
+    },
+    "SEC-ASI08": {
+      "dec": "ASK"
+    },
+    "SEC-ASI09": {
+      "dec": "WARN"
+    },
+    "SEC-ASI10": {
+      "dec": "WARN"
+    },
+    "SEC-IAC-REGION": {
+      "dec": "BLOCK"
+    },
+    "SEC-LLM01": {
+      "dec": "WARN"
+    },
+    "SEC-LLM02": {
+      "dec": "BLOCK"
+    },
+    "SEC-LLM03": {
+      "dec": "ASK"
+    },
+    "SEC-LLM04": {
+      "dec": "WARN"
+    },
+    "SEC-LLM05": {
+      "dec": "BLOCK"
+    },
+    "SEC-LLM06": {
+      "dec": "ASK"
+    },
+    "SEC-LLM07": {
+      "dec": "BLOCK"
+    },
+    "SEC-LLM08": {
+      "dec": "WARN"
+    },
+    "SEC-LLM09": {
+      "dec": "WARN"
+    },
+    "SEC-LLM10": {
+      "dec": "WARN"
+    },
+    "SEC-PROVENANCE": {
+      "dec": "BLOCK"
+    },
+    "SEC-SAST": {
+      "dec": "WARN"
+    },
+    "SEC-SCA-SBOM": {
+      "dec": "WARN"
+    },
+    "SEC-SECRETS": {
+      "dec": "BLOCK"
+    },
+    "SEC-SHADOW-AI": {
+      "dec": "ASK"
+    }
+  }
+}

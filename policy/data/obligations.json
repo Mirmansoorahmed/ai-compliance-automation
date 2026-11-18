@@ -1,0 +1,144 @@
+{
+  "obligations": {
+    "AIA-14": [
+      "oversight_plan"
+    ],
+    "AIA-15": [
+      "eval_report"
+    ],
+    "AIA-26-7": [
+      "worker_information"
+    ],
+    "AIA-27": [
+      "dpia",
+      "fria"
+    ],
+    "AIA-9": [
+      "risk_management"
+    ],
+    "AIA-A3-1a": [
+      "risk_management",
+      "dpia",
+      "oversight_plan",
+      "eval_report"
+    ],
+    "AIA-A3-1b": [
+      "risk_management",
+      "dpia",
+      "oversight_plan",
+      "eval_report"
+    ],
+    "AIA-A3-1c": [
+      "risk_management",
+      "dpia",
+      "oversight_plan",
+      "eval_report"
+    ],
+    "AIA-A3-2": [
+      "risk_management",
+      "dpia",
+      "oversight_plan",
+      "eval_report"
+    ],
+    "AIA-A3-3a": [
+      "risk_management",
+      "dpia",
+      "oversight_plan",
+      "eval_report"
+    ],
+    "AIA-A3-3b": [
+      "risk_management",
+      "dpia",
+      "oversight_plan",
+      "eval_report"
+    ],
+    "AIA-A3-3c": [
+      "risk_management",
+      "dpia",
+      "oversight_plan",
+      "eval_report"
+    ],
+    "AIA-A3-3d": [
+      "risk_management",
+      "dpia",
+      "oversight_plan",
+      "eval_report"
+    ],
+    "AIA-A3-4a": [
+      "risk_management",
+      "dpia",
+      "oversight_plan",
+      "eval_report",
+      "worker_information"
+    ],
+    "AIA-A3-4b": [
+      "risk_management",
+      "dpia",
+      "oversight_plan",
+      "eval_report",
+      "worker_information"
+    ],
+    "AIA-A3-5a": [
+      "risk_management",
+      "dpia",
+      "fria",
+      "oversight_plan",
+      "eval_report"
+    ],
+    "AIA-A3-5b": [
+      "risk_management",
+      "dpia",
+      "fria",
+      "oversight_plan",
+      "eval_report"
+    ],
+    "AIA-A3-5c": [
+      "risk_management",
+      "dpia",
+      "fria",
+      "oversight_plan",
+      "eval_report"
+    ],
+    "AIA-A3-5d": [
+      "risk_management",
+      "dpia",
+      "oversight_plan",
+      "eval_report"
+    ],
+    "AIA-A3-6a-e": [
+      "risk_management",
+      "dpia",
+      "fria",
+      "oversight_plan",
+      "eval_report"
+    ],
+    "AIA-A3-7a-d": [
+      "risk_management",
+      "dpia",
+      "fria",
+      "oversight_plan",
+      "eval_report"
+    ],
+    "AIA-A3-8a": [
+      "risk_management",
+      "dpia",
+      "oversight_plan",
+      "eval_report"
+    ],
+    "AIA-A3-8b": [
+      "risk_management",
+      "dpia",
+      "oversight_plan",
+      "eval_report"
+    ],
+    "GDPR-35": [
+      "dpia"
+    ],
+    "GDPR-9": [
+      "dpia"
+    ],
+    "ISO42-C6-1-4": [
+      "dpia"
+    ]
+  }
+}
