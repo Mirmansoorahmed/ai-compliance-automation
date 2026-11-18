@@ -7,9 +7,9 @@ one CI guarantees; nothing here is required to run `make demo`, `make test`, or
 
 > **Prerequisite — budget alert first (R15.3, DESIGN.md §15).** Do NOT enable any
 > paid adapter until a budget alert is set on the Azure subscription. The lab
-> account is **Azure for Students** (USD $90 credit, expires 7 November 2027, IU
-> tenant). Set alerts at 50% and 80% of the credit, delivered to an address you
-> monitor, and confirm them before sending a single hybrid request.
+> uses a **low-cost Azure lab subscription with a budget alert**. Set alerts at
+> 50% and 80% of the budget, delivered to an address you monitor, and confirm
+> them before sending a single hybrid request.
 
 ## What the hybrid adapters are (and are not)
 
@@ -27,13 +27,13 @@ fail-safe tier (risky/unknown → `ask`) — never a silent allow.
 ## Required Azure resources
 
 1. **Azure AI Content Safety** resource (for Prompt Shields), in an EU region if
-   available on the student tenant (region/quota **unverified** — see DESIGN.md
+   available on the lab tenant (region/quota **unverified** — see DESIGN.md
    §15).
 2. **Azure OpenAI** (or Azure AI Foundry) resource with a **deployed** chat model
    (the pinned deployment name), only if you enable the stage-3 judge. Access is
    often a separate approval.
 3. **Entra ID** app registration able to issue group claims, only if you use the
-   Entra identity provider (P1/P2 or student-plan limits **unverified**).
+   Entra identity provider (plan limits **unverified**).
 
 ## Environment variables (no secrets in the repo)
 
@@ -61,10 +61,10 @@ export ACA_ENTRA_CLIENT_ID="<app-client-id>"
 To enable the stage-3 judge, also set `judge_enabled = true` under `[guard]` in
 `config/hybrid.toml` (it is `false` by default).
 
-## Cost notes (Azure for Students)
+## Cost notes (low-cost lab subscription)
 
-- Credit is small (USD $90) and expires; **every hybrid run spends it**. Keep
-  runs short and the eval set small.
+- The budget is small; **every hybrid run spends it**. Keep runs short and the
+  eval set small.
 - Prompt Shields is billed per text record; the judge is billed per token.
   Favour the `oss` path for day-to-day work and reserve hybrid for a measured
   comparison run.

@@ -188,7 +188,7 @@ Acceptance criteria:
 
 Acceptance criteria:
 1. THE SYSTEM SHALL NOT require a cloud IdP; WHERE identity is needed in tests, it SHALL use a Keycloak or fixture token, and Entra ID SHALL be an optional adapter only.
-2. THE SYSTEM SHALL document the verified lab account facts (Azure for Students, USD $90, expires 7 November 2027, IU tenant; verified 14 Nov 2026 Europe/Berlin) and the open TODOs from DESIGN.md §15.
+2. THE SYSTEM SHALL document that the lab uses a low-cost Azure lab subscription with a budget alert, and the open TODOs from DESIGN.md §15.
 3. THE SYSTEM SHALL document that a budget alert is a prerequisite that must be set before any `hybrid` adapter is enabled, and SHALL NOT assume unverified Prompt Shields / Azure OpenAI / Foundry limits.
 
 ## R16 — Documentation and boundaries

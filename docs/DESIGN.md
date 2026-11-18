@@ -35,7 +35,7 @@ The missing piece is this project, **AI Compliance Automation**: a GitHub-native
 - An HTTP contract the Agent Access Governance Gateway can call on the slow path for suspicious or risky tool calls.
 - Artefact / PR analysis for the same legal elements in code and diffs.
 - A GitHub Actions harness: `opa test`, a labelled eval set, a coverage report, and `make report` (PDF).
-- A hybrid demo profile that can use a Microsoft / Azure student account where that is realistic, and a default profile that runs fully open source with no cloud account.
+- A hybrid demo profile that can use a Microsoft / Azure lab subscription where that is realistic, and a default profile that runs fully open source with no cloud account.
 
 **Out of scope (v1)**
 
@@ -76,7 +76,7 @@ The missing piece is this project, **AI Compliance Automation**: a GitHub-native
 
 A second cloud adapter slot (possibly AWS; the account is unconfirmed) is reserved in the same interface and left unused. The design does not depend on it.
 
-The lab account is **Azure for Students**, with **USD $90** credit, expiry **7 November 2027**, in the **IU tenant** (verified in the Azure portal on 14 November 2026, Europe/Berlin). Prompt Shields, Azure OpenAI / Foundry access, Entra group-claim limits, region and quota are still **unverified** — see §15. Set a budget alert before any `hybrid` calls. Until those checks pass, `oss` is the profile CI guarantees.
+The lab uses a **low-cost Azure lab subscription with a budget alert**. Prompt Shields, Azure OpenAI / Foundry access, Entra group-claim limits, region and quota are still **unverified** — see §15. Set a budget alert before any `hybrid` calls. Until those checks pass, `oss` is the profile CI guarantees.
 
 ---
 
@@ -150,7 +150,7 @@ One OpenTelemetry span per decision, aligned with the platform **decision-record
 
 ## 6. Requirement map (v1 starter set)
 
-Illustrative only. Titles are in our own words. ISO 27001 titles follow the Halvaro Payments catalog used in `iso27001-evidence-as-code` (identifiers plus short titles, not standard text).
+Illustrative only. Titles are in our own words. ISO 27001 titles follow an illustrative ISO 27001 Annex A catalog (identifiers plus short titles, not standard text).
 
 | ID | Citation | Title (own words) | Mode | v1 handling |
 |---|---|---|---|---|
@@ -199,7 +199,7 @@ OPA maps labels to `allow` / `ask` / `four-eyes` / `deny` as in §5.3. The worst
 
 | Component | Microsoft-native | Commercial | Open-source | We build | Chosen in demo |
 |---|---|---|---|---|---|
-| Identity / groups | Entra ID | Okta and others | Keycloak | Only the adapter that normalises claims | **`oss`:** Keycloak. **`hybrid`:** Entra ID, if the student tenant can issue group claims (unverified). |
+| Identity / groups | Entra ID | Okta and others | Keycloak | Only the adapter that normalises claims | **`oss`:** Keycloak. **`hybrid`:** Entra ID, if the lab tenant can issue group claims (unverified). |
 | Semantic / injection filter | Azure AI Content Safety Prompt Shields | Lakera (or successor brand) | Local embeddings, Presidio, optional Llama Guard (licence to be re-checked before use) | The legal-element rubric, exemplar set, label schema, and artefact checks | **`oss`:** local embeddings + stage 0. **`hybrid`:** Prompt Shields *plus* the local path. Lakera remains a stub. |
 | Judge model | Azure OpenAI / Azure AI Foundry | Other hosted models | Local stub; no judge required to demo | The pinned rubric and the parser for structured output | **`oss`:** judge off. **`hybrid`:** Azure OpenAI or Foundry *if* access exists; otherwise the demo still runs without it. |
 | Policy decision | Copilot / Purview / Entra policy (siloed, not a cross-tool PDP) | Several GRC suites | **OPA / Rego** | Requirement and interpretation YAML, and the Rego that consumes labels | **OPA in both profiles.** |
@@ -282,24 +282,22 @@ Do not use these bullets until the repo exists and, for any number, a committed 
 - Built a Semantic Guard that labels contextual intent (legal elements, exemplars in DE/EN) and leaves allow / ask / deny to OPA; integrated it as the slow path of an existing MCP gateway, fail-safe to `ask` on Guard failure.
 - Used a hybrid, adapter-based stack: Keycloak + local embeddings + OPA + OpenTelemetry by default; optional Entra ID, Azure Prompt Shields, and Azure OpenAI / Foundry behind feature flags so the same demo runs fully offline.
 
-Limits to say out loud: lab and synthetic data; mappings are illustrative; Azure for Students credit and expiry are known, but Prompt Shields / Azure OpenAI limits are not yet checked; no conformity claim.
+Limits to say out loud: lab and synthetic data; mappings are illustrative; a budget alert gates the lab Azure subscription, but Prompt Shields / Azure OpenAI limits are not yet checked; no conformity claim.
 
 ---
 
-## 15. Azure student account (verified facts and remaining TODOs)
+## 15. Azure lab subscription (prerequisites and remaining TODOs)
 
-**Verified in the Azure portal on 14 November 2026 (Europe/Berlin):** the lab subscription is **Azure for Students**, with **USD $90** credit, expiring **7 November 2027**, in the **IU tenant**.
-
-The `hybrid` profile may use this account. The `oss` profile remains the one CI guarantees, and `make demo` must still run with no Azure credentials.
+The lab uses a **low-cost Azure lab subscription with a budget alert**. The `hybrid` profile may use it; the `oss` profile remains the one CI guarantees, and `make demo` must still run with no Azure credentials.
 
 **Do now**
 
-- [ ] **Set a budget alert** on this subscription before any `hybrid` traffic (Prompt Shields, Azure OpenAI / Foundry, or other billed APIs). Suggested thresholds: 50% and 80% of the USD $90 credit, delivered to an address Mir monitors. Do not turn on paid adapters until the alert is confirmed.
+- [ ] **Set a budget alert** on the subscription before any `hybrid` traffic (Prompt Shields, Azure OpenAI / Foundry, or other billed APIs). Suggested thresholds: 50% and 80% of the budget, delivered to an address the owner monitors. Do not turn on paid adapters until the alert is confirmed.
 
 **Still unverified (TODOs)**
 
-- [ ] Whether a directory / app registration is allowed on this student tenant, and whether **Entra ID** can issue group claims to a lab app (including any P1/P2 or student-plan limits).
-- [ ] Whether **Azure AI Content Safety / Prompt Shields** is available in an EU region, what the quota is, and how much of the USD $90 credit a demo run consumes.
+- [ ] Whether a directory / app registration is allowed on this tenant, and whether **Entra ID** can issue group claims to a lab app (including any plan limits).
+- [ ] Whether **Azure AI Content Safety / Prompt Shields** is available in an EU region, what the quota is, and how much of the budget a demo run consumes.
 - [ ] Whether **Azure OpenAI** and / or **Azure AI Foundry** access is granted, which models and regions, and at what quota. Access is often a separate approval.
 - [ ] Rate limits, logging and retention defaults (no prompt bodies should be sent to a vendor unless the flag is explicit).
 - [ ] A possible **second cloud account** (maybe AWS): confirm it exists before doing any work; keep it as an unused adapter slot until then.
@@ -310,8 +308,8 @@ The `hybrid` profile may use this account. The `oss` profile remains the one CI 
 
 - No Semantic Guard or requirement harness exists in code yet. Precision, recall, false-block rate and latency are **unknown**.
 - Art. 12 / 14 duties attach mainly to high-risk systems and to providers; whether they apply to a given Halvaro Payments assistant is a legal classification, not a finding of this design.
-- ISO/IEC 42001 is mentioned only at theme level. ISO 27001 titles are our own words from the Halvaro Payments catalog.
+- ISO/IEC 42001 is mentioned only at theme level. ISO 27001 titles are our own words from an illustrative ISO 27001 Annex A catalog.
 - Prompt Shields behaviour is taken from Microsoft Learn (retrieved for the platform research on 11–12 Nov 2026) and must be re-checked at implementation time.
 - This document does not create a GitHub repository.
 
-*Sources: platform `system-design.md` and `production-research.md` (11–12 Nov 2026); gateway `DESIGN.md`; Halvaro Payments ISMS brief and the `iso27001-evidence-as-code` Annex A catalog (ids + short titles). EU AI Act Service Desk Art. 5, 9, 12, 14 (consolidated text as at 27 July 2026). Design date: 14 Nov 2026, Europe/Berlin.*
+*Sources: platform `system-design.md` and `production-research.md` (11–12 Nov 2026); gateway `DESIGN.md`; the Halvaro Payments ISMS brief and an illustrative ISO 27001 Annex A catalog (ids + short titles). EU AI Act Service Desk Art. 5, 9, 12, 14 (consolidated text as at 27 July 2026). Design date: 14 Nov 2026, Europe/Berlin.*

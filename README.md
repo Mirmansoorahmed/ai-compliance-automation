@@ -76,7 +76,7 @@ The `hybrid` profile adds feature-flagged Azure adapters behind the same adapter
 | Prompt Shields precision / recall (scored separately) | TO BE MEASURED |
 | Stage 2–3 (vendor/judge) p95 | TO BE MEASURED |
 
-_No hybrid number is published until a real credentialed run exists (see [`docs/HYBRID.md`](docs/HYBRID.md)). A budget alert on the Azure for Students subscription is a prerequisite before any hybrid call._
+_No hybrid number is published until a real credentialed run exists (see [`docs/HYBRID.md`](docs/HYBRID.md)). A budget alert on the low-cost Azure lab subscription is a prerequisite before any hybrid call._
 
 ## Agent security framework
 
@@ -95,7 +95,7 @@ Runtime-hardening gaps are roadmapped to a planned **Agent Hardening Sandbox**; 
 
 - Lab and synthetic data; mappings are illustrative; no conformity claim and no automation of indeterminate legal concepts.
 - Committed metrics use the hashed fallback embedder (see note above); stages 2–3 and vendor paths are not measured on `oss`.
-- Azure for Students credit/expiry are known, but Prompt Shields / Azure OpenAI / Entra limits are unverified — a budget alert is a prerequisite before any hybrid call ([`docs/DESIGN.md` §15](docs/DESIGN.md)).
+- A low-cost Azure lab subscription with a budget alert gates the hybrid profile, but Prompt Shields / Azure OpenAI / Entra limits are unverified — a budget alert is a prerequisite before any hybrid call ([`docs/DESIGN.md` §15](docs/DESIGN.md)).
 - This repo does not implement the sibling projects (audit logging, red-teaming, multi-agent) and does not change the gateway.
 
 ## License

@@ -16,10 +16,10 @@ Demo consultancy: **Northwind Advisory**. Demo client: **Halvaro Payments GmbH**
 - **Default profile `oss` (CI must pass with this only):** Python service, OPA/Rego, local embeddings plus deterministic stage-0 signals (Semantic Guard core), Keycloak when identity is needed, OpenTelemetry, optional self-hosted Langfuse, YAML + JSON Schema in Git, PDF report.
 - **Optional profile `hybrid`:** same core, plus feature-flagged adapters for Entra ID (groups), Azure AI Content Safety Prompt Shields (one Guard signal, not a legal verdict), and optionally Azure OpenAI or Azure AI Foundry as a pinned judge. These must degrade cleanly when credentials are missing.
 - Reserve an unused adapter slot for a possible second cloud (maybe AWS; unconfirmed). Do not design the system around it.
-- Azure lab account, **verified in the portal on 14 November 2026 (Europe/Berlin):** Azure for Students, USD $90 credit, expires 7 November 2027, IU tenant. Prompt Shields, Azure OpenAI / Foundry access, Entra group-claim limits, region and quota are still unverified — see DESIGN.md §15. **Set a budget alert** before any hybrid-profile calls. Do not assume those unverified limits.
+- Azure lab account: a low-cost Azure lab subscription with a budget alert set before any hybrid-profile calls. Prompt Shields, Azure OpenAI / Foundry access, Entra group-claim limits, region and quota are still unverified — see DESIGN.md §15. Do not assume those unverified limits.
 
 ## Hard constraints
-- **Synthetic data only.** Fictional firms: Northwind Advisory and NordPay. No real client data. Default NordPay size in this project is ~2,000 employees; do not edit older NordPay repos from here.
+- **Synthetic data only.** Fictional firms: Northwind Advisory and Halvaro Payments GmbH. No real client data. Default Halvaro Payments size in this project is ~2,000 employees.
 - **No employer branding** on demos, READMEs, or reports.
 - **No AI attribution** and **no `Co-authored-by`** (or similar) on commits.
 - **Never invent metrics.** Every number in README / report / case study must come from a **committed eval run** with **timestamp + git SHA**. Until then write "TO BE MEASURED" or "TARGET".

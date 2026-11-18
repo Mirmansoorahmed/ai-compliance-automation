@@ -11,8 +11,10 @@ HYBRID_DOC = (REPO / "docs" / "HYBRID.md").read_text(encoding="utf-8")
 def test_runbook_documents_budget_alert_prerequisite():
     low = HYBRID_DOC.lower()
     assert "budget alert" in low
-    assert "azure for students" in low
-    assert "$90" in HYBRID_DOC or "90 credit" in low
+    # Neutral wording only — no account-specific credit amount / tenant / plan.
+    assert "low-cost azure lab subscription" in low
+    for banned in ("azure for students", "$90", "iu tenant"):
+        assert banned not in low
 
 
 def test_runbook_lists_env_vars_and_command():
