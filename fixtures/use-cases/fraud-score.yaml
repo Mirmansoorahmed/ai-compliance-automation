@@ -1,0 +1,28 @@
+id: uc-fraud-transaction-score
+title: Transaction fraud risk score
+intended_purpose: score card transactions for fraud risk on objective facts and flag the riskiest for manual review
+ai_system: true
+role: deployer
+annex_iii: []
+art6_3_exception: false
+profiling: false
+decision_effect: assists
+affected_persons:
+  - customers
+personal_data:
+  - transaction_amount
+  - merchant
+  - country
+special_categories: []
+countries_of_processing:
+  - DE
+owner: fraud-analytics-lead
+human_overseer: fraud-ops-reviewer
+artefacts:
+  risk_management: null
+  dpia: null
+  fria: null
+  oversight_plan: null
+  eval_report: null
+  worker_information: null
+approvals: []
