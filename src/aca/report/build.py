@@ -24,7 +24,7 @@ _REPO = Path(__file__).resolve().parents[3]
 
 DISCLAIMER = (
     "Lab / portfolio project. Synthetic data only (fictional firms Northwind "
-    "Advisory and NordPay). Mappings to the EU AI Act and ISO/IEC 27001:2022 are "
+    "Advisory and Halvaro Payments GmbH). Mappings to the EU AI Act and ISO/IEC 27001:2022 are "
     "illustrative and in our own words; this is not legal advice and not a "
     "conformity claim."
 )

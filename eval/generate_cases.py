@@ -4,7 +4,7 @@ Writes one YAML file per case under ``eval/cases/``. Running it is deterministic
 and idempotent: the same spec produces the same files, so the committed set is
 reviewable file-by-file and regenerating never introduces churn.
 
-All text is SYNTHETIC and illustrative (fictional NordPay / Northwind Advisory
+All text is SYNTHETIC and illustrative (fictional Halvaro Payments / Northwind Advisory
 context). Categories:
 
   Art. 5(1)(c) social scoring  -> concept AIA-5-1-c

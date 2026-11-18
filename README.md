@@ -2,7 +2,7 @@
 
 **Core component: Semantic Guard** — it emits contextual intent *labels* and confidence for prompts, tool calls, and code artefacts. **OPA decides** `allow` / `ask` / `four-eyes` / `deny`. A GitHub-native harness that turns a legal or ISMS requirement into a versioned human interpretation, then an OPA rule, then evidence.
 
-> Lab / portfolio project. **Synthetic data only** (fictional consultancy *Northwind Advisory*, fictional client *NordPay*). Mappings to the EU AI Act and ISO/IEC 27001:2022 are **illustrative** and in our own words — not legal advice, not a conformity claim. Part of the AI Governance Platform.
+> Lab / portfolio project. **Synthetic data only** (fictional consultancy *Northwind Advisory*, fictional client *Halvaro Payments GmbH*). Mappings to the EU AI Act and ISO/IEC 27001:2022 are **illustrative** and in our own words — not legal advice, not a conformity claim. Part of the AI Governance Platform.
 
 ## Problem
 

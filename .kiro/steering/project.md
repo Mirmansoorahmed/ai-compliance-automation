@@ -5,7 +5,7 @@ Portfolio project under the **AI Governance Platform** umbrella. **AI Compliance
 
 **Core component: Semantic Guard.** It emits contextual intent *labels* only; OPA decides allow / ask / deny. This is the semantic / contextual slow path next to the deterministic gateway.
 
-Demo consultancy: **Northwind Advisory**. Demo client: **NordPay** (fictional Berlin fintech, ~2,000 employees, several sites).
+Demo consultancy: **Northwind Advisory**. Demo client: **Halvaro Payments GmbH** (fictional Berlin fintech, ~2,000 employees, several sites).
 
 ## Sibling and boundaries
 - The Agent Access Governance Gateway already exists and stays the PEP. This repo is a standalone sibling. Integrate through a versioned HTTP label API (Semantic Guard) and a shared decision-record / OTel contract. Provide a recorded fixture mode so demos run without a live gateway.

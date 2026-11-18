@@ -37,7 +37,7 @@ def test_benign_decision_records_single_allow_span(tmp_path):
     )
     rec = pipe.decide(
         Event(text=BENIGN, tool={"class": "risky"}),
-        subject_id="alice@nordpay.example",
+        subject_id="alice@halvaro.example",
         resource="analytics.job",
         action="run",
         args={"sql": "SELECT * FROM txns"},
@@ -49,7 +49,7 @@ def test_benign_decision_records_single_allow_span(tmp_path):
     # Privacy: no raw arg value, no clear identity in the span.
     blob = json.dumps(spans[0])
     assert "SELECT * FROM txns" not in blob
-    assert "alice@nordpay.example" not in blob
+    assert "alice@halvaro.example" not in blob
 
 
 def test_guard_failure_records_failsafe_ask_not_silent_allow(tmp_path):

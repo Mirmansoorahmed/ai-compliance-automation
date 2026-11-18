@@ -68,7 +68,7 @@ def run_demo(*, repo: Path | None = None, spans_path: Path | None = None) -> dic
     )
     rec1 = pipe_confirmed.decide(
         Event(text=SOCIAL_SCORING, tool={"class": "risky"}),
-        subject_id="nordpay-user-1", resource="hr.scoring_job", action="run",
+        subject_id="halvaro-user-1", resource="hr.scoring_job", action="run",
     )
     outcomes["scenario1_deny"] = rec1.attributes["tier"]
 
@@ -84,7 +84,7 @@ def run_demo(*, repo: Path | None = None, spans_path: Path | None = None) -> dic
     )
     rec2 = pipe_unconfirmed.decide(
         Event(text=AMBIGUOUS, tool={"class": "risky"}),
-        subject_id="nordpay-user-2", resource="analytics.ranking", action="run",
+        subject_id="halvaro-user-2", resource="analytics.ranking", action="run",
     )
     outcomes["scenario2_before"] = rec2.attributes["tier"]
     change_set = build_change_set(
@@ -102,7 +102,7 @@ def run_demo(*, repo: Path | None = None, spans_path: Path | None = None) -> dic
     # Replay the SOCIAL_SCORING prompt after the (simulated) merge -> deny.
     rec2b = pipe_confirmed.decide(
         Event(text=SOCIAL_SCORING, tool={"class": "risky"}),
-        subject_id="nordpay-user-2", resource="analytics.ranking", action="run",
+        subject_id="halvaro-user-2", resource="analytics.ranking", action="run",
     )
     outcomes["scenario2_after_replay"] = rec2b.attributes["tier"]
 
@@ -117,7 +117,7 @@ def run_demo(*, repo: Path | None = None, spans_path: Path | None = None) -> dic
     )
     rec3 = pipe_benign.decide(
         Event(text=BENIGN, tool={"class": "risky"}),
-        subject_id="nordpay-user-3", resource="fraud.scoring", action="run",
+        subject_id="halvaro-user-3", resource="fraud.scoring", action="run",
     )
     outcomes["scenario3_allow"] = rec3.attributes["tier"]
 

@@ -2,13 +2,13 @@
 
 **Core component: Semantic Guard** — contextual intent labels for prompts, tool calls and artefacts; OPA still decides allow / ask / deny.
 **Design note (v0.1)** · Portfolio project by Mir Mansoor Ahmed
-**Status:** design · fictional consultancy in examples: *Northwind Advisory* · fictional client: *NordPay* (~2,000 employees, several sites)
+**Status:** design · fictional consultancy in examples: *Northwind Advisory* · fictional client: *Halvaro Payments* (~2,000 employees, several sites)
 **Umbrella:** AI Governance Platform · sits next to the existing Agent Access Governance Gateway
 **Proposed repo (not created):** `ai-compliance-automation`
 **Sibling repos (planned, not created):** LLM Red-Teaming Pipeline (`llm-red-teaming-pipeline`) · AI Audit Logging & Monitoring (`ai-audit-logging`) · Multi-Agent AI System (LangGraph) (`langgraph-multi-agent-system`)
 **Date:** 14 November 2026 (Europe/Berlin)
 
-This is a lab / portfolio design, not a production product, not legal advice, and not a conformity assessment. Mapping to the EU AI Act or ISO/IEC 27001:2022 is illustrative. Nothing here is a claim that NordPay, or any real firm, is compliant or audit-ready.
+This is a lab / portfolio design, not a production product, not legal advice, and not a conformity assessment. Mapping to the EU AI Act or ISO/IEC 27001:2022 is illustrative. Nothing here is a claim that Halvaro Payments, or any real firm, is compliant or audit-ready.
 
 A consulting narrative for the same design lives in [`CASE-STUDY.md`](CASE-STUDY.md).
 
@@ -16,7 +16,7 @@ A consulting narrative for the same design lives in [`CASE-STUDY.md`](CASE-STUDY
 
 ## 1. Problem
 
-Coding agents and cloud chat already sit between NordPay staff and client or employee data. A deterministic gateway can decide *who* may call *which* tool. It cannot decide whether a request is, in effect, building something the law prohibits — for example a social-scoring workflow typed into Claude Code without using those words.
+Coding agents and cloud chat already sit between Halvaro Payments staff and client or employee data. A deterministic gateway can decide *who* may call *which* tool. It cannot decide whether a request is, in effect, building something the law prohibits — for example a social-scoring workflow typed into Claude Code without using those words.
 
 Law cannot be fully automated. German and EU legal texts use *unbestimmte Rechtsbegriffe* (indeterminate legal concepts) such as *angemessen* and *Stand der Technik*. A machine may flag elements of a requirement. A named human must interpret the hard cases. Only already-interpreted rules should be enforced automatically. Ambiguous requirements go to a four-eyes review. Each human decision becomes a versioned interpretation plus new eval cases, through a pull request, not by the system rewriting policy itself.
 
@@ -28,7 +28,7 @@ The missing piece is this project, **AI Compliance Automation**: a GitHub-native
 
 **In scope (v1)**
 
-- A requirement map for a small, declared set: EU AI Act Art. 5 (social scoring, and one further prohibited-practice example), a few Art. 9 / 12 / 14 obligations, and a few ISO/IEC 27001:2022 Annex A controls already used for NordPay in the companion ISMS work. Each entry is labelled `auto`, `human` or `hybrid`.
+- A requirement map for a small, declared set: EU AI Act Art. 5 (social scoring, and one further prohibited-practice example), a few Art. 9 / 12 / 14 obligations, and a few ISO/IEC 27001:2022 Annex A controls already used for Halvaro Payments in the companion ISMS work. Each entry is labelled `auto`, `human` or `hybrid`.
 - Versioned interpretations (owner, reason, review) that are the only source of hard deny rules.
 - A **Semantic Guard** that emits intent *labels* and confidence, never a verdict. OPA decides `allow` / `ask` (four-eyes) / `deny`.
 - Contextual detection against legal-element rubrics and exemplars (not hard-coded keyword lists), with a deterministic fallback.
@@ -42,7 +42,7 @@ The missing piece is this project, **AI Compliance Automation**: a GitHub-native
 - Replacing the gateway PEP, rewriting `src/apm_cli/**`, or opening a PR to `microsoft/apm`.
 - Building the **AI Audit Logging & Monitoring** store (`ai-audit-logging`) or the **LLM Red-Teaming Pipeline** (`llm-red-teaming-pipeline`). This repo *emits* OTel spans the audit-logging sibling will consume later, and *produces* eval cases that pipeline can import later. The **Multi-Agent AI System (LangGraph)** (`langgraph-multi-agent-system`) is a later sibling and is out of scope for this repo.
 - A full ISO/IEC 42001 Annex A mapping (the standard text is not in hand; theme-level mentions only).
-- Certifying NordPay, automating Legal's sign-off, or treating the judge model as an authorization control.
+- Certifying Halvaro Payments, automating Legal's sign-off, or treating the judge model as an authorization control.
 - Production high availability, multi-region residency cut-over, or designing the system around a second cloud account. A placeholder adapter slot is reserved; it is not implemented.
 - Real client data, live attacks, employer branding (including Telekom / Magenta), or any `Co-authored-by` / AI attribution in commits.
 
@@ -150,7 +150,7 @@ One OpenTelemetry span per decision, aligned with the platform **decision-record
 
 ## 6. Requirement map (v1 starter set)
 
-Illustrative only. Titles are in our own words. ISO 27001 titles follow the NordPay catalog used in `iso27001-evidence-as-code` (identifiers plus short titles, not standard text).
+Illustrative only. Titles are in our own words. ISO 27001 titles follow the Halvaro Payments catalog used in `iso27001-evidence-as-code` (identifiers plus short titles, not standard text).
 
 | ID | Citation | Title (own words) | Mode | v1 handling |
 |---|---|---|---|---|
@@ -251,7 +251,7 @@ The eval set must include hard negatives (lawful fraud or credit scoring) and at
 
 ## 12. Demo script (`make demo`, under 15 minutes)
 
-Fictional setting: Northwind Advisory running the harness for NordPay. Synthetic data only. Default profile: `oss`. The same three scenarios must also run under `hybrid` when credentials exist.
+Fictional setting: Northwind Advisory running the harness for Halvaro Payments. Synthetic data only. Default profile: `oss`. The same three scenarios must also run under `hybrid` when credentials exist.
 
 1. **Clear deny — social scoring, no keyword.** A Claude Code-style prompt joins employee behaviour sources, builds a reliability index, and applies an adverse HR action. An approved interpretation already records this as a confirmed Art. 5(1)(c) pattern, *or* the Guard finds enough elements at high confidence against that confirmed pattern. OPA returns `deny`. A span is written. The report shows the requirement, the interpretation, and the deny.
 2. **Ambiguous request → four-eyes → a new rule.** A second prompt hits some, but not all, elements (or sits between thresholds). OPA returns `ask` / four-eyes. A reviewer records an interpretation (`owner`, `reason`) and adds eval cases. A PR is opened; CI runs `opa test`, the eval set, and coverage. After (simulated) merge, a replay of the same prompt follows the new interpreted rule. Policy was not self-modified.
@@ -309,9 +309,9 @@ The `hybrid` profile may use this account. The `oss` profile remains the one CI 
 ## 16. Limits and sources
 
 - No Semantic Guard or requirement harness exists in code yet. Precision, recall, false-block rate and latency are **unknown**.
-- Art. 12 / 14 duties attach mainly to high-risk systems and to providers; whether they apply to a given NordPay assistant is a legal classification, not a finding of this design.
-- ISO/IEC 42001 is mentioned only at theme level. ISO 27001 titles are our own words from the NordPay catalog.
+- Art. 12 / 14 duties attach mainly to high-risk systems and to providers; whether they apply to a given Halvaro Payments assistant is a legal classification, not a finding of this design.
+- ISO/IEC 42001 is mentioned only at theme level. ISO 27001 titles are our own words from the Halvaro Payments catalog.
 - Prompt Shields behaviour is taken from Microsoft Learn (retrieved for the platform research on 11–12 Nov 2026) and must be re-checked at implementation time.
 - This document does not create a GitHub repository.
 
-*Sources: platform `system-design.md` and `production-research.md` (11–12 Nov 2026); gateway `DESIGN.md`; NordPay ISMS brief and the `iso27001-evidence-as-code` Annex A catalog (ids + short titles). EU AI Act Service Desk Art. 5, 9, 12, 14 (consolidated text as at 27 July 2026). Design date: 14 Nov 2026, Europe/Berlin.*
+*Sources: platform `system-design.md` and `production-research.md` (11–12 Nov 2026); gateway `DESIGN.md`; Halvaro Payments ISMS brief and the `iso27001-evidence-as-code` Annex A catalog (ids + short titles). EU AI Act Service Desk Art. 5, 9, 12, 14 (consolidated text as at 27 July 2026). Design date: 14 Nov 2026, Europe/Berlin.*

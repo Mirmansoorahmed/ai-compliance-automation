@@ -29,7 +29,7 @@ def test_demo_writes_spans(tmp_path):
     assert first["attributes"]["tier"] == "deny"
     # Privacy: no clear subject id in any span.
     blob = spans.read_text(encoding="utf-8")
-    assert "nordpay-user-1" not in blob
+    assert "halvaro-user-1" not in blob
 
 
 def test_demo_does_not_write_policy_data(tmp_path):

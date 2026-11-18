@@ -21,7 +21,7 @@ from aca.guard.evidence.redact import (
 def _record(**overrides):
     base = dict(
         tier="deny",
-        subject_id="alice@nordpay.example",
+        subject_id="alice@halvaro.example",
         resource="hr.scoring_job",
         action="run",
         labels=[{"concept_id": "AIA-5-1-c", "confidence": 0.9, "elements_met": ["a", "b", "c"]}],
@@ -30,7 +30,7 @@ def _record(**overrides):
         site="berlin",
         args={"query": "SELECT ...", "limit": 10},
         latency_ms=12.3,
-        approver_ids=["bob@nordpay.example", "carol@nordpay.example"],
+        approver_ids=["bob@halvaro.example", "carol@halvaro.example"],
     )
     base.update(overrides)
     return build_decision_record(**base)
@@ -54,14 +54,14 @@ def test_subject_is_pseudonymised_not_clear():
     rec = _record()
     subj = rec.attributes["subject_pseudonym"]
     assert subj.startswith("subj-")
-    assert "alice@nordpay.example" not in json.dumps(rec.attributes)
+    assert "alice@halvaro.example" not in json.dumps(rec.attributes)
 
 
 def test_approvers_pseudonymised():
     rec = _record()
     for a in rec.attributes["approver_pseudonyms"]:
         assert a.startswith("subj-")
-    assert "bob@nordpay.example" not in json.dumps(rec.attributes)
+    assert "bob@halvaro.example" not in json.dumps(rec.attributes)
 
 
 def test_args_reduced_to_names_count_hashes_no_raw_values():

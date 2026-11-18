@@ -4,7 +4,7 @@
 
 Product brief: [`docs/DESIGN.md`](docs/DESIGN.md). Narrative context only: [`docs/CASE-STUDY.md`](docs/CASE-STUDY.md). Architecture diagram: [`docs/diagrams/architecture.png`](docs/diagrams/architecture.png).
 
-Fictional consultancy **Northwind Advisory**; fictional client **NordPay** (~2,000 employees, several sites). Synthetic data only. No employer branding. No AI commit attribution. Never invent metrics (every number comes from a committed eval run with timestamp + git SHA, else `TARGET` / `TO BE MEASURED`). Never copy statute or standard text (IDs + short titles in our own words, illustrative mappings only).
+Fictional consultancy **Northwind Advisory**; fictional client **Halvaro Payments GmbH** (~2,000 employees, several sites). Synthetic data only. No employer branding. No AI commit attribution. Never invent metrics (every number comes from a committed eval run with timestamp + git SHA, else `TARGET` / `TO BE MEASURED`). Never copy statute or standard text (IDs + short titles in our own words, illustrative mappings only).
 
 This is a lab / portfolio project, not a product, not legal advice, and not a conformity assessment.
 
