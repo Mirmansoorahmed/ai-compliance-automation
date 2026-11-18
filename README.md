@@ -50,7 +50,7 @@ Two recall views: **strict recall** = the full three-element pattern was asserte
 | Attacks routed to review (strict + partial -> ask) | 1.0 | 1.0 | 1.0 |
 | Benign false-block rate (strict) | | | 0.0 |
 | Benign routed-to-ask rate | | | 0.0625 |
-| Semantic path p95 (stages 0-1, ms) | | | 0.482 |
+| Semantic path p95 (stages 0-1, ms) | | | 48.313 |
 | Semantic path p95 (stages 2-3, ms) | | | TO BE MEASURED |
 | Prompt-injection precision (vendor path) | | | TO BE MEASURED |
 | Prompt-injection recall (vendor path) | | | TO BE MEASURED |
@@ -60,12 +60,15 @@ Held-out set (21 NEW cases, scored separately — the detector was not tuned on 
 | Held-out metric | de | en | overall |
 |---|---|---|---|
 | Label recall (strict) | 0.25 | 0.0 | 0.1111 |
-| Attacks routed to review | 0.25 | 0.2 | 0.2222 |
+| Attacks routed to review | 0.25 | 0.4 | 0.3333 |
 | Benign false-block rate | | | 0.0 |
+| Benign routed-to-ask rate | | | 0.0 |
 
-_Source: committed eval run 2026-11-14 22:27 UTC, git `49582c3b`, embedder `hashed/0.1.0:dim=256` (hashed-fallback backend; see [`eval/results/`](eval/results/))._
+_Source: committed eval run 2026-11-18 14:02 UTC, git `6ead950c`, embedder `st:sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2` (real multilingual MiniLM model, CPU; see [`eval/results/`](eval/results/))._
 
-> **Honest reading.** This committed run uses the deterministic **hashed-vector embedding fallback**, not the trained model, because the sandbox that produced it has no network to download `sentence-transformers`. On the tuning set: precision 1.0, strict recall 0.82, and **every attack is routed to a human** (routed-to-review 1.0) via the partial-pattern rule, while benign false-block stays 0.0 and only 6.25% of benign cases are sent to `ask`. On the **held-out** set the hashed fallback generalises poorly (strict recall 0.11) — new behaviour-source vocabulary isn't recognised by character n-grams. The code defaults to a pinned multilingual MiniLM (`paraphrase-multilingual-MiniLM-L12-v2`); run `pip install .[embeddings] && make eval` on a networked host to produce a real-backend run (expected to lift held-out recall via semantics), and both tables regenerate from that committed file. Do not cite these as real-world accuracy.
+> **Honest reading.** This run used the real pinned multilingual MiniLM model (`paraphrase-multilingual-MiniLM-L12-v2`) on CPU. On the tuning set: precision 1.0, strict recall 0.82 (DE and EN alike), and **every attack is routed to a human** (routed-to-review 1.0) via the partial-pattern rule, while benign false-block stays 0.0 and only 6.25% of benign cases are sent to `ask`.
+>
+> **The honest weakness is generalisation.** On the held-out set — 21 NEW cases the detector was never tuned on — strict recall is only **0.11** and just **0.33** of held-out attacks are routed to review; several new behaviour-source scenarios slip through to `allow`. Precision/false-block stay clean (0 false blocks), so the gap is missed detections, not over-blocking. Next step: expand the exemplar set and legal-element coverage for unseen behaviour sources, and re-measure on held-out before any real use. Do not read the tuning-set numbers as real-world accuracy; the held-out numbers are the more honest indicator.
 
 ## Hybrid profile (optional Azure adapters)
 
