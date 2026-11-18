@@ -267,7 +267,7 @@ Fictional setting: Northwind Advisory running the harness for Halvaro Payments. 
 |---|---|
 | False blocks push staff to shadow AI | Log-only / ask first for uninterpreted concepts; publish false-block rate once measured; fast appeal path |
 | Judge or vendor model drift | Pin versions; golden-set gate on upgrades; `oss` path does not depend on the vendor |
-| Student-account features missing or region-locked | Feature flags; `oss` is the supported default; limits listed as a TODO in §15, not assumed |
+| Lab-subscription features missing or region-locked | Feature flags; `oss` is the supported default; limits listed as a TODO in §15, not assumed |
 | Treating Prompt Shields as a legal classifier | Adapter docs and the report must state Microsoft's own limit: it does not judge policy compliance or task alignment |
 | Works-council concern if employees are identifiable in logs | Pseudonymisation, no prompt bodies by default, aggregate reports; a Betriebsvereinbarung is a client legal step, not something this lab "implements" |
 | Over-claiming compliance | Disclaimers on the map, the report, the README, and the case study |

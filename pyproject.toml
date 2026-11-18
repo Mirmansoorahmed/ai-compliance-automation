@@ -27,6 +27,8 @@ hybrid = [
 ]
 dev = [
     "pytest>=8",
+    # PyYAML so tests/test_yamlio.py exercises the PyYAML path instead of skipping.
+    "PyYAML>=6",
 ]
 
 [tool.pytest.ini_options]
