@@ -1,0 +1,18 @@
+# Four-eyes review (R9.4). Changes to the compliance register, policy, and
+# eval set require review. Replace the placeholder handles with two DISTINCT
+# real reviewers so no single person can both author and approve an auto-deny.
+#
+# A confirmed_prohibited_pattern interpretation (which enables a hard deny) is
+# only enforceable after such a review merges and CI passes — never written by
+# the running system.
+
+# The compliance register (requirements + human interpretations).
+/requirements/      @org/ai-governance @org/isms
+/interpretations/   @org/ai-governance @org/isms
+
+# Policy and its signed data (thresholds, confirmed prohibited patterns).
+/policy/            @org/ai-governance @org/security
+
+# Eval set and fixtures that justify an interpretation.
+/eval/              @org/ai-governance
+/exemplars/         @org/ai-governance

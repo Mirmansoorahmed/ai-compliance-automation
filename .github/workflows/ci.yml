@@ -1,0 +1,68 @@
+name: ci
+
+# CI runs on the oss profile with optional adapters absent (R11.5).
+# The oss profile needs no third-party install step.
+
+on:
+  pull_request:
+  push:
+    branches: [main, spec]
+
+jobs:
+  schema:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Validate requirement/interpretation YAML against JSON Schema
+        run: make schema
+
+  pytest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install dev extras (pytest)
+        run: python -m pip install pytest
+      - name: Run tests (oss profile, optional adapters absent)
+        run: make test
+
+  opa-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install OPA
+        run: |
+          curl -sSL -o /usr/local/bin/opa https://openpolicyagent.org/downloads/latest/opa_linux_amd64_static
+          chmod +x /usr/local/bin/opa
+          opa version
+      - name: Run opa test
+        run: make opa-test
+
+  eval:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      # Runs the eval set on the oss (hashed-fallback) profile. This proves the
+      # runner works; the COMMITTED run under eval/results/ is what docs cite.
+      # CI does not commit its run.
+      - name: Run eval set
+        run: make eval
+
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      # Fails the job if mapped coverage is below the configured floor (TARGET).
+      - name: Coverage report (fails below floor)
+        run: make coverage

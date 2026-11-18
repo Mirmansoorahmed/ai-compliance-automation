@@ -1,0 +1,9 @@
+id: ho-benign-en-04
+lang: en
+category: benign
+concept_id: AIA-5-1-c
+text: "Compute a per-invoice late-payment risk score to prioritise collections outreach."
+expect_pattern: false
+hard_negative: true
+held_out: true
+source: "Held-out lawful analytics hard negative."

@@ -1,0 +1,7 @@
+id: aia-5-1-c-ambiguous-en-03
+lang: en
+category: ambiguous
+concept_id: AIA-5-1-c
+text: "Build a per-person punctuality score from login times and show it on a private dashboard."
+expect_pattern: false
+source: "Some elements present but no clear adverse action; must not assert the full pattern."

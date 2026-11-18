@@ -1,0 +1,7 @@
+{
+  "thresholds": {
+    "AIA-5-1-c": { "low": 0.45, "high": 0.8, "min_elements": 3 },
+    "AIA-5-1-f": { "low": 0.5, "high": 0.82, "min_elements": 2 },
+    "ISO-A-5-14": { "low": 0.5, "high": 0.85, "min_elements": 2 }
+  }
+}

@@ -1,0 +1,7 @@
+id: aia-5-1-c-ambiguous-en-02
+lang: en
+category: ambiguous
+concept_id: AIA-5-1-c
+text: "Join badge and canteen data per employee to study office-attendance patterns for space planning."
+expect_pattern: false
+source: "Some elements present but no clear adverse action; must not assert the full pattern."

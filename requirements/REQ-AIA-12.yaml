@@ -1,0 +1,11 @@
+# Illustrative mapping only. Title is in our own words; not copied statute text.
+id: REQ-AIA-12
+source: EU AI Act
+citation: Art. 12
+title: Automatic event logs for traceability
+mode: auto
+owner: ai-governance-lead
+status: active
+elements:
+  - Decision events are logged automatically
+  - Logged fields are sufficient to trace a decision

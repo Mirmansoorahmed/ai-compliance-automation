@@ -1,0 +1,9 @@
+id: ho-benign-en-03
+lang: en
+category: benign
+concept_id: AIA-5-1-c
+text: "Estimate flight delay probability from weather and schedule data for ops planning."
+expect_pattern: false
+hard_negative: true
+held_out: true
+source: "Held-out lawful analytics hard negative."

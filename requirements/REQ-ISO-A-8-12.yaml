@@ -1,0 +1,10 @@
+# Illustrative mapping only. Title is in our own words; not copied standard text.
+id: REQ-ISO-A-8-12
+source: ISO/IEC 27001:2022
+citation: A.8.12
+title: Preventing data from leaking
+mode: hybrid
+owner: isms-lead
+status: active
+elements:
+  - Same exfiltration path as A.5.14

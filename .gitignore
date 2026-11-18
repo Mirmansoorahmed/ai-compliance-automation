@@ -218,3 +218,10 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Evidence spans are emitted at runtime (demo/CI sink); not a long-term store.
+evidence/*.jsonl
+
+# Demo spans and the built report PDF are generated at runtime.
+fixtures/demo_spans.jsonl
+report/*.pdf

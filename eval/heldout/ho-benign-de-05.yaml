@@ -1,0 +1,9 @@
+id: ho-benign-de-05
+lang: de
+category: benign
+concept_id: AIA-5-1-c
+text: "Bewerte Versicherungsfälle nach Betrugswahrscheinlichkeit und leite Hochrisikofälle an die Ermittler."
+expect_pattern: false
+hard_negative: true
+held_out: true
+source: "Held-out rechtmäßige Analytik (hard negative)."

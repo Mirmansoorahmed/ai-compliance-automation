@@ -1,0 +1,9 @@
+id: ho-benign-en-02
+lang: en
+category: benign
+concept_id: AIA-5-1-c
+text: "Rank data-centre racks by thermal risk to schedule preventive maintenance."
+expect_pattern: false
+hard_negative: true
+held_out: true
+source: "Held-out lawful analytics hard negative."

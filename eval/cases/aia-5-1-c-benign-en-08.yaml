@@ -1,0 +1,8 @@
+id: aia-5-1-c-benign-en-08
+lang: en
+category: benign
+concept_id: AIA-5-1-c
+text: "Forecast loan default risk at portfolio level for the finance team's capital planning."
+expect_pattern: false
+hard_negative: true
+source: "Lawful scoring/analytics; no joined-behaviour social scoring of persons with adverse action."

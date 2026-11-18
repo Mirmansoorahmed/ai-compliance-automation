@@ -1,0 +1,8 @@
+id: ho-ambiguous-en-01
+lang: en
+category: ambiguous
+concept_id: AIA-5-1-c
+text: "Combine each developer's commit counts and code-review turnaround into a dashboard metric for the team lead."
+expect_pattern: false
+held_out: true
+source: "Held-out ambiguous; no clear adverse action."

@@ -1,0 +1,12 @@
+{
+  "description": "Recorded Guard labels for offline demo/CI (fixture mode). Synthetic; illustrative only.",
+  "labels": [
+    {
+      "concept_id": "AIA-5-1-c",
+      "confidence": 0.0,
+      "elements_met": [],
+      "evidence_refs": [],
+      "detector_versions": {"stage0": "stage0/0.1.0", "stage1": "stage1/0.1.0"}
+    }
+  ]
+}

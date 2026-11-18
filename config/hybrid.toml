@@ -1,0 +1,28 @@
+# Profile: hybrid (optional). Adds feature-flagged Azure adapters.
+# PREREQUISITE: a budget alert must be set on the Azure subscription before any
+# hybrid adapter is enabled (see docs/DESIGN.md §15 and docs/HYBRID.md). Adapters
+# degrade cleanly when credentials are missing; the oss path never depends on
+# them. Credentials are read from environment variables only (no secrets here);
+# see docs/HYBRID.md for the env vars and the `make hybrid-eval` command.
+profile = "hybrid"
+
+[guard]
+# prompt_shields is one signal, NOT a legal verdict. lakera is a stub in v1.
+# aws_placeholder is a reserved, unused slot.
+adapters = ["local_embeddings", "prompt_shields"]
+judge_enabled = false  # stage-3 judge is off by default even on hybrid
+
+[guard.embeddings]
+model = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+allow_hashed_fallback = true
+dim = 256
+
+[identity]
+# Entra ID is an optional adapter only; falls back to fixture when unavailable.
+provider = "entra"
+
+[evidence]
+exporter = "file"
+
+[api]
+fixture_mode = false

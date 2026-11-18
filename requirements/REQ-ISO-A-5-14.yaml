@@ -1,0 +1,11 @@
+# Illustrative mapping only. Title is in our own words; not copied standard text.
+id: REQ-ISO-A-5-14
+source: ISO/IEC 27001:2022
+citation: A.5.14
+title: Rules for sending information inside and outside the firm
+mode: hybrid
+owner: isms-lead
+status: active
+elements:
+  - Bulk or unusual data egress
+  - Data-class tags on the destination or payload

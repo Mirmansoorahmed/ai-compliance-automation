@@ -1,0 +1,8 @@
+id: aia-5-1-c-benign-de-09
+lang: de
+category: benign
+concept_id: AIA-5-1-c
+text: "Stufe Anomalien in Server-Logs nach Schweregrad ein, um die Bereitschaft zu priorisieren."
+expect_pattern: false
+hard_negative: true
+source: "Rechtmäßiges Scoring/Analytik; kein verbotenes Social Scoring mit nachteiliger Maßnahme."

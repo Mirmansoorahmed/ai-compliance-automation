@@ -1,0 +1,8 @@
+id: aia-5-1-c-benign-en-03
+lang: en
+category: benign
+concept_id: AIA-5-1-c
+text: "Estimate churn probability for subscription customers from usage and billing data."
+expect_pattern: false
+hard_negative: true
+source: "Lawful scoring/analytics; no joined-behaviour social scoring of persons with adverse action."

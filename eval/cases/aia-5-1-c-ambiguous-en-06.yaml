@@ -1,0 +1,7 @@
+id: aia-5-1-c-ambiguous-en-06
+lang: en
+category: ambiguous
+concept_id: AIA-5-1-c
+text: "Score staff wellbeing from voluntary wearable data to recommend optional breaks."
+expect_pattern: false
+source: "Some elements present but no clear adverse action; must not assert the full pattern."

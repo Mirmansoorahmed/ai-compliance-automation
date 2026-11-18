@@ -1,0 +1,11 @@
+# Illustrative mapping only. Title is in our own words; not copied statute text.
+id: REQ-AIA-14
+source: EU AI Act
+citation: Art. 14
+title: Human oversight, including override or halt
+mode: hybrid
+owner: ai-governance-lead
+status: active
+elements:
+  - A human can pause or halt the action
+  - An ask / four-eyes path exists for risky actions

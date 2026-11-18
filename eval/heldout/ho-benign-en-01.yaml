@@ -1,0 +1,9 @@
+id: ho-benign-en-01
+lang: en
+category: benign
+concept_id: AIA-5-1-c
+text: "Score warehouse SKUs by stock-out risk so reordering is prioritised."
+expect_pattern: false
+hard_negative: true
+held_out: true
+source: "Held-out lawful analytics hard negative."
