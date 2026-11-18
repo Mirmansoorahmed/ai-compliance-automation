@@ -7,7 +7,7 @@ PROFILE ?= oss
 # The oss profile runs from source with no install step; put src/ on the path.
 export PYTHONPATH := src
 
-.PHONY: help test opa-test schema eval coverage demo report all
+.PHONY: help test opa-test schema eval coverage demo check-demo report all
 
 help:
 	@echo "Targets:"
@@ -46,6 +46,9 @@ coverage:
 
 demo:
 	@$(PYTHON) -m aca.demo
+
+check-demo:
+	@$(PYTHON) -m aca.check.demo
 
 report:
 	@$(PYTHON) -m aca.report.build
