@@ -1,32 +1,50 @@
-# AI Compliance Automation
+# AI Coding Compliance Guardrails (EU)
 
-**Core component: Semantic Guard** — it emits contextual intent *labels* and confidence for prompts, tool calls, and code artefacts. **OPA decides** `allow` / `ask` / `four-eyes` / `deny`. A GitHub-native harness that turns a legal or ISMS requirement into a versioned human interpretation, then an OPA rule, then evidence.
+**Core component: Semantic Guard** — it emits contextual intent *labels* and confidence for prompts, tool calls, and code artefacts. **OPA decides** `BLOCK` / `ASK` / `WARN` / `ALLOW`. A GitHub-native harness that catches EU-regulated AI uses at the point a developer builds them with an AI coding tool (Claude Code, Cursor, GitHub Copilot, Codex, Kiro).
 
-> Lab / portfolio project. **Synthetic data only** (fictional consultancy *Northwind Advisory*, fictional client *Halvaro Payments GmbH*). Mappings to the EU AI Act and ISO/IEC 27001:2022 are **illustrative** and in our own words — not legal advice, not a conformity claim. Part of the AI Governance Platform.
+> Lab / portfolio project. **Synthetic data only** (fictional consultancy *Northwind Advisory*, fictional client *Halvaro Payments GmbH*). Mappings to the EU AI Act, GDPR, ISO/IEC 42001 and security best practice are **illustrative** and in our own words — not legal advice, not a conformity claim. Formerly *AI Compliance Automation*; the Semantic Guard, OPA tiers, four-eyes loop and evidence spans are reused.
 
-## Problem
+## The story in one paragraph
 
-A deterministic gateway can decide *who* may call *which* tool. It cannot tell whether a request is, in effect, building something the law prohibits — e.g. a social-scoring workflow typed into a coding agent without ever saying "social scoring". Indeterminate legal concepts cannot be fully automated. So: a machine flags elements, a **named human interprets** the hard cases, and only an already-interpreted reading is enforced automatically. Each human decision becomes a versioned interpretation plus eval cases via a pull request — the system never rewrites its own policy.
+A developer asks an AI coding tool to build something. **Prohibited uses are refused at the prompt** — a request that amounts to social scoring under EU AI Act Art. 5 is blocked before the model acts on it, even when it never says "social scoring". **High-risk uses are allowed but warned and gated at deploy** — a CV-screening or credit-scoring feature (EU AI Act Annex III) keeps building, but the harness lists the artefacts the law requires (risk assessment, DPIA, human-oversight plan, evaluation report, worker information) and the deploy gate blocks production until they exist and two different people have approved them. **Ordinary security mistakes are blocked** — a secret pasted into code is caught by a deterministic scanner at the agent and again in CI. One policy bundle holds the rules, so the prompt, the tool call, the pull request and the deploy gate all agree.
 
 ## Architecture
 
-![Architecture — AI Compliance Automation and its core Semantic Guard on the slow path, with the existing gateway as the PEP](docs/diagrams/architecture.png)
+![Architecture v2 — the policy core, adapters, CI and deploy gates, runtime and evidence](docs/v2/img/architecture-v2.png)
 
-The existing gateway stays the PEP. On the slow path it calls the **Semantic Guard** (`POST /v1/labels`). The Guard labels the request (stages 0–1 local; 2–3 optional cloud). OPA maps labels + signed data to a tier. Ambiguous cases go to four-eyes review, which records an interpretation + eval cases through a PR. One OpenTelemetry-shaped span per decision carries pseudonymised evidence. Full design: [`docs/DESIGN.md`](docs/DESIGN.md); the engineering design and data model: [`design.md`](design.md); the four-eyes loop: [`docs/FOUR-EYES.md`](docs/FOUR-EYES.md).
+Full v2 design: [`docs/v2/ARCHITECTURE.md`](docs/v2/ARCHITECTURE.md) · the 120-check catalog: [`docs/v2/COMPLIANCE-CATALOG.md`](docs/v2/COMPLIANCE-CATALOG.md) and the machine-readable [`policy/catalog/catalog.yaml`](policy/catalog/catalog.yaml) · the gap list and phased plan: [`docs/v2/GAP-AND-BUILD-PLAN.md`](docs/v2/GAP-AND-BUILD-PLAN.md).
+
+The existing Agent Trust Gateway stays the runtime PEP (separate repo, unchanged). On the slow path it calls the **Semantic Guard**. The Guard labels the request (stages 0–1 local; 2–3 optional cloud). OPA maps labels + the catalog + `use-case.yaml` to a tier. Ambiguous cases go to four-eyes review, which records an interpretation + eval cases through a PR. One OpenTelemetry-shaped span per decision carries pseudonymised evidence.
+
+## Status (built vs planned, per phase)
+
+| Phase | Scope | Status |
+|---|---|---|
+| **0 — Docs + catalog** | v2 docs under `docs/v2/`, 120-check `catalog.yaml` as policy data with JSON schema + validation test, this README | **Built** |
+| **1 — One API, four decisions** | `use-case.yaml` schema + validator; `POST /v1/check` (prompt/tool/diff/deploy); Rego WARN tier + obligations from the catalog; `/v1/labels` kept; fail-safe to ASK | **Built** |
+| **2 — First adapters (Kiro, Claude Code)** | `guardrails-hook` + generated guides | Planned |
+| **3 — CI gate** | `guardrails-ci` action (diff scan, gitleaks, Semgrep, schema, obligations comment, AI-BOM); required check | Planned |
+| **4 — Deploy gate** | `deploy.rego`; GitHub environment gate; Gatekeeper policy | Planned |
+| **5 — Wider detection** | exemplars + legal elements for more Art. 5 / Annex III / GDPR intents; new held-out eval | Planned |
+| **6 — Remaining adapters + runtime link** | Cursor, Copilot, Codex, MCP tool; gateway integration test | Planned |
+| **7 — Evidence pack v2** | spans from all points; ISO 42001 / AI Act mapping; approvals | Planned |
+| **8 — Deployable package** | docker-compose; signed OPA bundle on GHCR; optional cloud demo | Planned |
+
+Plain-language explanation of the Phase 1 API and decisions: [`docs/v2/PHASE-1.md`](docs/v2/PHASE-1.md).
 
 ## Semantic Guard (core)
 
 - **Labels, not verdicts.** `{concept_id, pattern_id?, elements_met[], confidence, evidence_refs[], detector_versions{}}`. OPA is the only decision point.
 - **Rubric + exemplars, not keywords.** Detection scores against legal-element rubrics and curated DE/EN exemplars (positives and hard negatives), so "compute a fraud risk score" (lawful) stays low while a keyword-free joined-behaviour ranking with an adverse action scores high.
 - **Stages:** 0 deterministic signals · 1 local embedding similarity · A artefact/diff analysis · S session context (labels only). Stages 2 (Prompt Shields) and 3 (LLM judge) are optional hybrid adapters, off by default.
-- **Fail-safe.** If the Guard is down, risky tools degrade to `ask` — never a silent allow.
+- **Fail-safe.** If the Guard is down or errors, risky actions degrade to `ASK` — never a silent allow.
 
 ## How to run
 
 The default `oss` profile runs fully offline on the Python standard library — no cloud account, no third-party install needed.
 
 ```bash
-make demo      # the 3 scenarios below (oss profile, offline, < 15 min)
+make demo      # the 3 Semantic-Guard scenarios (oss profile, offline)
 make report    # build the evidence-pack PDF (fails closed on missing fields)
 make test      # pytest suite
 make schema    # validate the requirement/interpretation register
@@ -35,7 +53,7 @@ make eval      # run the eval set; writes a provenanced results file
 make coverage  # requirement coverage report
 ```
 
-Demo scenarios (DESIGN.md §12): **1)** a keyword-free social-scoring prompt → `deny`; **2)** an ambiguous request → `ask`/four-eyes → a recorded interpretation + eval cases → replay after merge follows the new rule; **3)** a benign "fraud risk score" hard negative → `allow`. The same scenarios run under the `hybrid` profile when Azure credentials exist.
+The Phase 1 API can be exercised with `scripts/demo_v1_check.sh` (four `POST /v1/check` calls: CV screening → WARN, social scoring → BLOCK, fraud score → ALLOW, secret diff → BLOCK).
 
 ## Results
 

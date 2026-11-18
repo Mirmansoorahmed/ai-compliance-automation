@@ -13,8 +13,10 @@ def test_names_semantic_guard_as_core():
 
 
 def test_has_skimmable_sections():
-    for heading in ("## Problem", "## Architecture", "## Semantic Guard", "## How to run",
-                    "## Results", "## Limitations"):
+    # v2 README headings (renamed from v1: "Problem" -> "The story in one paragraph",
+    # added a per-phase "Status" table).
+    for heading in ("## The story in one paragraph", "## Architecture", "## Status",
+                    "## Semantic Guard", "## How to run", "## Results", "## Limitations"):
         assert heading in README, f"missing section: {heading}"
 
 
@@ -37,4 +39,5 @@ def test_no_employer_branding():
 
 
 def test_references_architecture_diagram_path():
-    assert "docs/diagrams/architecture.png" in README
+    # v2 hero image is the v2 architecture diagram under docs/v2/img/.
+    assert "docs/v2/img/architecture-v2.png" in README
