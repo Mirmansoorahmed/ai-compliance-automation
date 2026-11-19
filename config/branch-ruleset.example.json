@@ -1,0 +1,34 @@
+{
+  "_doc": "Example GitHub branch ruleset that makes the 'guardrails' check required on main. Apply it by hand (repo Settings -> Rules -> Rulesets -> New ruleset -> Import), or via the REST API if you choose to. This repo never calls the GitHub API for you. The required status-check context name must match the job name in .github/workflows/guardrails.yml (job id 'guardrails'); confirm the exact context shown on a PR's checks list and adjust if your setup reports it differently.",
+  "name": "guardrails-required-on-main",
+  "target": "branch",
+  "enforcement": "active",
+  "conditions": {
+    "ref_name": {
+      "include": ["refs/heads/main"],
+      "exclude": []
+    }
+  },
+  "rules": [
+    {
+      "type": "pull_request",
+      "parameters": {
+        "required_approving_review_count": 1,
+        "dismiss_stale_reviews_on_push": true,
+        "require_code_owner_review": false,
+        "require_last_push_approval": false,
+        "required_review_thread_resolution": false
+      }
+    },
+    {
+      "type": "required_status_checks",
+      "parameters": {
+        "strict_required_status_checks_policy": true,
+        "required_status_checks": [
+          { "context": "guardrails" }
+        ]
+      }
+    },
+    { "type": "non_fast_forward" }
+  ]
+}
