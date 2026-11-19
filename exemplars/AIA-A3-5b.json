@@ -1,0 +1,20 @@
+{
+  "concept_id": "AIA-A3-5b",
+  "pattern_id": "AIA-A3-5b/creditworthiness-scoring",
+  "description": "High-risk Annex III 5(b): AI used to evaluate creditworthiness or establish a credit score of natural persons. High-risk (WARN + obligations). The fraud-detection exception (scoring transactions on objective facts) is NOT this concept. Illustrative only; synthetic text.",
+  "elements": [
+    "assesses_natural_person_creditworthiness",
+    "affects_access_to_credit"
+  ],
+  "positives": [
+    {"id": "pos-en-1", "lang": "en", "text": "Build a credit scoring model from loan application and repayment history to decide who qualifies for a personal loan.", "elements_met": ["assesses_natural_person_creditworthiness", "affects_access_to_credit"]},
+    {"id": "pos-en-2", "lang": "en", "text": "Estimate each applicant's creditworthiness from income, debts and payment history and set their borrowing limit.", "elements_met": ["assesses_natural_person_creditworthiness", "affects_access_to_credit"]},
+    {"id": "pos-de-1", "lang": "de", "text": "Erstelle ein Kredit-Scoring-Modell aus Antrags- und Rückzahlungsdaten, um zu entscheiden, wer einen Privatkredit erhält.", "elements_met": ["assesses_natural_person_creditworthiness", "affects_access_to_credit"]},
+    {"id": "pos-de-2", "lang": "de", "text": "Schätze die Kreditwürdigkeit jedes Antragstellers aus Einkommen, Schulden und Zahlungshistorie und lege das Kreditlimit fest.", "elements_met": ["assesses_natural_person_creditworthiness", "affects_access_to_credit"]}
+  ],
+  "hard_negatives": [
+    {"id": "neg-en-1", "lang": "en", "text": "Compute a fraud risk score on a single card transaction from amount, merchant and country and flag it for manual review.", "elements_met": []},
+    {"id": "neg-en-2", "lang": "en", "text": "Reconcile monthly statements and show the customer their own spending by category.", "elements_met": []},
+    {"id": "neg-de-1", "lang": "de", "text": "Berechne einen Betrugs-Risikoscore für eine einzelne Kartentransaktion aus Betrag, Händler und Land und markiere sie zur manuellen Prüfung.", "elements_met": []}
+  ]
+}

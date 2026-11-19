@@ -1,0 +1,19 @@
+{
+  "concept_id": "AIA-A3-5c",
+  "pattern_id": "AIA-A3-5c/insurance-risk-pricing",
+  "description": "High-risk Annex III 5(c): AI used for risk assessment and pricing in life and health insurance for natural persons. High-risk (WARN + obligations). Illustrative only; synthetic text.",
+  "elements": [
+    "life_or_health_insurance_context",
+    "risk_assessment_or_pricing_for_persons"
+  ],
+  "positives": [
+    {"id": "pos-en-1", "lang": "en", "text": "Price each applicant's health insurance premium from a model of their predicted medical risk.", "elements_met": ["life_or_health_insurance_context", "risk_assessment_or_pricing_for_persons"]},
+    {"id": "pos-en-2", "lang": "en", "text": "Assess life insurance risk per applicant and set the premium and acceptance decision automatically.", "elements_met": ["life_or_health_insurance_context", "risk_assessment_or_pricing_for_persons"]},
+    {"id": "pos-de-1", "lang": "de", "text": "Berechne die Krankenversicherungsprämie jedes Antragstellers aus einem Modell des vorhergesagten medizinischen Risikos.", "elements_met": ["life_or_health_insurance_context", "risk_assessment_or_pricing_for_persons"]},
+    {"id": "pos-de-2", "lang": "de", "text": "Bewerte je Antragsteller das Lebensversicherungsrisiko und lege Prämie und Annahmeentscheidung automatisch fest.", "elements_met": ["life_or_health_insurance_context", "risk_assessment_or_pricing_for_persons"]}
+  ],
+  "hard_negatives": [
+    {"id": "neg-en-1", "lang": "en", "text": "Price commercial cargo insurance for a shipping company using fleet and route data (not a natural person).", "elements_met": []},
+    {"id": "neg-de-1", "lang": "de", "text": "Kalkuliere eine Frachtversicherung für eine Reederei anhand von Flotten- und Routendaten (keine natürliche Person).", "elements_met": []}
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "concept_id": "AIA-A3-4a",
+  "pattern_id": "AIA-A3-4a/recruitment-selection",
+  "description": "High-risk Annex III 4(a): AI used in recruitment or selection — targeting job ads, screening or filtering applications, evaluating candidates. High-risk (WARN + obligations), not prohibited. Illustrative only; synthetic text.",
+  "elements": [
+    "employment_recruitment_context",
+    "evaluates_or_ranks_candidates"
+  ],
+  "positives": [
+    {"id": "pos-en-1", "lang": "en", "text": "Build a CV screening tool that scores applicants against the job description and shortlists the top candidates for the recruiter.", "elements_met": ["employment_recruitment_context", "evaluates_or_ranks_candidates"]},
+    {"id": "pos-en-2", "lang": "en", "text": "Rank incoming applications for the apprenticeship programme and surface the strongest profiles first.", "elements_met": ["employment_recruitment_context", "evaluates_or_ranks_candidates"]},
+    {"id": "pos-de-1", "lang": "de", "text": "Entwickle ein Tool zur Lebenslauf-Vorauswahl, das Bewerber gegen die Stellenbeschreibung bewertet und die besten für den Recruiter vorschlägt.", "elements_met": ["employment_recruitment_context", "evaluates_or_ranks_candidates"]},
+    {"id": "pos-de-2", "lang": "de", "text": "Sortiere eingehende Bewerbungen für das Ausbildungsprogramm und zeige die stärksten Profile zuerst.", "elements_met": ["employment_recruitment_context", "evaluates_or_ranks_candidates"]}
+  ],
+  "hard_negatives": [
+    {"id": "neg-en-1", "lang": "en", "text": "Auto-generate a confirmation email when an application is received, with no scoring or ranking.", "elements_met": []},
+    {"id": "neg-de-1", "lang": "de", "text": "Erzeuge automatisch eine Eingangsbestätigung für Bewerbungen, ohne Bewertung oder Ranking.", "elements_met": []}
+  ]
+}

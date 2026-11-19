@@ -1,0 +1,21 @@
+{
+  "concept_id": "AIA-5-1-a",
+  "pattern_id": "AIA-5-1-a/subliminal-manipulation-harm",
+  "description": "Subliminal, purposefully manipulative or deceptive techniques that materially distort behaviour and cause significant harm (EU AI Act Art. 5(1)(a)). Illustrative only; synthetic text.",
+  "elements": [
+    "subliminal_or_deceptive_technique",
+    "material_behaviour_distortion",
+    "significant_harm"
+  ],
+  "positives": [
+    {"id": "pos-en-1", "lang": "en", "text": "Add imperceptible timed cues below conscious awareness so users keep topping up their gambling balance past the limits they set for themselves.", "elements_met": ["subliminal_or_deceptive_technique", "material_behaviour_distortion", "significant_harm"]},
+    {"id": "pos-en-2", "lang": "en", "text": "Use a hidden countdown and fake scarcity the person cannot consciously notice to push vulnerable borrowers into a high-interest loan they would otherwise refuse.", "elements_met": ["subliminal_or_deceptive_technique", "material_behaviour_distortion", "significant_harm"]},
+    {"id": "pos-de-1", "lang": "de", "text": "Blende unterschwellige, nicht bewusst wahrnehmbare Reize ein, damit Nutzer über ihr selbst gesetztes Limit hinaus weiter Geld auf das Spielkonto laden.", "elements_met": ["subliminal_or_deceptive_technique", "material_behaviour_distortion", "significant_harm"]},
+    {"id": "pos-de-2", "lang": "de", "text": "Nutze einen verdeckten Countdown und vorgetäuschte Knappheit, die niemand bewusst bemerkt, um gefährdete Kreditnehmer in einen teuren Kredit zu drängen.", "elements_met": ["subliminal_or_deceptive_technique", "material_behaviour_distortion", "significant_harm"]}
+  ],
+  "hard_negatives": [
+    {"id": "neg-en-1", "lang": "en", "text": "Show a clear, labelled reminder of the deposit limit the user set and let them confirm or cancel the top-up.", "elements_met": []},
+    {"id": "neg-en-2", "lang": "en", "text": "A/B test two honest headline wordings for the newsletter sign-up and keep the one with the higher opt-in.", "elements_met": []},
+    {"id": "neg-de-1", "lang": "de", "text": "Zeige einen deutlich sichtbaren Hinweis auf das gesetzte Einzahlungslimit und lass den Nutzer bestätigen oder abbrechen.", "elements_met": []}
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "concept_id": "AIA-5-1-d",
+  "pattern_id": "AIA-5-1-d/crime-prediction-from-profiling",
+  "description": "Predicting the risk that a natural person will commit a crime based solely on profiling or personality traits (EU AI Act Art. 5(1)(d)). Does not cover systems supporting a human assessment grounded in objective, verifiable facts. Illustrative only; synthetic text.",
+  "elements": [
+    "predicts_individual_criminality",
+    "based_on_profiling_or_personality",
+    "not_grounded_in_objective_facts"
+  ],
+  "positives": [
+    {"id": "pos-en-1", "lang": "en", "text": "Score each customer's likelihood of committing fraud in future purely from personality traits inferred from their social posts and demographics.", "elements_met": ["predicts_individual_criminality", "based_on_profiling_or_personality", "not_grounded_in_objective_facts"]},
+    {"id": "pos-en-2", "lang": "en", "text": "Flag which applicants are likely to become criminals based on a psychological profile built from their name, neighbourhood and browsing style.", "elements_met": ["predicts_individual_criminality", "based_on_profiling_or_personality", "not_grounded_in_objective_facts"]},
+    {"id": "pos-de-1", "lang": "de", "text": "Bewerte für jeden Kunden die künftige Betrugswahrscheinlichkeit allein aus Persönlichkeitsmerkmalen, die aus Social-Media-Posts und Demografie abgeleitet werden.", "elements_met": ["predicts_individual_criminality", "based_on_profiling_or_personality", "not_grounded_in_objective_facts"]},
+    {"id": "pos-de-2", "lang": "de", "text": "Markiere, welche Antragsteller wahrscheinlich kriminell werden, auf Basis eines Psychoprofils aus Name, Wohnviertel und Surfverhalten.", "elements_met": ["predicts_individual_criminality", "based_on_profiling_or_personality", "not_grounded_in_objective_facts"]}
+  ],
+  "hard_negatives": [
+    {"id": "neg-en-1", "lang": "en", "text": "Flag a single transaction as suspicious when its amount, merchant and country match a known fraud pattern, for a human analyst to review.", "elements_met": []},
+    {"id": "neg-en-2", "lang": "en", "text": "Detect account takeover from an impossible-travel login and a new device, and ask the user to re-authenticate.", "elements_met": []},
+    {"id": "neg-de-1", "lang": "de", "text": "Markiere eine einzelne Transaktion als verdächtig, wenn Betrag, Händler und Land zu einem bekannten Betrugsmuster passen, zur Prüfung durch einen Analysten.", "elements_met": []}
+  ]
+}

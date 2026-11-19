@@ -1,0 +1,19 @@
+{
+  "concept_id": "GDPR-9",
+  "pattern_id": "GDPR-9/special-category-processing",
+  "description": "Processing of GDPR Art. 9 special categories of personal data — health, biometrics for unique identification, racial or ethnic origin, political opinions, religion, trade-union membership, sex life or sexual orientation. Routes to ASK (a lawful Art. 9(2) basis must be confirmed). Illustrative only; synthetic text.",
+  "elements": [
+    "processes_personal_data",
+    "data_is_special_category"
+  ],
+  "positives": [
+    {"id": "pos-en-1", "lang": "en", "text": "Store each customer's health conditions and medication list to tailor their insurance offer.", "elements_met": ["processes_personal_data", "data_is_special_category"]},
+    {"id": "pos-en-2", "lang": "en", "text": "Record and analyse applicants' religion and ethnicity fields to adjust the model.", "elements_met": ["processes_personal_data", "data_is_special_category"]},
+    {"id": "pos-de-1", "lang": "de", "text": "Speichere die Gesundheitszustände und Medikamentenliste jedes Kunden, um das Versicherungsangebot anzupassen.", "elements_met": ["processes_personal_data", "data_is_special_category"]},
+    {"id": "pos-de-2", "lang": "de", "text": "Erfasse und analysiere die Felder Religion und Ethnie der Antragsteller, um das Modell anzupassen.", "elements_met": ["processes_personal_data", "data_is_special_category"]}
+  ],
+  "hard_negatives": [
+    {"id": "neg-en-1", "lang": "en", "text": "Store the customer's account number, balance and transaction history only.", "elements_met": []},
+    {"id": "neg-de-1", "lang": "de", "text": "Speichere nur Kontonummer, Saldo und Transaktionshistorie des Kunden.", "elements_met": []}
+  ]
+}
