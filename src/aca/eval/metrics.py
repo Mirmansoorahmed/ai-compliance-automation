@@ -55,10 +55,30 @@ def provenance_line(run: dict | None) -> str:
     return f"_Source: committed eval run {stamp}, git {sha}, embedder `{embedder}`._"
 
 
+def _precision_text(metrics: dict | None) -> str:
+    """Precision for a markdown cell.
+
+    A null precision because no positives were predicted renders as
+    "n/a (no positives predicted)"; a null for any other reason (no committed
+    run) renders as TO BE MEASURED. JSON keeps the null either way.
+    """
+    if not metrics:
+        return TO_BE_MEASURED
+    val = metrics.get("precision")
+    if val is not None:
+        return str(val)
+    if metrics.get("precision_na_reason"):
+        return f"n/a ({metrics['precision_na_reason']})"
+    return TO_BE_MEASURED
+
+
 def _cell(run: dict | None, lang: str, key: str) -> str:
     if run is None:
         return TO_BE_MEASURED
-    val = (run.get("per_language", {}).get(lang, {}) or {}).get(key)
+    metrics = run.get("per_language", {}).get(lang, {}) or {}
+    if key == "precision":
+        return _precision_text(metrics)
+    val = metrics.get(key)
     return TO_BE_MEASURED if val is None else str(val)
 
 
