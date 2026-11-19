@@ -225,3 +225,7 @@ evidence/*.jsonl
 # Demo spans and the built report PDF are generated at runtime.
 fixtures/demo_spans.jsonl
 report/*.pdf
+
+# guardrails-ci gate outputs (generated per run / per PR).
+/ci-report.md
+/ai-bom.json
