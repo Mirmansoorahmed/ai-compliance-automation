@@ -1,8 +1,8 @@
-# AI Coding Compliance Guardrails (EU)
+# AI Semantic Guardrails EU
 
 **Core component: Semantic Guard** — it emits contextual intent *labels* and confidence for prompts, tool calls, and code artefacts. **OPA decides** `BLOCK` / `ASK` / `WARN` / `ALLOW`. A GitHub-native harness that catches EU-regulated AI uses at the point a developer builds them with an AI coding tool (Claude Code, Cursor, GitHub Copilot, Codex, Kiro).
 
-> Lab / portfolio project. **Synthetic data only** (fictional consultancy *Northwind Advisory*, fictional client *Halvaro Payments GmbH*). Mappings to the EU AI Act, GDPR, ISO/IEC 42001 and security best practice are **illustrative** and in our own words — not legal advice, not a conformity claim. Formerly *AI Compliance Automation*; the Semantic Guard, OPA tiers, four-eyes loop and evidence spans are reused.
+> Lab / portfolio project (`ai-semantic-guardrails-eu`). **Synthetic data only** (fictional consultancy *Northwind Advisory*, fictional client *Halvaro Payments GmbH*). Mappings to the EU AI Act, GDPR, ISO/IEC 42001 and security best practice are **illustrative** and in our own words — not legal advice, not a conformity claim. Formerly *AI Compliance Automation* / *AI Coding Compliance Guardrails*; the Semantic Guard, OPA tiers, four-eyes loop and evidence spans are reused.
 
 ## The story in one paragraph
 

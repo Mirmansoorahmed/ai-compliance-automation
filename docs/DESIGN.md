@@ -1,4 +1,6 @@
-# AI Compliance Automation
+# AI Semantic Guardrails EU
+
+> Renamed from *AI Compliance Automation*. This v1 design document keeps its original wording and the historical `ai-compliance-automation` references for lineage; the v2 docs under `docs/v2/` carry the current design.
 
 **Core component: Semantic Guard** — contextual intent labels for prompts, tool calls and artefacts; OPA still decides allow / ask / deny.
 **Design note (v0.1)** · Portfolio project by Mir Mansoor Ahmed

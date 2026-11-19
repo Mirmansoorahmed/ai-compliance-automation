@@ -1,7 +1,7 @@
-# Steering — ai-compliance-automation
+# Steering — ai-semantic-guardrails-eu
 
 ## Purpose
-Portfolio project under the **AI Governance Platform** umbrella. **AI Compliance Automation** (`ai-compliance-automation`) is a GitHub-native harness that maps legal and ISMS requirements to versioned human interpretations, then to OPA rules and evidence.
+Portfolio project under the **AI Governance Platform** umbrella. **AI Semantic Guardrails EU** (`ai-semantic-guardrails-eu`, formerly *AI Compliance Automation*) is a GitHub-native harness that maps legal and ISMS requirements to versioned human interpretations, then to OPA rules and evidence.
 
 **Core component: Semantic Guard.** It emits contextual intent *labels* only; OPA decides allow / ask / deny. This is the semantic / contextual slow path next to the deterministic gateway.
 
