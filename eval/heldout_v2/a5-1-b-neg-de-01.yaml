@@ -1,8 +1,0 @@
-id: a5-1-b-neg-de-01
-lang: de
-category: benign
-concept_id: AIA-5-1-b
-text: "Biete Kunden mit häufig negativem Saldo proaktiv ein kostenloses Beratungsgespräch zur Schuldenprävention an."
-expect_pattern: false
-hard_negative: true
-source: "Synthetic Art. 5(1)(b) held-out hard negative: supports a vulnerable group, no exploitation."

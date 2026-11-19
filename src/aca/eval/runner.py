@@ -32,7 +32,15 @@ from aca.guard.stages.stage_s import SessionContext
 
 _EVAL_DIR = Path(__file__).resolve().parents[3] / "eval"
 _CASES_DIR = _EVAL_DIR / "cases"
+_HELDOUT_DIR = _EVAL_DIR / "heldout"
+_HELDOUT_V2_DIR = _EVAL_DIR / "heldout_v2"
 _RESULTS_DIR = _EVAL_DIR / "results"
+_EXEMPLAR_DIR = Path(__file__).resolve().parents[3] / "exemplars"
+
+
+def all_concepts() -> list[str]:
+    """Every concept with a curated exemplar file (the Phase 5 set + AIA-5-1-c)."""
+    return sorted(p.stem for p in _EXEMPLAR_DIR.glob("*.json"))
 
 
 def _git_sha(repo_root: Path) -> str:
@@ -85,11 +93,13 @@ class EvalReport:
     prompt_injection: dict
     held_out: dict
     vendor_path: dict | None
+    per_concept: dict = field(default_factory=dict)
+    held_out_v2: dict = field(default_factory=dict)
     cases: list[dict] = field(default_factory=list)
 
     def to_dict(self) -> dict:
         return {
-            "schema": "eval-report/v2",
+            "schema": "eval-report/v3",
             "generated_ts": self.generated_ts,
             "git_sha": self.git_sha,
             "profile": self.profile,
@@ -98,11 +108,13 @@ class EvalReport:
             "n_cases": self.n_cases,
             "n_scored_cases": self.n_scored_cases,
             "per_language": self.per_language,
+            "per_concept": self.per_concept,
             "benign_false_block_rate": self.benign_false_block_rate,
             "benign_routed_to_ask_rate": self.benign_routed_to_ask_rate,
             "latency_ms": self.latency_ms,
             "prompt_injection": self.prompt_injection,
             "held_out": self.held_out,
+            "held_out_v2": self.held_out_v2,
             "vendor_path": self.vendor_path,
             "cases": self.cases,
         }
@@ -185,6 +197,9 @@ def _prf(results: list[CaseResult]) -> dict:
     fn = sum(1 for r in results if r.expect_pattern and not r.detected_pattern)
     tn = sum(1 for r in results if not r.expect_pattern and not r.detected_pattern)
     precision = tp / (tp + fp) if (tp + fp) else None
+    # Why precision is null: no positives were predicted (tp+fp == 0). Carried so
+    # markdown can say "n/a (no positives predicted)" while JSON keeps null.
+    precision_na_reason = "no positives predicted" if (tp + fp) == 0 else None
     recall = tp / (tp + fn) if (tp + fn) else None
     # Routed-to-review recall: of the attacks (expect_pattern), how many were
     # routed to a human (deny/four-eyes/ask) rather than allowed. The partial
@@ -195,9 +210,42 @@ def _prf(results: list[CaseResult]) -> dict:
     return {
         "tp": tp, "fp": fp, "fn": fn, "tn": tn,
         "precision": round(precision, 4) if precision is not None else None,
+        "precision_na_reason": precision_na_reason,
         "recall": round(recall, 4) if recall is not None else None,
         "routed_to_review": routed_to_review,
         "n": len(results),
+    }
+
+
+def _score_set(cases: list[dict], adapter, policy_data) -> dict:
+    """Score a case set and break it down overall, per language, and per concept.
+
+    Used for the tuning set (all 13 concepts) and the held-out sets, so each is
+    reported separately. Non-local concepts (PROMPT-INJECTION) are excluded;
+    they are reported in their own vendor section.
+    """
+    scored = [c for c in cases if c.get("concept_id") != "PROMPT-INJECTION"]
+    results = [_run_case(c, adapter, policy_data) for c in scored]
+
+    by_lang = {}
+    for lang in sorted({r.lang for r in results}):
+        by_lang[lang] = _prf([r for r in results if r.lang == lang])
+    by_lang["overall"] = _prf(results)
+
+    by_concept = {}
+    concept_of = {r.id: c.get("concept_id") for r, c in zip(results, scored)}
+    for cid in sorted({c.get("concept_id") for c in scored}):
+        cres = [r for r in results if concept_of[r.id] == cid]
+        by_concept[cid] = _prf(cres) | _benign_rates(cres)
+
+    benign = _benign_rates(results)
+    return {
+        "n_cases": len(scored),
+        "n_scored_cases": len(results),
+        "per_language": by_lang,
+        "per_concept": by_concept,
+        "benign_false_block_rate": benign["benign_false_block_rate"],
+        "benign_routed_to_ask_rate": benign["benign_routed_to_ask_rate"],
     }
 
 
@@ -227,7 +275,10 @@ def run_eval(
 ) -> EvalReport:
     root = repo_root or Path(__file__).resolve().parents[3]
     embedder = build_embedder(allow_hashed_fallback=True, dim=dim)
-    adapter = LocalEmbeddingsAdapter(embedder=embedder, dim=dim)
+    # Build the adapter with EVERY curated concept (Phase 5 added 12 more), so
+    # detect() emits a label per concept and the runner can score all of them.
+    adapter = LocalEmbeddingsAdapter(embedder=embedder, dim=dim,
+                                     concepts=tuple(all_concepts()))
 
     # Eval uses the production thresholds with an EMPTY confirmed-pattern list
     # (the default), so a full match routes to four-eyes and a partial to ask —
@@ -254,9 +305,17 @@ def run_eval(
     benign_false_block_rate = benign_rates["benign_false_block_rate"]
     benign_routed_to_ask_rate = benign_rates["benign_routed_to_ask_rate"]
 
+    # Per-concept breakdown of the tuning set over ALL 13 concepts (the AIA-5-1-c
+    # overall numbers above are kept for backward compatibility).
+    per_concept = _score_set(all_cases, adapter, policy_data)
+
     # Held-out set: NEW cases not used while tuning stage-0 vocab/exemplars,
     # scored separately so improvements are not just fit to the training texts.
     held_out = _score_held_out(adapter, policy_data, root)
+
+    # Phase-5 held-out set (eval/heldout_v2/): the wider-concept held-out, scored
+    # separately and per concept. Disjoint from exemplars + tuning (a test checks).
+    held_out_v2 = _score_held_out_v2(adapter, policy_data, root)
 
     stage01 = [r.stage01_latency_ms for r in results]
     latency = {
@@ -300,6 +359,8 @@ def run_eval(
         latency_ms=latency,
         prompt_injection=prompt_injection,
         held_out=held_out,
+        held_out_v2=held_out_v2,
+        per_concept=per_concept,
         vendor_path=None,  # no vendor adapter on oss; scored separately when present
         cases=[r.__dict__ for r in results],
     )
@@ -327,6 +388,22 @@ def _score_held_out(adapter: LocalEmbeddingsAdapter, policy_data, root: Path) ->
         "note": "NEW cases not used while tuning; scored separately (no fit to these texts).",
         "cases": [r.__dict__ for r in results],
     }
+
+
+def _score_held_out_v2(adapter: LocalEmbeddingsAdapter, policy_data, root: Path) -> dict:
+    """Score the Phase-5 wider-concept held-out set (eval/heldout_v2/).
+
+    Scored per concept, kept disjoint from exemplars + tuning (a test enforces
+    disjointness). Separate from eval/heldout/ (the AIA-5-1-c held-out).
+    """
+    held_dir = root / "eval" / "heldout_v2"
+    if not held_dir.exists():
+        return {"n_cases": 0, "note": "no held-out v2 set present"}
+    cases = load_cases(held_dir)
+    out = _score_set(cases, adapter, policy_data)
+    out["note"] = ("NEW wider-concept cases, disjoint from exemplars + tuning; "
+                   "scored separately and per concept.")
+    return out
 
 
 def write_report(report: EvalReport, *, results_dir: Path | None = None) -> Path:
@@ -362,6 +439,26 @@ def main(argv: list[str] | None = None) -> int:  # pragma: no cover - CLI glue
               f"false_block={ho['benign_false_block_rate']}")
     print(f"  prompt_injection: {report.prompt_injection['n_cases']} cases "
           f"(precision/recall {report.prompt_injection['precision']})")
+
+    def _prec(m):
+        if m.get("precision") is not None:
+            return str(m["precision"])
+        return f"n/a ({m.get('precision_na_reason') or 'no positives'})"
+
+    pc = report.per_concept.get("per_concept", {})
+    if pc:
+        print(f"  tuning per-concept (n={report.per_concept['n_cases']}, all 13 concepts):")
+        for cid in sorted(pc):
+            m = pc[cid]
+            print(f"    {cid:12} prec={_prec(m)} recall={m['recall']} "
+                  f"routed={m['routed_to_review']} n={m['n']}")
+    hv2 = report.held_out_v2.get("per_concept", {})
+    if hv2:
+        print(f"  held-out v2 per-concept (n={report.held_out_v2['n_cases']}):")
+        for cid in sorted(hv2):
+            m = hv2[cid]
+            print(f"    {cid:12} prec={_prec(m)} recall={m['recall']} "
+                  f"routed={m['routed_to_review']} n={m['n']}")
     return 0
 
 

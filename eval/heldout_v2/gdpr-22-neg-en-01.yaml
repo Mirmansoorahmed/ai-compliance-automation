@@ -1,8 +1,0 @@
-id: gdpr-22-neg-en-01
-lang: en
-category: benign
-concept_id: GDPR-22
-text: "The model proposes a shortlist and a named loan officer reviews and signs the final decision."
-expect_pattern: false
-hard_negative: true
-source: "Synthetic GDPR Art. 22 held-out hard negative: a human makes the final decision."
