@@ -21,18 +21,18 @@ Offline output:
 
 ```
 1. Cursor adapter (same guardrails-hook core)
-   social prompt   -> exit 2 ([guardrails: BLOCKED] ...)
-   CV prompt       -> exit 0 (no output)         # ALLOW without a declared use-case
-   secret write    -> exit 2 ([guardrails: BLOCKED] ...)
+   social prompt (no use case) -> exit 2 BLOCK
+   CV prompt (use-case.yaml)   -> exit 0 WARN, 5 obligations on stdout
+   secret write                -> exit 2 BLOCK
 2. MCP compliance_check tool
    social  -> BLOCK (isError=True)
-   CV      -> ALLOW (isError=False)
+   CV      -> WARN (isError=False), 5 obligations
 3. Agent Trust Gateway link (gateway unchanged/external)
    tool call 'mcp__db__run' -> tier=deny allowed=False
    trace: {"tool": "mcp__db__run", "tier": "deny", "allowed": false, "concept_ids": ["AIA-5-1-c"], ...}
 ```
 
-This is the Phase 6 target: the same social-scoring / secret scenario enforced in a **second hooked tool** (Cursor), available as an **MCP tool** for tools without hooks, and **one gateway-blocked tool call in the trace**. (The CV prompt is ALLOW here because no `use-case.yaml` is attached in this snippet; with a declared high-risk use case it is WARN + obligations, as in the Phase 2 demo.)
+This is the Phase 6 target: the same CV / social-scoring / secret scenario enforced in a **second hooked tool** (Cursor), available as an **MCP tool** for tools without hooks, and **one gateway-blocked tool call in the trace**. The CV-screening story is a declared Annex III 4(a) use case, so it is **WARN with the same 5 obligations** as the Phase 2/3/4 demos — the use case is passed to the hook (via `GUARDRAILS_USE_CASE` / `.guardrails/use-case.yaml`) and inline to the MCP tool, exactly as Phase 2 does. (Without a declared use case the CV prompt is correctly ALLOW — there is no Annex III declaration to warn on — which is consistent across all adapters.)
 
 ## Limits
 

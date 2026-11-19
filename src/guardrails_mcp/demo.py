@@ -44,8 +44,40 @@ SOCIAL = ("Join badge logs, Slack activity and canteen data per employee into a 
 CV = "Build a CV screening tool that scores applicants and shortlists the top 20."
 SECRET = 'AWS_ACCESS_KEY_ID = "AKIAXXXXXXXXXXXXXXXX"'
 
+# The CV-screening use case declaration (Annex III 4(a) -> WARN + obligations),
+# the same story as the Phase 2/3/4 demos. Passing it is what turns the CV case
+# into WARN; without a declared use case the engine correctly returns ALLOW.
+CV_USE_CASE = {
+    "id": "uc-hr-cv-screening",
+    "title": "CV pre-screening for apprenticeships",
+    "ai_system": True,
+    "role": "deployer",
+    "annex_iii": ["4(a)"],
+    "decision_effect": "assists",
+    "artefacts": {
+        "risk_management": None, "dpia": None, "fria": None,
+        "oversight_plan": None, "eval_report": None, "worker_information": None,
+    },
+}
 
-def _run_cursor(event, raw, *, user_prompt=None):
+_CV_YAML = """id: uc-hr-cv-screening
+title: CV pre-screening for apprenticeships
+ai_system: true
+role: deployer
+annex_iii:
+  - 4(a)
+decision_effect: assists
+artefacts:
+  risk_management: null
+  dpia: null
+  fria: null
+  oversight_plan: null
+  eval_report: null
+  worker_information: null
+"""
+
+
+def _run_cursor(event, raw, *, user_prompt=None, use_case_path=None):
     import os
     import sys
     old_stdin = sys.stdin
@@ -54,6 +86,10 @@ def _run_cursor(event, raw, *, user_prompt=None):
         os.environ["CURSOR_PROMPT"] = user_prompt
     else:
         os.environ.pop("CURSOR_PROMPT", None)
+    if use_case_path is not None:
+        os.environ["GUARDRAILS_USE_CASE"] = use_case_path
+    else:
+        os.environ.pop("GUARDRAILS_USE_CASE", None)
     out, err = io.StringIO(), io.StringIO()
     old_out, old_err = sys.stdout, sys.stderr
     sys.stdout, sys.stderr = out, err
@@ -62,35 +98,54 @@ def _run_cursor(event, raw, *, user_prompt=None):
     finally:
         sys.stdin, sys.stdout, sys.stderr = old_stdin, old_out, old_err
         os.environ.pop("CURSOR_PROMPT", None)
+        os.environ.pop("GUARDRAILS_USE_CASE", None)
     return out.getvalue(), err.getvalue(), code
 
 
 def main() -> int:
+    import os
+    import tempfile
+
     print("Phase 6 demo — second tool (Cursor), MCP tool, gateway link (offline)\n")
+    print("The CV-screening story is a declared Annex III 4(a) use case, so it is "
+          "WARN with obligations — the same as Phase 2/3/4.\n")
+
+    tmp = tempfile.NamedTemporaryFile("w", suffix=".yaml", delete=False, encoding="utf-8")
+    tmp.write(_CV_YAML)
+    tmp.close()
 
     httpd, port = _start_service()
     os.environ["GUARDRAILS_URL"] = f"http://127.0.0.1:{port}"
     try:
         print("1. Cursor adapter (same guardrails-hook core)")
         _, err, code = _run_cursor("prompt", {}, user_prompt=SOCIAL)
-        print(f"   social prompt   -> exit {code} ({err.strip()[:60]}...)")
-        out, _, code = _run_cursor("prompt", {}, user_prompt=CV)
-        print(f"   CV prompt       -> exit {code} ({'WARN + obligations on stdout' if out.strip() else 'no output'})")
+        print(f"   social prompt (no use case) -> exit {code} BLOCK ({err.strip()[:50]}...)")
+        out, _, code = _run_cursor("prompt", {}, user_prompt=CV, use_case_path=tmp.name)
+        n_obl = out.count("(missing)")
+        print(f"   CV prompt (use-case.yaml)   -> exit {code} WARN, {n_obl} obligations on stdout")
         _, err, code = _run_cursor("tool", {"file_path": "aws.py", "content": SECRET})
-        print(f"   secret write    -> exit {code} ({err.strip()[:45]}...)")
+        print(f"   secret write                -> exit {code} BLOCK ({err.strip()[:40]}...)")
+        print()
+
+        print("2. MCP compliance_check tool")
+        server = ComplianceServer()
+        cases = [("social", SOCIAL, None), ("CV", CV, CV_USE_CASE)]
+        for name, text, uc in cases:
+            args = {"event": "prompt", "text": text}
+            if uc is not None:
+                args["use_case"] = uc
+            resp = server.handle({"jsonrpc": "2.0", "id": 1, "method": "tools/call",
+                                  "params": {"name": "compliance_check", "arguments": args}})
+            d = resp["result"]["structuredContent"]
+            obl = f", {len(d['obligations'])} obligations" if d.get("obligations") else ""
+            print(f"   {name:7} -> {d['decision']} (isError={resp['result']['isError']}){obl}")
         print()
     finally:
         httpd.shutdown()
-
-    print("2. MCP compliance_check tool")
-    server = ComplianceServer()
-    for name, text in (("social", SOCIAL), ("CV", CV)):
-        resp = server.handle({"jsonrpc": "2.0", "id": 1, "method": "tools/call",
-                              "params": {"name": "compliance_check",
-                                         "arguments": {"event": "prompt", "text": text}}})
-        d = resp["result"]["structuredContent"]
-        print(f"   {name:7} -> {d['decision']} (isError={resp['result']['isError']})")
-    print()
+        try:
+            os.unlink(tmp.name)
+        except OSError:
+            pass
 
     print("3. Agent Trust Gateway link (gateway unchanged/external)")
     base = load_policy_data()
