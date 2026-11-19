@@ -124,7 +124,55 @@ def map_kiro(event: str, raw: dict) -> dict:
     return base
 
 
-_MAPPERS = {"claude": map_claude, "kiro": map_kiro}
+# Cursor key guesses. Cursor agent hooks pass JSON on stdin; field names vary by
+# hook (beforeSubmitPrompt / beforeShellExecution / afterFileEdit), so read them
+# defensively, like Kiro. Documented in adapters/cursor/README.md.
+CURSOR_PROMPT_KEYS = ["prompt", "text", "userPrompt", "user_input", "message"]
+CURSOR_TOOL_NAME_KEYS = ["tool_name", "toolName", "command_name", "name", "hook_event_name"]
+CURSOR_TOOL_INPUT_KEYS = ["tool_input", "toolInput", "input", "arguments", "args"]
+
+
+def map_cursor(event: str, raw: dict) -> dict:
+    """Map Cursor agent-hook JSON to the normalised event (defensive reading)."""
+    repo, user = _repo_user(raw)
+    base = {"tool": "cursor", "repo": repo, "user": user, "tool_call": ""}
+
+    if event == "prompt":
+        text = os.environ.get("CURSOR_PROMPT") or str(_first(raw, CURSOR_PROMPT_KEYS, ""))
+        base.update(event="prompt", text=text)
+        return base
+
+    # Cursor's beforeShellExecution carries a top-level "command"; afterFileEdit /
+    # file-write hooks carry edits/content + a path. Handle both shapes.
+    command = _first(raw, ["command", "cmd"], "")
+    if command:
+        base.update(event="tool", text=str(command), tool_call="shell")
+        return base
+
+    tool_name = str(_first(raw, CURSOR_TOOL_NAME_KEYS, ""))
+    tool_input = _first(raw, CURSOR_TOOL_INPUT_KEYS, {}) or {}
+    if not isinstance(tool_input, dict):
+        tool_input = {"text": str(tool_input)}
+    base["tool_call"] = tool_name
+    low = tool_name.lower()
+
+    # File edit/write: content may be top-level or in tool_input.
+    content = _first(raw, ["content", "newText", "new_content", "edits"], "") \
+        or _first(tool_input, ["content", "new_string", "newStr", "text", "contents"], "")
+    path = _first(raw, ["file_path", "path", "filePath", "target_file"], "") \
+        or _first(tool_input, ["file_path", "path", "filePath", "target_file"], "")
+    if content or path or low in _WRITE_TOOLS:
+        base.update(event="diff", text="", diff=str(content), path=str(path))
+        return base
+    if low in _SHELL_TOOLS:
+        base.update(event="tool", text=str(_first(tool_input, ["command", "cmd", "script"], "")))
+        return base
+
+    base.update(event="tool", text=str(_first(tool_input, ["command", "text", "query", "prompt"], "")))
+    return base
+
+
+_MAPPERS = {"claude": map_claude, "kiro": map_kiro, "cursor": map_cursor}
 
 
 def map_event(tool: str, event: str, raw: dict) -> dict:

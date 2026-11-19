@@ -70,11 +70,11 @@ def _decide(tool: str, event: str, raw: dict, *, opener=None) -> dict:
 
 def run(argv: list[str], *, opener=None) -> int:
     if len(argv) != 2:
-        sys.stderr.write("usage: guardrails-hook <claude|kiro> <prompt|tool>\n")
+        sys.stderr.write("usage: guardrails-hook <claude|kiro|cursor> <prompt|tool>\n")
         return 2
     tool, event = argv[0], argv[1]
-    if tool not in ("claude", "kiro"):
-        sys.stderr.write(f"unknown tool {tool!r}; expected claude|kiro\n")
+    if tool not in ("claude", "kiro", "cursor"):
+        sys.stderr.write(f"unknown tool {tool!r}; expected claude|kiro|cursor\n")
         return 2
     if event not in ("prompt", "tool"):
         sys.stderr.write(f"unknown event {event!r}; expected prompt|tool\n")
@@ -92,7 +92,8 @@ def run(argv: list[str], *, opener=None) -> int:
             sys.stdout.write(json.dumps(out))
         return code
 
-    # kiro
+    # kiro and cursor both use the exit-code contract (non-zero blocks). Cursor
+    # agent hooks read the process exit code; a BLOCK/ASK exits non-zero.
     stdout_text, stderr_text, code = render_kiro.render(decision, event)
     if stdout_text:
         sys.stdout.write(stdout_text)

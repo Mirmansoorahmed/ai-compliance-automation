@@ -1,0 +1,15 @@
+{
+  "// doc": "Cursor agent hooks for the EU AI compliance guardrails. Place at .cursor/hooks.json (project) or ~/.cursor/hooks.json (user). Cursor runs the command and reads its exit code: a non-zero exit from a beforeShellExecution / file-write hook blocks the action (BLOCK/ASK), exit 0 allows (WARN prints its obligations). guardrails-hook must be on PATH and the policy service reachable at GUARDRAILS_URL (default http://127.0.0.1:8080). Field names across Cursor versions vary; the mapper reads them defensively. Confirm the exact hook event names for your Cursor version — see adapters/cursor/README.md.",
+  "version": 1,
+  "hooks": {
+    "beforeSubmitPrompt": [
+      { "command": "guardrails-hook cursor prompt" }
+    ],
+    "beforeShellExecution": [
+      { "command": "guardrails-hook cursor tool" }
+    ],
+    "beforeFileEdit": [
+      { "command": "guardrails-hook cursor tool" }
+    ]
+  }
+}

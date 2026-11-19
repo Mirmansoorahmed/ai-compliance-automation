@@ -22,6 +22,18 @@ from aca.catalog.loader import load_catalog  # noqa: E402
 _ROOT = Path(__file__).resolve().parents[1]
 _CLAUDE = _ROOT / "adapters" / "claude-code" / "CLAUDE.md"
 _KIRO = _ROOT / "adapters" / "kiro" / "steering" / "eu-ai-compliance.md"
+_CURSOR = _ROOT / "adapters" / "cursor" / "rules" / "eu-ai-compliance.mdc"
+_COPILOT = _ROOT / "adapters" / "copilot" / "copilot-instructions.md"
+_CODEX = _ROOT / "adapters" / "codex" / "AGENTS.md"
+
+# For tools without a deterministic pre-tool hook, the guide is advisory and the
+# enforcement happens in CI + the MCP compliance_check tool. State that plainly.
+_GUIDANCE_ONLY = (
+    "This tool does not run the compliance hook as a blocking pre-tool check, so "
+    "these rules are guidance for the model, not enforcement. The real gates are "
+    "the CI check (guardrails-ci) on every pull request and, where wired, the MCP "
+    "`compliance_check` tool. Treat a BLOCK item as something the PR will fail on."
+)
 
 _INTRO = (
     "Halvaro Payments GmbH (fictional client of Northwind Advisory) builds "
@@ -113,13 +125,71 @@ def render_kiro(checks: list[dict]) -> str:
     return "\n".join(lines) + "\n"
 
 
+def render_cursor(checks: list[dict]) -> str:
+    # Cursor .mdc rules carry YAML frontmatter; alwaysApply keeps them in context.
+    lines = [
+        "---",
+        "description: EU AI compliance rules (generated from the policy catalog)",
+        "alwaysApply: true",
+        "---",
+        "",
+        "# EU AI compliance (Cursor rules)",
+        "",
+        "<!-- Generated from policy/catalog/catalog.yaml by adapters/generate_guides.py. Do not edit by hand. -->",
+        "",
+        _INTRO,
+        "",
+        "Cursor also runs the compliance hook (`guardrails-hook cursor ...`) as a "
+        "pre-tool check where configured; see adapters/cursor/README.md.",
+        "",
+    ]
+    lines += _guide_body(checks)
+    return "\n".join(lines) + "\n"
+
+
+def render_copilot(checks: list[dict]) -> str:
+    lines = [
+        "# EU AI compliance — GitHub Copilot instructions",
+        "",
+        "<!-- Generated from policy/catalog/catalog.yaml by adapters/generate_guides.py. Do not edit by hand. -->",
+        "",
+        _INTRO,
+        "",
+        _GUIDANCE_ONLY,
+        "",
+    ]
+    lines += _guide_body(checks)
+    return "\n".join(lines) + "\n"
+
+
+def render_codex(checks: list[dict]) -> str:
+    lines = [
+        "# AGENTS.md — EU AI compliance (Codex / agents)",
+        "",
+        "<!-- Generated from policy/catalog/catalog.yaml by adapters/generate_guides.py. Do not edit by hand. -->",
+        "",
+        _INTRO,
+        "",
+        _GUIDANCE_ONLY,
+        "",
+    ]
+    lines += _guide_body(checks)
+    return "\n".join(lines) + "\n"
+
+
 def main() -> int:
     checks = load_catalog()["checks"]
-    _CLAUDE.parent.mkdir(parents=True, exist_ok=True)
-    _KIRO.parent.mkdir(parents=True, exist_ok=True)
-    _CLAUDE.write_text(render_claude(checks), encoding="utf-8")
-    _KIRO.write_text(render_kiro(checks), encoding="utf-8")
-    print(f"wrote {_CLAUDE} and {_KIRO}")
+    outputs = {
+        _CLAUDE: render_claude(checks),
+        _KIRO: render_kiro(checks),
+        _CURSOR: render_cursor(checks),
+        _COPILOT: render_copilot(checks),
+        _CODEX: render_codex(checks),
+    }
+    for path, text in outputs.items():
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(text, encoding="utf-8")
+    print("wrote: " + ", ".join(str(p.relative_to(_ROOT)) for p in outputs))
     return 0
 
 
