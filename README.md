@@ -26,11 +26,12 @@ The existing Agent Trust Gateway stays the runtime PEP (separate repo, unchanged
 | **3 — CI gate** | `guardrails-ci` CLI + composite action: PR-diff secret scan, same `/v1/check` engine in-process, artefact checklist, `ci-report.md` + AI-BOM, optional gitleaks/Semgrep (skipped when absent); branch-ruleset docs to make it a required check | **Built** |
 | **4 — Deploy gate** | `policy/deploy.rego` (+ Python mirror): obligations must be present and approved by two distinct people; `guardrails-deploy-gate` CLI; `deploy.yml` with a gate job before a protected `production` environment; Gatekeeper ConstraintTemplate + Constraint with a `gator` suite | **Built** |
 | **5 — Wider detection** | exemplars + legal elements (DE/EN) for the remaining Art. 5 points, Annex III 4a/4b/5b/5c/1c and GDPR Art. 9/22; a held-out set kept separate from tuning; offline per-concept smoke check (real recall measured by the owner with MiniLM) | **Built** |
+| **5b — Vague-law classifier** | pluggable `DecisionBackend` (local open-source MiniLM, deterministic fake for tests, optional closed Jev off by default); question sets from the catalog; ACT/NO/ASK routing; eval harness (accuracy/ECE/ASK-rate to be measured) | **Built** |
 | **6 — Remaining adapters + runtime link** | Cursor, Copilot, Codex, MCP tool; gateway integration test | Planned |
 | **7 — Evidence pack v2** | spans from all points; ISO 42001 / AI Act mapping; approvals | Planned |
 | **8 — Deployable package** | docker-compose; signed OPA bundle on GHCR; optional cloud demo | Planned |
 
-Plain-language explanations: Phase 1 API and decisions — [`docs/v2/PHASE-1.md`](docs/v2/PHASE-1.md); Phase 2 adapters (Claude Code + Kiro) — [`docs/v2/PHASE-2.md`](docs/v2/PHASE-2.md); Phase 3 CI gate — [`docs/v2/PHASE-3.md`](docs/v2/PHASE-3.md); Phase 4 deploy gate — [`docs/v2/PHASE-4.md`](docs/v2/PHASE-4.md); Phase 5 wider detection — [`docs/v2/PHASE-5.md`](docs/v2/PHASE-5.md).
+Plain-language explanations: Phase 1 API and decisions — [`docs/v2/PHASE-1.md`](docs/v2/PHASE-1.md); Phase 2 adapters (Claude Code + Kiro) — [`docs/v2/PHASE-2.md`](docs/v2/PHASE-2.md); Phase 3 CI gate — [`docs/v2/PHASE-3.md`](docs/v2/PHASE-3.md); Phase 4 deploy gate — [`docs/v2/PHASE-4.md`](docs/v2/PHASE-4.md); Phase 5 wider detection — [`docs/v2/PHASE-5.md`](docs/v2/PHASE-5.md); Phase 5b vague-law classifier — [`docs/v2/PHASE-5b.md`](docs/v2/PHASE-5b.md).
 
 ## Semantic Guard (core)
 
