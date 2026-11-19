@@ -28,10 +28,10 @@ The existing Agent Trust Gateway stays the runtime PEP (separate repo, unchanged
 | **5 — Wider detection** | exemplars + legal elements (DE/EN) for the remaining Art. 5 points, Annex III 4a/4b/5b/5c/1c and GDPR Art. 9/22; a held-out set kept separate from tuning; offline per-concept smoke check (real recall measured by the owner with MiniLM) | **Built** |
 | **5b — Vague-law classifier** | pluggable `DecisionBackend` (local open-source MiniLM, deterministic fake for tests, optional closed Jev off by default); question sets from the catalog; ACT/NO/ASK routing; eval harness (accuracy/ECE/ASK-rate to be measured) | **Built** |
 | **6 — Remaining adapters + runtime link** | Cursor adapter (same hook core) + generated Copilot/Codex instructions (guidance-only, limits stated); `guardrails-mcp` server with a `compliance_check` tool; integration test against the unchanged Agent Trust Gateway contract | **Built** |
-| **7 — Evidence pack v2** | spans from all points; ISO 42001 / AI Act mapping; approvals | Planned |
+| **7 — Evidence pack v2** | one ordered decision trace across editor/CI/deploy/runtime; ISO 42001 / EU AI Act mapping table; approval + break-glass records; auditor PDF with no code/paths/hashes in the body | **Built** |
 | **8 — Deployable package** | docker-compose; signed OPA bundle on GHCR; optional cloud demo | Planned |
 
-Plain-language explanations: Phase 1 API and decisions — [`docs/v2/PHASE-1.md`](docs/v2/PHASE-1.md); Phase 2 adapters (Claude Code + Kiro) — [`docs/v2/PHASE-2.md`](docs/v2/PHASE-2.md); Phase 3 CI gate — [`docs/v2/PHASE-3.md`](docs/v2/PHASE-3.md); Phase 4 deploy gate — [`docs/v2/PHASE-4.md`](docs/v2/PHASE-4.md); Phase 5 wider detection — [`docs/v2/PHASE-5.md`](docs/v2/PHASE-5.md); Phase 5b vague-law classifier — [`docs/v2/PHASE-5b.md`](docs/v2/PHASE-5b.md); Phase 6 remaining adapters + runtime link — [`docs/v2/PHASE-6.md`](docs/v2/PHASE-6.md).
+Plain-language explanations: Phase 1 API and decisions — [`docs/v2/PHASE-1.md`](docs/v2/PHASE-1.md); Phase 2 adapters (Claude Code + Kiro) — [`docs/v2/PHASE-2.md`](docs/v2/PHASE-2.md); Phase 3 CI gate — [`docs/v2/PHASE-3.md`](docs/v2/PHASE-3.md); Phase 4 deploy gate — [`docs/v2/PHASE-4.md`](docs/v2/PHASE-4.md); Phase 5 wider detection — [`docs/v2/PHASE-5.md`](docs/v2/PHASE-5.md); Phase 5b vague-law classifier — [`docs/v2/PHASE-5b.md`](docs/v2/PHASE-5b.md); Phase 6 remaining adapters + runtime link — [`docs/v2/PHASE-6.md`](docs/v2/PHASE-6.md); Phase 7 evidence pack v2 — [`docs/v2/PHASE-7.md`](docs/v2/PHASE-7.md).
 
 ## Semantic Guard (core)
 
