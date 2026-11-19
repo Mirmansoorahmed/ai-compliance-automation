@@ -22,7 +22,7 @@ The existing Agent Trust Gateway stays the runtime PEP (separate repo, unchanged
 |---|---|---|
 | **0 — Docs + catalog** | v2 docs under `docs/v2/`, 120-check `catalog.yaml` as policy data with JSON schema + validation test, this README | **Built** |
 | **1 — One API, four decisions** | `use-case.yaml` schema + validator; `POST /v1/check` (prompt/tool/diff/deploy); Rego WARN tier + obligations from the catalog; `/v1/labels` kept; fail-safe to ASK | **Built** |
-| **2 — First adapters (Kiro, Claude Code)** | `guardrails-hook` + generated guides | Planned |
+| **2 — First adapters (Kiro, Claude Code)** | `guardrails-hook` (prompt + tool-call hook → `POST /v1/check`, fail-safe to ASK, offline secret block) with Claude Code + Kiro hook configs, and tool guides generated from the catalog | **Built** |
 | **3 — CI gate** | `guardrails-ci` action (diff scan, gitleaks, Semgrep, schema, obligations comment, AI-BOM); required check | Planned |
 | **4 — Deploy gate** | `deploy.rego`; GitHub environment gate; Gatekeeper policy | Planned |
 | **5 — Wider detection** | exemplars + legal elements for more Art. 5 / Annex III / GDPR intents; new held-out eval | Planned |
@@ -30,7 +30,7 @@ The existing Agent Trust Gateway stays the runtime PEP (separate repo, unchanged
 | **7 — Evidence pack v2** | spans from all points; ISO 42001 / AI Act mapping; approvals | Planned |
 | **8 — Deployable package** | docker-compose; signed OPA bundle on GHCR; optional cloud demo | Planned |
 
-Plain-language explanation of the Phase 1 API and decisions: [`docs/v2/PHASE-1.md`](docs/v2/PHASE-1.md).
+Plain-language explanations: Phase 1 API and decisions — [`docs/v2/PHASE-1.md`](docs/v2/PHASE-1.md); Phase 2 adapters (Claude Code + Kiro) — [`docs/v2/PHASE-2.md`](docs/v2/PHASE-2.md).
 
 ## Semantic Guard (core)
 
