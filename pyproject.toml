@@ -31,6 +31,10 @@ dev = [
     "PyYAML>=6",
 ]
 
+[project.scripts]
+# Thin adapter that connects an AI coding tool's hook to POST /v1/check.
+guardrails-hook = "guardrails_hook.cli:main"
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src"]
