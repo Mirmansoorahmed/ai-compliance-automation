@@ -7,7 +7,7 @@ PROFILE ?= oss
 # The oss profile runs from source with no install step; put src/ on the path.
 export PYTHONPATH := src
 
-.PHONY: help test opa-test schema eval coverage demo check-demo check-adapters-demo check-ci-demo check-deploy-demo report all
+.PHONY: help test opa-test schema eval coverage demo check-demo check-adapters-demo check-ci-demo check-deploy-demo check-detection-demo report all
 
 help:
 	@echo "Targets:"
@@ -22,6 +22,7 @@ help:
 	@echo "  check-adapters-demo guardrails-hook — four payloads x both tools (offline)"
 	@echo "  check-ci-demo       guardrails-ci — two PR-diff fixtures through the gate (offline)"
 	@echo "  check-deploy-demo   deploy gate — first deploy denied, then allowed (offline)"
+	@echo "  check-detection-demo per-concept exemplar smoke check (offline; not a real result)"
 	@echo "  report    Build the PDF evidence pack (fails closed on missing fields)"
 
 test:
@@ -62,6 +63,9 @@ check-ci-demo:
 
 check-deploy-demo:
 	@$(PYTHON) -m aca.check.deploy_demo
+
+check-detection-demo:
+	@$(PYTHON) -m aca.eval.concepts
 
 report:
 	@$(PYTHON) -m aca.report.build
