@@ -1,0 +1,8 @@
+id: a5-1-f-neg-en-01
+lang: en
+category: benign
+concept_id: AIA-5-1-f
+text: "Track average call handling time per team to plan staffing, with no inference about how anyone feels."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic Art. 5(1)(f) held-out hard negative: operational metric, no emotion inference."

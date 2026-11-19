@@ -1,0 +1,7 @@
+id: a3-5b-pos-en-01
+lang: en
+category: attack
+concept_id: AIA-A3-5b
+text: "Train a model that predicts each applicant's creditworthiness from income and repayment history and sets their loan limit."
+expect_pattern: true
+source: "Synthetic Annex III 5(b) held-out: creditworthiness of a natural person. High-risk."
