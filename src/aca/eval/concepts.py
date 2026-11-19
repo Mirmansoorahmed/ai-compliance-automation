@@ -17,14 +17,31 @@ sanity signal, not a model metric.
 from __future__ import annotations
 
 import json
+import time
 from dataclasses import dataclass, field
 from pathlib import Path
 
 from aca.guard.embeddings import build_embedder, cosine
 
 _EXEMPLAR_DIR = Path(__file__).resolve().parents[3] / "exemplars"
+_RESULTS_DIR = Path(__file__).resolve().parents[3] / "eval" / "results"
 
-SMOKE_LABEL = "smoke, not a real result (offline hashed embedder; real recall is measured by the owner with MiniLM)"
+# Label text depends on the embedder actually loaded (set at run time).
+_HASHED_LABEL = ("smoke, not a real result (offline hashed embedder; real recall "
+                 "is measured by the owner with MiniLM)")
+_MODEL_LABEL = ("per-concept leave-one-out separation on the trained model "
+                "(a data-quality signal, not a held-out recall number)")
+
+# Back-compat alias (tests referenced SMOKE_LABEL).
+SMOKE_LABEL = _HASHED_LABEL
+
+
+def _is_hashed(embedder) -> bool:
+    return not str(getattr(embedder, "version", "")).startswith("st:")
+
+
+def _label_for(embedder) -> str:
+    return _HASHED_LABEL if _is_hashed(embedder) else _MODEL_LABEL
 
 
 @dataclass
@@ -88,21 +105,38 @@ def run_smoke(*, exemplar_dir: Path | None = None) -> dict:
     for path in sorted(base.glob("*.json")):
         results.append(smoke_concept(path, embedder))
     return {
-        "label": SMOKE_LABEL,
+        "schema": "concept-separation/v1",
+        "generated_ts": time.time(),
         "embedder": embedder.version,
+        "embedder_backend": "hashed-fallback" if _is_hashed(embedder) else "sentence-transformers",
+        "is_smoke": _is_hashed(embedder),
+        "label": _label_for(embedder),
         "n_concepts": len(results),
         "concepts": [r.__dict__ for r in results],
     }
 
 
+def write_report(report: dict, *, results_dir: Path | None = None) -> Path:
+    base = results_dir or _RESULTS_DIR
+    base.mkdir(parents=True, exist_ok=True)
+    stamp = time.strftime("%Y%m%dT%H%M%SZ", time.gmtime(report.get("generated_ts", 0)))
+    backend = "hashed" if report.get("is_smoke") else "model"
+    path = base / f"concept-separation-{stamp}-{backend}.json"
+    path.write_text(json.dumps(report, indent=2, sort_keys=True), encoding="utf-8")
+    return path
+
+
 def main() -> int:  # pragma: no cover - CLI glue
     report = run_smoke()
-    print("Per-concept exemplar smoke check")
+    path = write_report(report)
+    print("Per-concept exemplar separation check")
     print(f"  {report['label']}")
-    print(f"  embedder: {report['embedder']}  concepts: {report['n_concepts']}\n")
+    print(f"  embedder: {report['embedder']}  concepts: {report['n_concepts']}")
+    print(f"  result written: {path}\n")
+    tag = "smoke" if report["is_smoke"] else "model"
     for c in report["concepts"]:
         print(f"  {c['concept_id']:14} pos={c['n_positives']} neg={c['n_negatives']} "
-              f"loo_accuracy(smoke)={c['loo_accuracy']}")
+              f"loo_accuracy({tag})={c['loo_accuracy']}")
     return 0
 
 

@@ -232,3 +232,7 @@ report/*.pdf
 
 # The OPA bundle manifest is a real policy file, not a PyInstaller *.manifest.
 !policy/.manifest
+
+# Per-run eval artifacts (owner commits the real MiniLM run separately).
+eval/results/concept-separation-*.json
+eval/results/vaguelaw-eval-*.json
