@@ -61,7 +61,10 @@ def test_demo_secret_write_denied_both_tools(running_service):
         "kiro", "tool",
         stdin=json.dumps({"tool_name": "fsWrite",
                           "tool_input": {"path": "aws.py", "text": content}}))
-    assert json.loads(out)["hookSpecificOutput"]["permissionDecision"] == "deny"
+    # Kiro blocks the tool call via a non-zero exit (no permissionDecision JSON).
+    assert code == 2
+    assert out == ""
+    assert "secret" in err.lower()
 
 
 def test_demo_fraud_allows_both_tools(running_service):

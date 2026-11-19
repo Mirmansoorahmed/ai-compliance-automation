@@ -67,19 +67,26 @@ def test_claude_tool_allow_is_silent():
     assert out is None
 
 
-# --- Kiro: Pre Tool Use (permissionDecision on exit 0) -----------------------
+# --- Kiro: Pre Tool Use (exit code only — a command hook has no JSON decision)
 
-@pytest.mark.parametrize("dec,perm", [("BLOCK", "deny"), ("ASK", "ask"), ("WARN", "allow")])
-def test_kiro_tool_permission_decision(dec, perm):
-    import json
+@pytest.mark.parametrize("dec", ["BLOCK", "ASK"])
+def test_kiro_tool_block_and_ask_exit_nonzero(dec):
+    # A Kiro command hook blocks the tool call only by exiting non-zero; the
+    # reason goes to stderr (there is no permissionDecision JSON).
     stdout, stderr, code = render_kiro.render(_decision(dec), "tool")
+    assert code == 2
+    assert stdout == ""
+    assert stderr  # reason on stderr
+    prefix = "BLOCKED" if dec == "BLOCK" else "NEEDS HUMAN REVIEW"
+    assert prefix in stderr
+
+
+def test_kiro_tool_warn_exits_zero_with_obligations():
+    stdout, stderr, code = render_kiro.render(
+        _decision("WARN", obligations=["dpia"], missing=["dpia"]), "tool")
     assert code == 0
     assert stderr == ""
-    payload = json.loads(stdout)
-    hso = payload["hookSpecificOutput"]
-    assert hso["hookEventName"] == "PreToolUse"
-    assert hso["permissionDecision"] == perm
-    assert hso["permissionDecisionReason"]
+    assert "dpia" in stdout
 
 
 def test_kiro_tool_allow_is_silent():
@@ -87,7 +94,7 @@ def test_kiro_tool_allow_is_silent():
     assert (stdout, stderr, code) == ("", "", 0)
 
 
-# --- Kiro: Prompt Submit (exit code only) ------------------------------------
+# --- Kiro: Prompt Submit (same exit-code contract) ---------------------------
 
 @pytest.mark.parametrize("dec", ["BLOCK", "ASK"])
 def test_kiro_prompt_block_and_ask_exit_nonzero(dec):

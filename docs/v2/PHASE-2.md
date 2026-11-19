@@ -57,10 +57,12 @@ The hook maps the four `/v1/check` decisions to each tool's native mechanism.
 
 | Decision | Prompt (`UserPromptSubmit`) | Tool call (`PreToolUse`) |
 |---|---|---|
-| **BLOCK** | exit 2, reason on stderr → submission blocked (IDE) | `hookSpecificOutput.permissionDecision: "deny"` (exit 0) |
-| **ASK** | exit 2, reason on stderr | `permissionDecision: "ask"` |
-| **WARN** | exit 0, obligations on stdout (added to context) | `permissionDecision: "allow"` with the reason |
+| **BLOCK** | exit 2, reason on stderr → submission blocked (IDE) | exit 2, reason on stderr → tool call blocked |
+| **ASK** | exit 2, reason on stderr | exit 2, reason on stderr |
+| **WARN** | exit 0, obligations on stdout (added to context) | exit 0, obligations on stdout |
 | **ALLOW** | no output (exit 0) | no output (exit 0) |
+
+A Kiro shell-command hook has no JSON decision mechanism: per the [Kiro hook actions docs](https://kiro.dev/docs/hooks/actions/) a command's exit code is the only signal — exit 0 adds its stdout to the agent context, and any non-zero exit sends stderr to the agent and blocks the action (the tool call for Pre Tool Use, the submission for Prompt Submit). So the hook must exit non-zero to actually stop a write or shell call.
 
 The mapping from a hook payload to a `/v1/check` event: a **Write/Edit** (or Kiro `fsWrite`/`strReplace`) is sent as a `diff` event carrying the new file content and path, so the secret scan and artefact stage see it; **Bash**/shell is sent as a `tool` event with the command; a prompt is a `prompt` event.
 
@@ -81,14 +83,15 @@ It starts the service offline (hashed-fallback embedder, no model download), pip
 
 - **(a) CV screening** → WARN + obligations (both tools)
 - **(b) Social scoring** → blocked (Claude `decision:block`; Kiro exit 2)
-- **(c) Write a file with a fake `AKIA…` credential** → denied (`permissionDecision:"deny"`, via the offline local scan)
+- **(c) Write a file with a fake `AKIA…` credential** → denied (Claude `permissionDecision:"deny"`; Kiro exit 2 — both via the offline local scan)
 - **(d) Fraud score on objective facts** → allowed (no output)
 
 ## Notes and current limits
 
 - **Kiro field shapes** follow the public docs: the prompt text arrives in the `USER_PROMPT` environment variable for the Prompt Submit hook, and the Pre Tool Use hook receives `tool_name` / `tool_input` as JSON on stdin. The tool-input key names (`path`, `text`, `content`, `command`, …) vary by built-in tool, so the mapper reads them across a few spellings; if a tool uses a different key the field is treated as empty rather than crashing. The matcher uses Kiro's built-in category selectors (`write`, `shell`, `@mcp`).
-- **Kiro prompt blocking is IDE-only.** Per the docs, a CLI/Web Prompt Submit hook cannot block the submission; there the reason is surfaced to the agent as context instead. Pre Tool Use blocking works on all surfaces.
-- **Kiro ASK vs BLOCK on a prompt.** A Prompt Submit command hook has only an exit code, no "ask" channel, so both ASK and BLOCK exit non-zero (2) with the reason on stderr; the wording distinguishes them. On a tool call, Kiro's `permissionDecision` gives a true `ask` distinct from `deny`.
+- **Kiro blocks only via exit code.** A Kiro shell-command hook ([actions docs](https://kiro.dev/docs/hooks/actions/)) has no `permissionDecision` JSON — a non-zero exit is what blocks a Pre Tool Use call. So BLOCK and ASK exit 2 (reason on stderr) for both the prompt and tool triggers; WARN exits 0 with its obligations on stdout.
+- **Kiro ASK and BLOCK are both enforced as a block.** A command hook has only an exit code, no separate "ask" channel, so ASK and BLOCK both exit 2 with the reason on stderr; the wording (`NEEDS HUMAN REVIEW` vs `BLOCKED`) distinguishes them. (Claude Code does expose a true `ask` via `permissionDecision`.)
+- **Kiro prompt blocking is IDE-only.** Per the docs, a CLI/Web Prompt Submit hook cannot block the submission; there the non-zero exit still surfaces the reason to the agent as context. Pre Tool Use blocking works on all surfaces.
 - **Claude `tool_input` keys** (`file_path`/`content`/`new_string`, `command`) follow the documented Write/Edit/Bash shapes; other tools (including `mcp__*`) are classified on their text argument with no file content.
 - The hook is self-contained: it vendors a compact secret scanner and a tiny YAML reader so it has no dependency on the `aca` package or PyYAML when installed on a developer machine. The policy service re-validates fully.
 

@@ -3,7 +3,7 @@
   "hooks": [
     {
       "name": "EU AI compliance — tool",
-      "description": "Checks every write and shell tool call against the EU AI compliance policy service (POST /v1/check) before it runs. BLOCK denies the tool call, ASK asks a human, WARN allows with obligations shown, ALLOW is silent — emitted as hookSpecificOutput.permissionDecision on exit 0, with a non-zero exit as the fallback block. The matcher targets built-in write and shell tools plus all MCP tools. Requires guardrails-hook on PATH and the service reachable at GUARDRAILS_URL (default http://127.0.0.1:8080). Copy to .kiro/hooks/ in the project (or ~/.kiro/hooks/ for every workspace).",
+      "description": "Checks every write and shell tool call against the EU AI compliance policy service (POST /v1/check) before it runs. A Kiro command hook blocks via its exit code: BLOCK and ASK exit non-zero (2) with the reason on stderr so the tool call is blocked; WARN exits 0 and prints its obligations to stdout (added to context); ALLOW is silent. The matcher targets built-in write and shell tools plus all MCP tools. Requires guardrails-hook on PATH and the service reachable at GUARDRAILS_URL (default http://127.0.0.1:8080). Copy to .kiro/hooks/ in the project (or ~/.kiro/hooks/ for every workspace).",
       "trigger": "PreToolUse",
       "matcher": "write|shell|@mcp",
       "action": { "type": "command", "command": "guardrails-hook kiro tool" },

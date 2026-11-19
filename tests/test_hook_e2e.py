@@ -121,9 +121,10 @@ def test_kiro_fraud_prompt_allows(service_url, monkeypatch):
 
 
 def test_kiro_write_secret_denies(service_url, monkeypatch):
+    # A Kiro command hook blocks the tool call by exiting non-zero.
     out, err, code = _run("kiro", "tool", "kiro/tool-write-secret.json",
                           monkeypatch, service_url)
-    payload = json.loads(out)
-    hso = payload["hookSpecificOutput"]
-    assert hso["permissionDecision"] == "deny"
-    assert "secret" in hso["permissionDecisionReason"].lower()
+    assert code == 2
+    assert out == ""
+    assert "secret" in err.lower()
+    assert "BLOCKED" in err
