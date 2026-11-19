@@ -229,3 +229,6 @@ report/*.pdf
 # guardrails-ci gate outputs (generated per run / per PR).
 /ci-report.md
 /ai-bom.json
+
+# The OPA bundle manifest is a real policy file, not a PyInstaller *.manifest.
+!policy/.manifest

@@ -1,0 +1,35 @@
+# Phase 8 deployable stack: the policy service + an OPA server loading the
+# compliance bundle (check / tier / deploy packages + catalog/obligations data).
+# `docker compose up` on a clean machine runs the full offline story.
+#
+# The policy service answers /v1/labels and /v1/check with the Semantic Guard.
+# OPA serves the authoritative Rego so the same decisions can be evaluated as a
+# bundle (the service also mirrors them in-process for the oss profile).
+services:
+  policy-service:
+    build:
+      context: ../..
+      dockerfile: deploy/docker/Dockerfile
+    image: ghcr.io/mirmansoorahmed/ai-semantic-guardrails-eu:local
+    ports:
+      - "8080:8080"
+    environment:
+      ACA_PROFILE: oss
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/healthz', timeout=2)"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+
+  opa:
+    image: openpolicyagent/opa:latest-static
+    command:
+      - "run"
+      - "--server"
+      - "--addr=0.0.0.0:8181"
+      - "/policy"
+    ports:
+      - "8181:8181"
+    volumes:
+      # Mount the Rego + data as a read-only bundle directory.
+      - ../../policy:/policy:ro
