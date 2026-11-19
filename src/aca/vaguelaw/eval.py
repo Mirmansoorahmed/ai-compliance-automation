@@ -24,9 +24,11 @@ from aca.vaguelaw.classify import ASK, classify
 from aca.vaguelaw.questions import load_questions
 
 _CASES_DIR = Path(__file__).resolve().parents[3] / "eval" / "vaguelaw"
+_RESULTS_DIR = Path(__file__).resolve().parents[3] / "eval" / "results"
 
 SMOKE_NOTE = ("smoke only (FakeBackend or offline hashed LocalBackend); real accuracy/ECE "
               "to be measured by the owner with the trained model")
+MODEL_NOTE = "measured with the trained model backend"
 
 
 @dataclass
@@ -37,6 +39,8 @@ class EvalResult:
     ask_rate: float | None
     by_question: dict = field(default_factory=dict)
     note: str = SMOKE_NOTE
+    backend: str = ""
+    is_smoke: bool = True
 
 
 def load_cases(cases_dir: Path | None = None) -> list[dict]:
@@ -98,10 +102,105 @@ def evaluate(backend: DecisionBackend, *, cases_dir: Path | None = None) -> Eval
 
     accuracy = round(correct / scored, 4) if scored else None
     ask_rate = round(asks / len(cases), 4) if cases else None
+    is_smoke, backend_name = _backend_is_smoke(backend)
     return EvalResult(
         n=len(cases),
         accuracy=accuracy,
         ece=_ece(cal_pairs),
         ask_rate=ask_rate,
         by_question=by_q,
+        backend=backend_name,
+        is_smoke=is_smoke,
+        note=SMOKE_NOTE if is_smoke else MODEL_NOTE,
     )
+
+
+def _backend_is_smoke(backend) -> tuple[bool, str]:
+    """A run is 'smoke' with the fake backend or a hashed-embedder local backend."""
+    name = getattr(backend, "name", backend.__class__.__name__)
+    if name == "fake":
+        return True, "fake"
+    emb = getattr(backend, "_embedder", None)
+    # Trigger lazy load if the local backend has not built its embedder yet.
+    if emb is None and hasattr(backend, "_emb"):
+        try:
+            emb = backend._emb()
+        except Exception:
+            emb = None
+    version = str(getattr(emb, "version", "")) if emb is not None else ""
+    is_hashed = not version.startswith("st:")
+    return is_hashed, f"{name}:{version}" if version else name
+
+
+def write_report(result: EvalResult, *, results_dir: Path | None = None) -> Path:
+    import json
+    import time
+
+    base = results_dir or _RESULTS_DIR
+    base.mkdir(parents=True, exist_ok=True)
+    stamp = time.strftime("%Y%m%dT%H%M%SZ", time.gmtime())
+    tag = "smoke" if result.is_smoke else "model"
+    path = base / f"vaguelaw-eval-{stamp}-{tag}.json"
+    payload = {
+        "schema": "vaguelaw-eval/v1",
+        "generated_ts": time.time(),
+        "backend": result.backend,
+        "is_smoke": result.is_smoke,
+        "note": result.note,
+        "n": result.n,
+        "accuracy": result.accuracy,
+        "ece": result.ece,
+        "ask_rate": result.ask_rate,
+        "by_question": result.by_question,
+    }
+    path.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
+    return path
+
+
+def _make_backend(name: str):
+    if name == "fake":
+        from aca.vaguelaw.fake_backend import FakeBackend
+        return FakeBackend()
+    if name == "local":
+        from aca.vaguelaw.local_backend import LocalBackend
+        return LocalBackend()
+    raise SystemExit(f"unknown backend {name!r}; choose local or fake")
+
+
+def run(argv: list[str]) -> int:
+    import argparse
+
+    p = argparse.ArgumentParser(prog="python -m aca.vaguelaw.eval",
+                                description="Evaluate the vague-law classifier (accuracy, ECE, ASK rate).")
+    p.add_argument("--backend", choices=["local", "fake"], default="local",
+                   help="local = open-source MiniLM/hashed backend; fake = deterministic (default local)")
+    p.add_argument("--no-write", action="store_true", help="do not write a result JSON")
+    args = p.parse_args(argv)
+
+    backend = _make_backend(args.backend)
+    result = evaluate(backend)
+
+    acc = result.accuracy if result.accuracy is not None else "n/a"
+    ece = result.ece if result.ece is not None else "n/a"
+    ask = result.ask_rate if result.ask_rate is not None else "n/a"
+    print("Vague-law classifier eval")
+    print(f"  backend : {result.backend}")
+    print(f"  cases   : {result.n}")
+    print(f"  accuracy: {acc}   ECE: {ece}   ASK-rate: {ask}")
+    if result.is_smoke:
+        print(f"  note    : {result.note}")
+    else:
+        print(f"  note    : {result.note}")
+    if not args.no_write:
+        path = write_report(result)
+        print(f"  written : {path}")
+    return 0
+
+
+def main() -> int:  # pragma: no cover - CLI glue
+    import sys
+    return run(sys.argv[1:])
+
+
+if __name__ == "__main__":  # pragma: no cover
+    raise SystemExit(main())
