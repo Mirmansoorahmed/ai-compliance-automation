@@ -12,7 +12,7 @@ from pathlib import Path
 import pytest
 
 from aca.catalog.loader import load_catalog
-from aca.eval.concepts import run_smoke, SMOKE_LABEL
+from aca.eval.concepts import run_smoke
 from aca.guard.embeddings import build_embedder
 from aca.guard.stages.exemplars import load_concept
 
@@ -70,13 +70,34 @@ def test_exemplars_load_through_guard_loader(cid):
     assert all(e.vector for e in idx.exemplars)  # embedded
 
 
-def test_smoke_eval_runs_and_is_labelled_smoke():
+def test_smoke_eval_runs_and_is_labelled_by_active_embedder():
+    # The label depends on the embedder actually loaded: the hashed fallback
+    # says "smoke"; the trained sentence-transformers model says it is a model
+    # separation signal. Accept whichever matches the active embedder.
+    from aca.eval.concepts import _HASHED_LABEL, _MODEL_LABEL
     report = run_smoke()
-    assert report["label"] == SMOKE_LABEL
-    assert "smoke" in report["label"].lower()
+    if report["is_smoke"]:
+        assert report["label"] == _HASHED_LABEL
+        assert "smoke" in report["label"].lower()
+    else:
+        assert report["label"] == _MODEL_LABEL
+        assert "smoke" not in report["label"].lower()
     assert report["n_concepts"] >= len(_NEW_CONCEPTS)
     for c in report["concepts"]:
         assert c["loo_accuracy"] is None or 0.0 <= c["loo_accuracy"] <= 1.0
+
+
+def test_smoke_eval_hashed_label_when_forced_hashed():
+    # Forcing the hashed embedder must always produce the smoke label.
+    from aca.eval.concepts import _HASHED_LABEL, smoke_concept
+    from aca.guard.embeddings import HashedEmbedder
+    emb = HashedEmbedder(dim=256)
+    assert not str(emb.version).startswith("st:")
+    r = smoke_concept(_EXEMPLAR_DIR / "AIA-5-1-c.json", emb)
+    assert r.loo_accuracy is None or 0.0 <= r.loo_accuracy <= 1.0
+    # _label_for picks the hashed label for a non-"st:" embedder.
+    from aca.eval.concepts import _label_for
+    assert _label_for(emb) == _HASHED_LABEL
 
 
 def test_heldout_v2_cases_load_and_reference_known_concepts():
