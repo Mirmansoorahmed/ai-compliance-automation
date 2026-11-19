@@ -92,6 +92,29 @@ def test_local_backend_runs_offline():
 
 # --- eval harness -------------------------------------------------------------
 
+def test_demo_case_a_is_refused_or_escalated(capsys):
+    # The vague-law demo's case A (Art. 6(3) exception claimed while profiling)
+    # must end up refused/escalated (route ACT -> ASK, or a fail-safe ASK),
+    # never accepted (NO). The demo prints an honest verdict either way.
+    from aca.vaguelaw import demo as vl_demo
+    from aca.vaguelaw.classify import NO, classify
+    from aca.vaguelaw.local_backend import LocalBackend
+    from aca.vaguelaw.questions import load_questions
+
+    rc = vl_demo.main()
+    assert rc == 0
+    text = capsys.readouterr().out
+    assert "A. Annex III exception claimed" in text
+    assert "Legend:" in text
+    assert "expected" in text and "got" in text  # expected vs actual printed
+
+    # Directly assert case A does not resolve to "accepted" (NO).
+    qs = {q.id: q for q in load_questions()}
+    case_a = next(c for c in vl_demo._CASES if c["title"].startswith("A."))
+    r = classify(case_a["state"], [qs[case_a["qid"]]], LocalBackend())[0]
+    assert r.route != NO, "case A must not be accepted as a valid exception"
+
+
 def test_eval_runs_with_fake_backend():
     # Script confident, correct answers so the smoke accuracy is well-defined.
     be = FakeBackend(script={"AIA-6-3": 0.9, "GDPR-22": 0.9})

@@ -29,7 +29,14 @@ C. Human-in-the-loop lending decision
    question GDPR-22: route=NO (act_label=ASK, ...)
 ```
 
-A claimed Annex III exception on a system that profiles each applicant is refused (the Art. 6(3) condition is met, so the catalog ASK label applies); a solely-automated lending decision triggers the Art. 22 question; a human-in-the-loop decision does not. An uncertain state routes to ASK.
+The demo prints, for each case, the **expected** outcome and what the classifier **got**, with a one-line routing legend:
+
+- `route=ACT` — the legal condition is met with enough confidence; apply the question's `act_label` (here ASK = refuse the claim / send to a human).
+- `route=NO` — the condition is confidently absent; nothing to do.
+- `route=ASK` — too uncertain to decide; a human decides (fail-safe).
+- `act_label` — the catalog decision applied when the condition is met.
+
+A claimed Annex III exception on a system that profiles each applicant is **refused** (case A: route ACT → ASK, the Art. 6(3) condition is met); a solely-automated lending decision triggers the Art. 22 question; a human-in-the-loop decision does not. If the **offline hashed embedder answers a case wrong**, the demo prints `verdict: MISS` and says so explicitly (it does not hide it) — the offline backend is a reproducible fallback, not the trained model the questions are tuned for.
 
 ## To be run by the owner
 
