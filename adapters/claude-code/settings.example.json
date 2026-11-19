@@ -1,0 +1,20 @@
+{
+  "// doc": "Project-level Claude Code hooks for the EU AI compliance guardrails. Place at .claude/settings.json (project) or ~/.claude/settings.json (user). See https://code.claude.com/docs/en/hooks and /settings. guardrails-hook must be on PATH and the policy service reachable at GUARDRAILS_URL (default http://127.0.0.1:8080).",
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          { "type": "command", "command": "guardrails-hook claude prompt" }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit|Bash|mcp__.*",
+        "hooks": [
+          { "type": "command", "command": "guardrails-hook claude tool" }
+        ]
+      }
+    ]
+  }
+}
