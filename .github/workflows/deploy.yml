@@ -1,0 +1,45 @@
+name: deploy
+
+# Phase 4 deploy gate. The compliance gate runs first and must pass before the
+# job that targets the protected ``production`` environment can run. The
+# environment itself carries the required-reviewers rule (two distinct people),
+# configured by the repo owner — see docs/v2/DEPLOY-GATE.md. This workflow does
+# not deploy anything real; the deploy step is a placeholder.
+
+on:
+  workflow_dispatch:
+    inputs:
+      use-case:
+        description: "Path to the feature's use-case.yaml"
+        required: false
+        default: ".guardrails/use-case.yaml"
+
+permissions:
+  contents: read
+
+jobs:
+  compliance-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: EU AI compliance deploy gate
+        run: |
+          PYTHONPATH=src python3 -m guardrails_ci.deploy_gate \
+            --use-case "${{ github.event.inputs.use-case }}"
+
+  deploy-production:
+    needs: compliance-gate
+    runs-on: ubuntu-latest
+    # The 'production' environment is protected with required reviewers (two
+    # distinct people) in repo settings. GitHub holds the job here until the
+    # reviewers approve — the human four-eyes step that complements the
+    # artefact check above.
+    environment:
+      name: production
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy (placeholder)
+        run: echo "compliance gate passed and reviewers approved — deploy would run here."

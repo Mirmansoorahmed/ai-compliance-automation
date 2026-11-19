@@ -36,6 +36,8 @@ dev = [
 guardrails-hook = "guardrails_hook.cli:main"
 # CI gate: scans a PR diff and runs the same decision engine in-process.
 guardrails-ci = "guardrails_ci.cli:main"
+# Deploy gate: checks obligations + two-person approvals before production.
+guardrails-deploy-gate = "guardrails_ci.deploy_gate:main"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
