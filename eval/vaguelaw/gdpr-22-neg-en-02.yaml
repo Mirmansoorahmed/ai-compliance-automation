@@ -1,0 +1,6 @@
+id: gdpr-22-neg-en-02
+lang: en
+question_id: GDPR-22
+state: "The model ranks cases; a human officer decides and can override every one."
+expect_yes: false
+source: "Synthetic vague-law case (GDPR-22); disjoint from exemplars + tuning."

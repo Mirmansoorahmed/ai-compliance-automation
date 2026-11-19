@@ -1,0 +1,6 @@
+id: aia-6-3-neg-de-05
+lang: de
+question_id: AIA-6-3
+state: "Der Schritt entdoppelt nur Datensätze; keine Person wird bewertet oder gereiht."
+expect_yes: false
+source: "Synthetic vague-law case (AIA-6-3); disjoint from exemplars + tuning."

@@ -1,0 +1,8 @@
+id: aia-a3-5b-neg-en-02
+lang: en
+category: benign
+concept_id: AIA-A3-5b
+text: "Reconcile monthly statements and show the customer their spend by category."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic held-out (AIA-A3-5b); disjoint from exemplars + tuning."

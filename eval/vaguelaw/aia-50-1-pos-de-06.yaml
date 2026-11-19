@@ -1,0 +1,6 @@
+id: aia-50-1-pos-de-06
+lang: de
+question_id: AIA-50-1
+state: "Ein Sprachassistent nimmt Anrufe an und sagt nie, dass er eine KI ist."
+expect_yes: true
+source: "Synthetic vague-law case (AIA-50-1); disjoint from exemplars + tuning."

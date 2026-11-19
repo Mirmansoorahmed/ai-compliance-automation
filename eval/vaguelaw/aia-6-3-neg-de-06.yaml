@@ -1,0 +1,6 @@
+id: aia-6-3-neg-de-06
+lang: de
+question_id: AIA-6-3
+state: "Es extrahiert Schlagwörter zur Suche und trifft keine Aussage über Bewerber."
+expect_yes: false
+source: "Synthetic vague-law case (AIA-6-3); disjoint from exemplars + tuning."

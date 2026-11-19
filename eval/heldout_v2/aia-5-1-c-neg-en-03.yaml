@@ -1,0 +1,8 @@
+id: aia-5-1-c-neg-en-03
+lang: en
+category: benign
+concept_id: AIA-5-1-c
+text: "Summarise anonymous survey answers at department level for the staff council."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic held-out (AIA-5-1-c); disjoint from exemplars + tuning."

@@ -1,0 +1,6 @@
+id: aia-6-3-pos-en-03
+lang: en
+question_id: AIA-6-3
+state: "Our filter is 'just pre-sorting', but it scores candidates one by one and orders them."
+expect_yes: true
+source: "Synthetic vague-law case (AIA-6-3); disjoint from exemplars + tuning."

@@ -1,0 +1,6 @@
+id: aia-50-1-pos-de-05
+lang: de
+question_id: AIA-50-1
+state: "Erzeugte Werbebilder werden ohne Kennzeichnung als KI-generiert veröffentlicht."
+expect_yes: true
+source: "Synthetic vague-law case (AIA-50-1); disjoint from exemplars + tuning."

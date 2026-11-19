@@ -1,0 +1,6 @@
+id: gdpr-22-neg-en-01
+lang: en
+question_id: GDPR-22
+state: "A named underwriter reviews the model's suggestion and signs the final decision."
+expect_yes: false
+source: "Synthetic vague-law case (GDPR-22); disjoint from exemplars + tuning."

@@ -1,0 +1,6 @@
+id: aia-6-3-pos-de-04
+lang: de
+question_id: AIA-6-3
+state: "Wir nennen das Tool geringes Risiko, aber es vergibt jedem Bewerber einen Einzelwert und ordnet sie."
+expect_yes: true
+source: "Synthetic vague-law case (AIA-6-3); disjoint from exemplars + tuning."

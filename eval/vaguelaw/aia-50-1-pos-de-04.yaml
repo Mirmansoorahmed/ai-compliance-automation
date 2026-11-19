@@ -1,0 +1,6 @@
+id: aia-50-1-pos-de-04
+lang: de
+question_id: AIA-50-1
+state: "Der Chatbot antwortet Kunden und gibt sich als menschlicher Mitarbeiter aus, ohne KI-Hinweis."
+expect_yes: true
+source: "Synthetic vague-law case (AIA-50-1); disjoint from exemplars + tuning."

@@ -1,0 +1,6 @@
+id: aia-6-3-neg-en-01
+lang: en
+question_id: AIA-6-3
+state: "It only translates and reformats documents and never scores or ranks a person."
+expect_yes: false
+source: "Synthetic vague-law case (AIA-6-3); disjoint from exemplars + tuning."

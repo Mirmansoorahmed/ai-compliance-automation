@@ -1,0 +1,6 @@
+id: gdpr-22-pos-de-04
+lang: de
+question_id: GDPR-22
+state: "Die Entscheidung über Kreditvergabe oder -ablehnung trifft allein das Modell und wird ohne Prüfung angewandt."
+expect_yes: true
+source: "Synthetic vague-law case (GDPR-22); disjoint from exemplars + tuning."

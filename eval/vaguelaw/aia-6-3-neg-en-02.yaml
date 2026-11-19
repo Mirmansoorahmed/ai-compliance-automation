@@ -1,0 +1,6 @@
+id: aia-6-3-neg-en-02
+lang: en
+question_id: AIA-6-3
+state: "The step just deduplicates records; no individual is evaluated or ordered."
+expect_yes: false
+source: "Synthetic vague-law case (AIA-6-3); disjoint from exemplars + tuning."

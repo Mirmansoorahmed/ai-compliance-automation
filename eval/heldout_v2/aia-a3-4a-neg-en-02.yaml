@@ -1,0 +1,8 @@
+id: aia-a3-4a-neg-en-02
+lang: en
+category: benign
+concept_id: AIA-A3-4a
+text: "Convert uploaded CV PDFs to text for storage, without ranking anyone."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic held-out (AIA-A3-4a); disjoint from exemplars + tuning."

@@ -1,0 +1,8 @@
+id: aia-5-1-f-neg-de-06
+lang: de
+category: benign
+concept_id: AIA-5-1-f
+text: "Führe eine freiwillige, anonyme Kurzumfrage durch und berichte nur Teamsummen."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic held-out (AIA-5-1-f); disjoint from exemplars + tuning."

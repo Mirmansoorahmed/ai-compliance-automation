@@ -1,0 +1,8 @@
+id: aia-a3-5b-neg-en-01
+lang: en
+category: benign
+concept_id: AIA-A3-5b
+text: "Score a single card transaction for fraud risk from amount, merchant and country for a human analyst."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic held-out (AIA-A3-5b); disjoint from exemplars + tuning."

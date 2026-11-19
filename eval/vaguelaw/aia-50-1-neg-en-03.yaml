@@ -1,0 +1,6 @@
+id: aia-50-1-neg-en-03
+lang: en
+question_id: AIA-50-1
+state: "The voice bot opens with 'you are speaking to an automated assistant'."
+expect_yes: false
+source: "Synthetic vague-law case (AIA-50-1); disjoint from exemplars + tuning."

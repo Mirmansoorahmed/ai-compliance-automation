@@ -1,0 +1,6 @@
+id: aia-5-1-a-neg-en-02
+lang: en
+question_id: AIA-5-1-a
+state: "Display an honest countdown for a genuine, disclosed promotion the user can ignore."
+expect_yes: false
+source: "Synthetic vague-law case (AIA-5-1-a); disjoint from exemplars + tuning."

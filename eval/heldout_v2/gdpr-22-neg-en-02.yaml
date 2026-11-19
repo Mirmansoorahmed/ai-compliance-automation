@@ -1,0 +1,8 @@
+id: gdpr-22-neg-en-02
+lang: en
+category: benign
+concept_id: GDPR-22
+text: "Send an opt-in newsletter to customers, which has no significant effect on them."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic held-out (GDPR-22); disjoint from exemplars + tuning."

@@ -1,0 +1,6 @@
+id: gdpr-22-pos-en-02
+lang: en
+question_id: GDPR-22
+state: "Accounts are closed automatically by the system with legal effect on the customer and no human involved."
+expect_yes: true
+source: "Synthetic vague-law case (GDPR-22); disjoint from exemplars + tuning."

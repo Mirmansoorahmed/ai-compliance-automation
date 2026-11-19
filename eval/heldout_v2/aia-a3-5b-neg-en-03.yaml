@@ -1,0 +1,8 @@
+id: aia-a3-5b-neg-en-03
+lang: en
+category: benign
+concept_id: AIA-A3-5b
+text: "Rate a corporate bond issue's risk using the issuer's filings (not a natural person)."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic held-out (AIA-A3-5b); disjoint from exemplars + tuning."

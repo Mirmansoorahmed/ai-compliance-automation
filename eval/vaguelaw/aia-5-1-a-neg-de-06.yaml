@@ -1,0 +1,6 @@
+id: aia-5-1-a-neg-de-06
+lang: de
+question_id: AIA-5-1-a
+state: "Ein sichtbarer Bedenkzeit-Hinweis vor einer großen Überweisung."
+expect_yes: false
+source: "Synthetic vague-law case (AIA-5-1-a); disjoint from exemplars + tuning."

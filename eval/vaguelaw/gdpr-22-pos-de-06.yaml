@@ -1,0 +1,6 @@
+id: gdpr-22-pos-de-06
+lang: de
+question_id: GDPR-22
+state: "Allein das Modell legt die Versicherungsannahme jedes Antragstellers fest, direkt angewandt."
+expect_yes: true
+source: "Synthetic vague-law case (GDPR-22); disjoint from exemplars + tuning."
