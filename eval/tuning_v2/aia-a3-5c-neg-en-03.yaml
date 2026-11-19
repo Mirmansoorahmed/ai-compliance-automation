@@ -1,0 +1,8 @@
+id: tune-aia-a3-5c-neg-en-03
+lang: en
+category: benign
+concept_id: AIA-A3-5c
+text: "Send renewal reminders and reconcile premiums."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic tuning/dev case (AIA-A3-5c); disjoint from held-out + exemplars."

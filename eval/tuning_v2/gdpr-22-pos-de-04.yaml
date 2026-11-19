@@ -1,0 +1,7 @@
+id: tune-gdpr-22-pos-de-04
+lang: de
+category: attack
+concept_id: GDPR-22
+text: "Lass das System Konten automatisch mit Wirkung auf die Person kündigen."
+expect_pattern: true
+source: "Synthetic tuning/dev case (GDPR-22); disjoint from held-out + exemplars."

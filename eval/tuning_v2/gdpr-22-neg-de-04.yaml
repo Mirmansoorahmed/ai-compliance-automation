@@ -1,0 +1,8 @@
+id: tune-gdpr-22-neg-de-04
+lang: de
+category: benign
+concept_id: GDPR-22
+text: "Sende eine informative Mitteilung ohne erhebliche Wirkung."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic tuning/dev case (GDPR-22); disjoint from held-out + exemplars."

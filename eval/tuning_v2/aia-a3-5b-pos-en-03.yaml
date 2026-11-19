@@ -1,0 +1,7 @@
+id: tune-aia-a3-5b-pos-en-03
+lang: en
+category: attack
+concept_id: AIA-A3-5b
+text: "Set each borrower's limit from a model of default probability."
+expect_pattern: true
+source: "Synthetic tuning/dev case (AIA-A3-5b); disjoint from held-out + exemplars."

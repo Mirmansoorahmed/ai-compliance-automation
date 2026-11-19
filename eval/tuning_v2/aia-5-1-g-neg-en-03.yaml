@@ -1,0 +1,8 @@
+id: tune-aia-5-1-g-neg-en-03
+lang: en
+category: benign
+concept_id: AIA-5-1-g
+text: "Use a fingerprint sensor solely for the owner's device unlock."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic tuning/dev case (AIA-5-1-g); disjoint from held-out + exemplars."

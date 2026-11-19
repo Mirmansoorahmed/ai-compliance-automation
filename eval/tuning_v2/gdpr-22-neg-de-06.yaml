@@ -1,0 +1,8 @@
+id: tune-gdpr-22-neg-de-06
+lang: de
+category: benign
+concept_id: GDPR-22
+text: "Priorisiere eine Warteschlange für Menschen, die jeden Posten entscheiden."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic tuning/dev case (GDPR-22); disjoint from held-out + exemplars."

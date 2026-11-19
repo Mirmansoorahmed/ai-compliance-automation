@@ -1,0 +1,8 @@
+id: tune-aia-5-1-c-neg-de-05
+lang: de
+category: benign
+concept_id: AIA-5-1-c
+text: "Warne bei ungewöhnlichem Login-Ort und bitte den Kontoinhaber um Bestätigung."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic tuning/dev case (AIA-5-1-c); disjoint from held-out + exemplars."

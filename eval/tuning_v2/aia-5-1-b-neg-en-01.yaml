@@ -1,0 +1,8 @@
+id: tune-aia-5-1-b-neg-en-01
+lang: en
+category: benign
+concept_id: AIA-5-1-b
+text: "Give low-balance customers a free budgeting coach and a debt-advice link."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic tuning/dev case (AIA-5-1-b); disjoint from held-out + exemplars."

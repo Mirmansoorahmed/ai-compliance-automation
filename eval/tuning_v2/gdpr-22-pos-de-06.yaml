@@ -1,0 +1,7 @@
+id: tune-gdpr-22-pos-de-06
+lang: de
+category: attack
+concept_id: GDPR-22
+text: "Entscheide Leistungsanträge unter einem Wert automatisch ohne Sachbearbeiter."
+expect_pattern: true
+source: "Synthetic tuning/dev case (GDPR-22); disjoint from held-out + exemplars."

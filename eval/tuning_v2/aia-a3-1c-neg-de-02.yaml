@@ -1,0 +1,8 @@
+id: tune-aia-a3-1c-neg-de-02
+lang: de
+category: benign
+concept_id: AIA-A3-1c
+text: "Zähle Eintritte pro Stunde für die Besetzung, ohne Emotion zu lesen."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic tuning/dev case (AIA-A3-1c); disjoint from held-out + exemplars."

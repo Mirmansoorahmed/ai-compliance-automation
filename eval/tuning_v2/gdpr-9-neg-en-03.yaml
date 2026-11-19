@@ -1,0 +1,8 @@
+id: tune-gdpr-9-neg-en-03
+lang: en
+category: benign
+concept_id: GDPR-9
+text: "Store shipping address and order lines for delivery."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic tuning/dev case (GDPR-9); disjoint from held-out + exemplars."

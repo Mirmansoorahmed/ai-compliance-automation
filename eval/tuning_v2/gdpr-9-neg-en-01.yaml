@@ -1,0 +1,8 @@
+id: tune-gdpr-9-neg-en-01
+lang: en
+category: benign
+concept_id: GDPR-9
+text: "Hold only IBAN, balance and payment dates for the account."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic tuning/dev case (GDPR-9); disjoint from held-out + exemplars."

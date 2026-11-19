@@ -1,0 +1,8 @@
+id: tune-aia-5-1-b-neg-de-04
+lang: de
+category: benign
+concept_id: AIA-5-1-b
+text: "Vereinfache die Überweisungsmaske, damit ältere Kunden sie leichter nutzen."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic tuning/dev case (AIA-5-1-b); disjoint from held-out + exemplars."

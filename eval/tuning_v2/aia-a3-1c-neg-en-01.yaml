@@ -1,0 +1,8 @@
+id: tune-aia-a3-1c-neg-en-01
+lang: en
+category: benign
+concept_id: AIA-A3-1c
+text: "Count entries per hour for staffing, reading no emotion."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic tuning/dev case (AIA-A3-1c); disjoint from held-out + exemplars."

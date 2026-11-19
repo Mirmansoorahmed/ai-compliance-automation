@@ -1,0 +1,8 @@
+id: tune-gdpr-9-neg-de-02
+lang: de
+category: benign
+concept_id: GDPR-9
+text: "Halte nur IBAN, Saldo und Zahlungsdaten für das Konto."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic tuning/dev case (GDPR-9); disjoint from held-out + exemplars."

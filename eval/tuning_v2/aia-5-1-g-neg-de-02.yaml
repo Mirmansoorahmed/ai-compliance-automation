@@ -1,0 +1,8 @@
+id: tune-aia-5-1-g-neg-de-02
+lang: de
+category: benign
+concept_id: AIA-5-1-g
+text: "Verifiziere einen wiederkehrenden Nutzer per 1:1-Gesichtsabgleich und behalte nur bestanden/nicht bestanden."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic tuning/dev case (AIA-5-1-g); disjoint from held-out + exemplars."

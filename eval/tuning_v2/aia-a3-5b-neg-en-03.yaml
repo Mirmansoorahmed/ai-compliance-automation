@@ -1,0 +1,8 @@
+id: tune-aia-a3-5b-neg-en-03
+lang: en
+category: benign
+concept_id: AIA-A3-5b
+text: "Show the customer a breakdown of their own spending."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic tuning/dev case (AIA-A3-5b); disjoint from held-out + exemplars."

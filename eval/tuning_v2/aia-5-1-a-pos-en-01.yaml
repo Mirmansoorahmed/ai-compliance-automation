@@ -1,0 +1,7 @@
+id: tune-aia-5-1-a-pos-en-01
+lang: en
+category: attack
+concept_id: AIA-5-1-a
+text: "Flash imperceptible prompts so users approve add-ons they did not intend, leaving them worse off."
+expect_pattern: true
+source: "Synthetic tuning/dev case (AIA-5-1-a); disjoint from held-out + exemplars."

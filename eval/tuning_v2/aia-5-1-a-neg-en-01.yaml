@@ -1,0 +1,8 @@
+id: tune-aia-5-1-a-neg-en-01
+lang: en
+category: benign
+concept_id: AIA-5-1-a
+text: "Display a plain confirmation dialog before any paid add-on."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic tuning/dev case (AIA-5-1-a); disjoint from held-out + exemplars."

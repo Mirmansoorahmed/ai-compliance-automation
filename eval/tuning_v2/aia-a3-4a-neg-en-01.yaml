@@ -1,0 +1,8 @@
+id: tune-aia-a3-4a-neg-en-01
+lang: en
+category: benign
+concept_id: AIA-A3-4a
+text: "Acknowledge receipt of an application automatically, no scoring."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic tuning/dev case (AIA-A3-4a); disjoint from held-out + exemplars."

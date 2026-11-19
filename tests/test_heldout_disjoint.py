@@ -20,6 +20,7 @@ _EXEMPLARS = _ROOT / "exemplars"
 _TUNING = _ROOT / "eval" / "cases"
 _HELDOUT = _ROOT / "eval" / "heldout_v2"
 _VAGUELAW = _ROOT / "eval" / "vaguelaw"
+_TUNING_V2 = _ROOT / "eval" / "tuning_v2"
 
 
 def _norm(s: str) -> str:
@@ -38,12 +39,13 @@ def _exemplar_texts() -> set[str]:
 
 def _tuning_texts() -> set[str]:
     texts: set[str] = set()
-    for p in _TUNING.glob("*.yaml"):
-        c = load_yaml(p)
-        if c.get("text"):
-            texts.add(_norm(c["text"]))
-        for turn in c.get("turns", []) or []:
-            texts.add(_norm(turn))
+    for d in (_TUNING, _TUNING_V2):
+        for p in d.glob("*.yaml"):
+            c = load_yaml(p)
+            if c.get("text"):
+                texts.add(_norm(c["text"]))
+            for turn in c.get("turns", []) or []:
+                texts.add(_norm(turn))
     return texts
 
 
@@ -77,20 +79,52 @@ def test_vaguelaw_disjoint_from_exemplars_and_tuning():
     assert not clashes, f"vague-law text reused from exemplars/tuning: {clashes}"
 
 
+def test_tuning_v2_disjoint_from_exemplars_and_heldout():
+    exemplar = _exemplar_texts()
+    heldout = {_norm(load_yaml(p).get("text", "")) for p in _HELDOUT.glob("*.yaml")}
+    forbidden = exemplar | heldout
+    clashes = []
+    for p in _TUNING_V2.glob("*.yaml"):
+        t = _norm(load_yaml(p).get("text", ""))
+        if t and t in forbidden:
+            clashes.append(p.name)
+    assert not clashes, f"tuning/dev text reused from exemplars/held-out: {clashes}"
+
+
+def test_tuning_v2_has_six_pos_six_neg_for_all_13_concepts():
+    by_concept: dict = {}
+    for p in _TUNING_V2.glob("*.yaml"):
+        c = load_yaml(p)
+        d = by_concept.setdefault(c["concept_id"], {"pos": 0, "neg": 0})
+        d["pos" if c["expect_pattern"] else "neg"] += 1
+    assert set(by_concept) == _ALL_CONCEPTS, (
+        f"tuning/dev must cover all 13 concepts; missing: {_ALL_CONCEPTS - set(by_concept)}")
+    for cid, d in by_concept.items():
+        assert d["pos"] >= 6 and d["neg"] >= 6, f"{cid}: {d}"
+
+
 def test_heldout_and_vaguelaw_have_no_internal_duplicates():
-    for d, key in ((_HELDOUT, "text"), (_VAGUELAW, "state")):
+    for d, key in ((_HELDOUT, "text"), (_VAGUELAW, "state"), (_TUNING_V2, "text")):
         seen = Counter(_norm(load_yaml(p).get(key, "")) for p in d.glob("*.yaml"))
         dups = [t for t, n in seen.items() if n > 1 and t]
         assert not dups, f"duplicate texts within {d.name}: {len(dups)}"
 
 
-def test_heldout_v2_has_six_pos_six_neg_per_concept():
+_ALL_CONCEPTS = {
+    "AIA-5-1-a", "AIA-5-1-b", "AIA-5-1-c", "AIA-5-1-d", "AIA-5-1-f", "AIA-5-1-g",
+    "AIA-A3-1c", "AIA-A3-4a", "AIA-A3-4b", "AIA-A3-5b", "AIA-A3-5c",
+    "GDPR-9", "GDPR-22",
+}
+
+
+def test_heldout_v2_has_six_pos_six_neg_for_all_13_concepts():
     by_concept: dict = {}
     for p in _HELDOUT.glob("*.yaml"):
         c = load_yaml(p)
         d = by_concept.setdefault(c["concept_id"], {"pos": 0, "neg": 0})
         d["pos" if c["expect_pattern"] else "neg"] += 1
-    assert by_concept, "no held-out v2 cases"
+    assert set(by_concept) == _ALL_CONCEPTS, (
+        f"held-out must cover all 13 concepts; missing: {_ALL_CONCEPTS - set(by_concept)}")
     for cid, d in by_concept.items():
         assert d["pos"] >= 6, f"{cid}: only {d['pos']} positives (need >= 6)"
         assert d["neg"] >= 6, f"{cid}: only {d['neg']} negatives (need >= 6)"
