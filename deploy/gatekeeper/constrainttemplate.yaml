@@ -1,0 +1,77 @@
+apiVersion: templates.gatekeeper.sh/v1
+kind: ConstraintTemplate
+metadata:
+  name: euaicompliancedeploygate
+  annotations:
+    description: >-
+      Deny a workload labelled as a high-risk EU AI use case unless its required
+      compliance obligations are satisfied: every required artefact is recorded
+      and approved by two distinct people. Mirrors policy/deploy.rego. Synthetic
+      data only; not a conformity claim.
+spec:
+  crd:
+    spec:
+      names:
+        kind: EuAiComplianceDeployGate
+      validation:
+        openAPIV3Schema:
+          type: object
+          properties:
+            requiredApprovers:
+              type: integer
+              description: Distinct approvers required per obligation (default 2).
+  targets:
+    - target: admission.k8s.gatekeeper.sh
+      rego: |
+        package euaicompliancedeploygate
+
+        required_approvers := n {
+          n := input.parameters.requiredApprovers
+        } else := 2
+
+        # The use case declaration is carried on the workload's annotations as a
+        # compact JSON string under "guardrails.eu/use-case". Absent annotation
+        # -> not a gated workload -> no violation.
+        use_case := uc {
+          raw := input.review.object.metadata.annotations["guardrails.eu/use-case"]
+          uc := json.unmarshal(raw)
+        }
+
+        obligations[o] {
+          use_case
+          o := use_case.obligations[_]
+        }
+
+        present(key) {
+          p := use_case.artefacts[key]
+          is_string(p)
+          trim_space(p) != ""
+        }
+
+        approvers(key) = s {
+          s := {who |
+            item := use_case.approvals[_]
+            who := item.approver
+            art := object.get(item, "artefact", "*")
+            art == key
+          } | {who |
+            item := use_case.approvals[_]
+            who := item.approver
+            object.get(item, "artefact", "*") == "*"
+          }
+        }
+
+        violation[{"msg": msg}] {
+          some key
+          obligations[key]
+          not present(key)
+          msg := sprintf("deploy blocked: %q artefact missing", [key])
+        }
+
+        violation[{"msg": msg}] {
+          some key
+          obligations[key]
+          present(key)
+          count(approvers(key)) < required_approvers
+          msg := sprintf("deploy blocked: %q approved by %d, need %d distinct", [key, count(approvers(key)), required_approvers])
+        }

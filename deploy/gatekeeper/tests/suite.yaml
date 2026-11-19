@@ -1,0 +1,20 @@
+kind: Suite
+apiVersion: test.gatekeeper.sh/v1alpha1
+metadata:
+  name: eu-ai-compliance-deploy-gate
+# Run with:  gator verify deploy/gatekeeper/tests/   (to be run by the owner;
+# gator is part of the Gatekeeper tooling and is not installed in this sandbox).
+tests:
+  - name: deploy-gate
+    template: ../constrainttemplate.yaml
+    constraint: ../constraint.yaml
+    cases:
+      - name: denied-when-artefacts-missing
+        object: deny-missing-artefacts.yaml
+        assertions:
+          - violations: yes
+            message: "artefact missing"
+      - name: allowed-when-present-and-approved
+        object: allow-approved.yaml
+        assertions:
+          - violations: no
