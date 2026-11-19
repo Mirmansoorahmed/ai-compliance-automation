@@ -34,6 +34,8 @@ dev = [
 [project.scripts]
 # Thin adapter that connects an AI coding tool's hook to POST /v1/check.
 guardrails-hook = "guardrails_hook.cli:main"
+# CI gate: scans a PR diff and runs the same decision engine in-process.
+guardrails-ci = "guardrails_ci.cli:main"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
