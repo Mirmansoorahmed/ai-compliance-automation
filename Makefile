@@ -7,7 +7,7 @@ PROFILE ?= oss
 # The oss profile runs from source with no install step; put src/ on the path.
 export PYTHONPATH := src
 
-.PHONY: help test opa-test schema eval coverage demo check-demo check-adapters-demo check-ci-demo check-deploy-demo check-detection-demo check-vaguelaw-demo check-adapters6-demo check-evidence-demo report all
+.PHONY: help test opa-test schema eval coverage demo check-demo check-adapters-demo check-ci-demo check-deploy-demo check-detection-demo check-vaguelaw-demo check-adapters6-demo check-evidence-demo check-stack-demo report all
 
 help:
 	@echo "Targets:"
@@ -26,6 +26,7 @@ help:
 	@echo "  check-vaguelaw-demo  vague-law classifier on the CV story (offline local backend)"
 	@echo "  check-adapters6-demo Cursor + MCP tool + gateway link (offline)"
 	@echo "  check-evidence-demo  evidence pack v2 auditor view (offline)"
+	@echo "  check-stack-demo     packaged policy service, exercised in-process (offline)"
 	@echo "  report    Build the PDF evidence pack (fails closed on missing fields)"
 
 test:
@@ -78,6 +79,9 @@ check-adapters6-demo:
 
 check-evidence-demo:
 	@$(PYTHON) -m aca.evidence_pack.demo
+
+check-stack-demo:
+	@$(PYTHON) -m aca.guard.api.demo_stack
 
 report:
 	@$(PYTHON) -m aca.report.build
