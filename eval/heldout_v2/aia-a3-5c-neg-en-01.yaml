@@ -1,0 +1,8 @@
+id: aia-a3-5c-neg-en-01
+lang: en
+category: benign
+concept_id: AIA-A3-5c
+text: "Price commercial cargo insurance for a shipping firm from fleet and route data (not a natural person)."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic held-out (AIA-A3-5c); disjoint from exemplars + tuning."

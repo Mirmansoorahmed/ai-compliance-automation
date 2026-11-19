@@ -1,0 +1,8 @@
+id: aia-a3-1c-neg-en-02
+lang: en
+category: benign
+concept_id: AIA-A3-1c
+text: "Measure queue length to open more tills, reading no one's mood."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic held-out (AIA-A3-1c); disjoint from exemplars + tuning."

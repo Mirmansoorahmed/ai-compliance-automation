@@ -1,0 +1,8 @@
+id: aia-a3-1c-neg-de-04
+lang: de
+category: benign
+concept_id: AIA-A3-1c
+text: "Zähle, wie viele Käufer pro Stunde eintreten, ohne Rückschluss auf Gefühle."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic held-out (AIA-A3-1c); disjoint from exemplars + tuning."

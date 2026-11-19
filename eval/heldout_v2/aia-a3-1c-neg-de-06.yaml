@@ -1,0 +1,8 @@
+id: aia-a3-1c-neg-de-06
+lang: de
+category: benign
+concept_id: AIA-A3-1c
+text: "Protokolliere Verfügbarkeit und Fehlerquote des Terminals."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic held-out (AIA-A3-1c); disjoint from exemplars + tuning."

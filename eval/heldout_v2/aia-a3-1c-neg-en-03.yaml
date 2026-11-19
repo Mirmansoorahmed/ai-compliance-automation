@@ -1,0 +1,8 @@
+id: aia-a3-1c-neg-en-03
+lang: en
+category: benign
+concept_id: AIA-A3-1c
+text: "Log kiosk uptime and error rates."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic held-out (AIA-A3-1c); disjoint from exemplars + tuning."

@@ -1,0 +1,8 @@
+id: aia-a3-1c-neg-en-01
+lang: en
+category: benign
+concept_id: AIA-A3-1c
+text: "Count how many shoppers enter each hour, with no inference about feelings."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic held-out (AIA-A3-1c); disjoint from exemplars + tuning."

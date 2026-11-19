@@ -1,0 +1,8 @@
+id: aia-a3-4b-neg-en-01
+lang: en
+category: benign
+concept_id: AIA-A3-4b
+text: "Let employees book their own leave and show the team calendar, with no evaluation."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic held-out (AIA-A3-4b); disjoint from exemplars + tuning."

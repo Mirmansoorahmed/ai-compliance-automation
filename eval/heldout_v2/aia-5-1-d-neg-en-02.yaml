@@ -1,0 +1,8 @@
+id: aia-5-1-d-neg-en-02
+lang: en
+category: benign
+concept_id: AIA-5-1-d
+text: "Detect account takeover from an impossible-travel login and a new device and ask for re-authentication."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic held-out (AIA-5-1-d); disjoint from exemplars + tuning."

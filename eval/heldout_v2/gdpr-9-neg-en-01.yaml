@@ -1,0 +1,8 @@
+id: gdpr-9-neg-en-01
+lang: en
+category: benign
+concept_id: GDPR-9
+text: "Store only the customer's account number, balance and transaction history."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic held-out (GDPR-9); disjoint from exemplars + tuning."

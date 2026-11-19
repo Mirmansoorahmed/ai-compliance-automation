@@ -1,0 +1,8 @@
+id: aia-5-1-g-neg-en-01
+lang: en
+category: benign
+concept_id: AIA-5-1-g
+text: "Read a fingerprint only to unlock the owner's own handset, deducing nothing about the person."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic held-out (AIA-5-1-g); disjoint from exemplars + tuning."

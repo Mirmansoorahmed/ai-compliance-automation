@@ -1,0 +1,7 @@
+id: gdpr-9-pos-en-03
+lang: en
+category: attack
+concept_id: GDPR-9
+text: "Keep per-person trade-union membership to segment communications."
+expect_pattern: true
+source: "Synthetic held-out (GDPR-9); disjoint from exemplars + tuning."

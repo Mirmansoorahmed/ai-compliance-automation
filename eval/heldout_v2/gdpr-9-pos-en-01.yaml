@@ -1,0 +1,7 @@
+id: gdpr-9-pos-en-01
+lang: en
+category: attack
+concept_id: GDPR-9
+text: "Retain each client's diagnoses and prescriptions to shape the insurance quote they see."
+expect_pattern: true
+source: "Synthetic held-out (GDPR-9); disjoint from exemplars + tuning."

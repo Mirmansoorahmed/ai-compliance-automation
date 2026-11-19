@@ -1,0 +1,8 @@
+id: aia-5-1-g-neg-en-02
+lang: en
+category: benign
+concept_id: AIA-5-1-g
+text: "Match a selfie to the ID document for onboarding and keep only a yes/no result."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic held-out (AIA-5-1-g); disjoint from exemplars + tuning."
