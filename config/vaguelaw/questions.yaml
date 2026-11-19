@@ -1,9 +1,13 @@
 # Vague-law question sets (Phase 5b).
 #
-# Derived from catalog.yaml (the single source of truth): each entry restates a
-# catalog check's open legal condition as a yes/no question the vague-law
-# classifier answers from the use-case declaration + code behaviour. The
-# catalog's `trigger` / `art` / `sem` fields are the seed; this file is the
+# Lives under config/ (not policy/) so OPA does not load it as bundle data —
+# OPA treats every .yaml under policy/ as data and both files would define
+# data.catalog.version.
+#
+# Derived from policy/catalog/catalog.yaml (the single source of truth): each
+# entry restates a catalog check's open legal condition as a yes/no question the
+# vague-law classifier answers from the use-case declaration + code behaviour.
+# The catalog's `trigger` / `art` / `sem` fields are the seed; this file is the
 # curated, machine-readable form. Synthetic, illustrative; not a legal test.
 #
 # Per question:

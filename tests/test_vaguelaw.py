@@ -32,6 +32,18 @@ def test_question_by_id():
     assert q is not None and q.act_label == "ASK"
 
 
+def test_questions_file_is_not_under_policy_dir():
+    # Regression guard: questions.yaml must NOT live under policy/, or OPA loads
+    # it as bundle data and collides with catalog.yaml on data.catalog.version.
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[1]
+    assert (root / "config" / "vaguelaw" / "questions.yaml").is_file()
+    assert not (root / "policy" / "catalog" / "questions.yaml").exists()
+    # No stray non-Rego yaml that would shadow data.catalog under policy/catalog/.
+    extra = [p.name for p in (root / "policy" / "catalog").glob("*.yaml") if p.name != "catalog.yaml"]
+    assert extra == [], f"unexpected yaml under policy/catalog/: {extra}"
+
+
 # --- routing (deterministic, scripted FakeBackend) ---------------------------
 
 def _q(qid="Q", act="BLOCK", thr=0.6):

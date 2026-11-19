@@ -1,9 +1,11 @@
 """Load the vague-law question sets.
 
-The questions are curated in policy/catalog/questions.yaml, derived from
-catalog.yaml (the source of truth). This loader returns ``Question`` records.
-Uses the project's YAML reader (PyYAML when present, the dependency-free reader
-otherwise).
+The questions are curated in config/vaguelaw/questions.yaml, derived from
+catalog.yaml (the source of truth). They live under config/ rather than policy/
+so OPA does not load them as bundle data (OPA treats every .yaml under policy/
+as data and would hit a merge conflict on data.catalog.version). This loader
+returns ``Question`` records, using the project's YAML reader (PyYAML when
+present, the dependency-free reader otherwise).
 """
 
 from __future__ import annotations
@@ -13,7 +15,7 @@ from pathlib import Path
 from aca.register.yamlio import load_yaml
 from aca.vaguelaw.backend import Question
 
-_QUESTIONS_PATH = Path(__file__).resolve().parents[3] / "policy" / "catalog" / "questions.yaml"
+_QUESTIONS_PATH = Path(__file__).resolve().parents[3] / "config" / "vaguelaw" / "questions.yaml"
 
 
 def load_questions(path: Path | None = None) -> list[Question]:
