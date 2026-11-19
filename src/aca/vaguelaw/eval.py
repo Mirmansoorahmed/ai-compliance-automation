@@ -86,19 +86,28 @@ def evaluate(backend: DecisionBackend, *, cases_dir: Path | None = None) -> Eval
             continue
         expect = bool(case["expect_yes"])
         routing = classify(case["state"], [q], backend)[0]
-        qstat = by_q.setdefault(qid, {"n": 0, "correct": 0, "ask": 0})
+        qstat = by_q.setdefault(qid, {"n": 0, "correct": 0, "ask": 0, "scored": 0,
+                                      "_cal": []})
         qstat["n"] += 1
         # p(yes) for calibration (routing carries it).
         cal_pairs.append((routing.p_yes, expect))
+        qstat["_cal"].append((routing.p_yes, expect))
         if routing.route == ASK:
             asks += 1
             qstat["ask"] += 1
             continue  # ASK is neither right nor wrong; excluded from accuracy
         scored += 1
+        qstat["scored"] += 1
         predicted_yes = routing.route == "ACT"
         if predicted_yes == expect:
             correct += 1
             qstat["correct"] += 1
+
+    # Precompute per-question accuracy / ECE / ASK-rate, then drop the raw pairs.
+    for qid, s in by_q.items():
+        s["accuracy"] = round(s["correct"] / s["scored"], 4) if s["scored"] else None
+        s["ask_rate"] = round(s["ask"] / s["n"], 4) if s["n"] else None
+        s["ece"] = _ece(s.pop("_cal"))
 
     accuracy = round(correct / scored, 4) if scored else None
     ask_rate = round(asks / len(cases), 4) if cases else None

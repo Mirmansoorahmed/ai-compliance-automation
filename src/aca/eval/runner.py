@@ -34,6 +34,7 @@ _EVAL_DIR = Path(__file__).resolve().parents[3] / "eval"
 _CASES_DIR = _EVAL_DIR / "cases"
 _HELDOUT_DIR = _EVAL_DIR / "heldout"
 _HELDOUT_V2_DIR = _EVAL_DIR / "heldout_v2"
+_TUNING_V2_DIR = _EVAL_DIR / "tuning_v2"
 _RESULTS_DIR = _EVAL_DIR / "results"
 _EXEMPLAR_DIR = Path(__file__).resolve().parents[3] / "exemplars"
 
@@ -275,10 +276,9 @@ def run_eval(
 ) -> EvalReport:
     root = repo_root or Path(__file__).resolve().parents[3]
     embedder = build_embedder(allow_hashed_fallback=True, dim=dim)
-    # Build the adapter with EVERY curated concept (Phase 5 added 12 more), so
-    # detect() emits a label per concept and the runner can score all of them.
-    adapter = LocalEmbeddingsAdapter(embedder=embedder, dim=dim,
-                                     concepts=tuple(all_concepts()))
+    # The adapter's DEFAULT_CONCEPTS now covers all 13 concepts, so detect()
+    # emits a label per concept with no runner override.
+    adapter = LocalEmbeddingsAdapter(embedder=embedder, dim=dim)
 
     # Eval uses the production thresholds with an EMPTY confirmed-pattern list
     # (the default), so a full match routes to four-eyes and a partial to ask —
@@ -305,9 +305,13 @@ def run_eval(
     benign_false_block_rate = benign_rates["benign_false_block_rate"]
     benign_routed_to_ask_rate = benign_rates["benign_routed_to_ask_rate"]
 
-    # Per-concept breakdown of the tuning set over ALL 13 concepts (the AIA-5-1-c
-    # overall numbers above are kept for backward compatibility).
-    per_concept = _score_set(all_cases, adapter, policy_data)
+    # Per-concept breakdown of the tuning/dev set over ALL 13 concepts: the
+    # legacy AIA-5-1-c cases (eval/cases/) plus the per-concept dev set
+    # (eval/tuning_v2/). The AIA-5-1-c overall numbers above are unchanged.
+    tuning_cases = list(all_cases)
+    if _TUNING_V2_DIR.exists():
+        tuning_cases += load_cases(_TUNING_V2_DIR)
+    per_concept = _score_set(tuning_cases, adapter, policy_data)
 
     # Held-out set: NEW cases not used while tuning stage-0 vocab/exemplars,
     # scored separately so improvements are not just fit to the training texts.

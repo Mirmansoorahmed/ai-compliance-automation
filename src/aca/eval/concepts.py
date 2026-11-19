@@ -1,17 +1,21 @@
 """Per-concept exemplar smoke eval (Phase 5).
 
 Phase 5 ships exemplars + legal elements for many concepts (the remaining Art. 5
-points and the fintech-relevant Annex III areas and GDPR Art. 9/22). The real
-recall numbers must come from a run with the trained MiniLM model, done by the
-owner on another machine. This module is a **smoke check only**: a leave-one-out
-nearest-exemplar separation score computed with the OFFLINE hashed embedder, so
-CI can confirm the data loads and the positives/negatives are not trivially
-inseparable. Its output is explicitly labelled "smoke, not a real result".
+points and the fintech-relevant Annex III areas and GDPR Art. 9/22). This module
+computes a per-concept leave-one-out nearest-exemplar separation score and
+writes a result JSON to eval/results/.
 
-For each concept it embeds every exemplar, and for each held-out exemplar checks
-whether its nearest OTHER exemplar has the same polarity (positive vs hard
-negative). The reported ``loo_accuracy`` is that agreement rate. This is a data
-sanity signal, not a model metric.
+It is a DATA-QUALITY signal, not a held-out recall number. The label and the
+``is_smoke`` flag depend on the embedder actually loaded: with the OFFLINE
+hashed fallback it is a smoke check (the data loads and positives/negatives are
+not trivially inseparable), explicitly labelled "smoke, not a real result"; with
+the trained sentence-transformers model it is labelled a model separation signal
+(still a data-quality check, not recall). The real recall numbers come from the
+eval runner's held-out scoring with the trained model, run by the owner.
+
+For each concept it embeds every exemplar, and for each one checks whether its
+nearest OTHER exemplar has the same polarity (positive vs hard negative). The
+reported ``loo_accuracy`` is that agreement rate.
 """
 
 from __future__ import annotations

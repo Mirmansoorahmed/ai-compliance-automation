@@ -17,8 +17,14 @@ from aca.guard.stages.stage0 import run_stage0
 from aca.guard.stages.stage1 import run_stage1
 from aca.guard.stages.stage_a import run_stage_a
 
-# Concepts this adapter has curated exemplars for in v1.
-DEFAULT_CONCEPTS = ("AIA-5-1-c",)
+# Concepts this adapter has curated exemplars for. Phase 5 added 12 beyond the
+# original AIA-5-1-c; the default is now every concept with an exemplar file so
+# detect() emits a label per concept without a caller override.
+DEFAULT_CONCEPTS = (
+    "AIA-5-1-a", "AIA-5-1-b", "AIA-5-1-c", "AIA-5-1-d", "AIA-5-1-f", "AIA-5-1-g",
+    "AIA-A3-1c", "AIA-A3-4a", "AIA-A3-4b", "AIA-A3-5b", "AIA-A3-5c",
+    "GDPR-9", "GDPR-22",
+)
 
 
 class LocalEmbeddingsAdapter:
