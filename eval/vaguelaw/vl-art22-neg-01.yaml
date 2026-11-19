@@ -1,0 +1,5 @@
+id: vl-art22-neg-01
+question_id: GDPR-22
+state: "The model proposes a shortlist and a named loan officer reviews and signs the final decision for each applicant."
+expect_yes: false
+source: "Synthetic GDPR Art. 22 negative: a human makes the final decision."

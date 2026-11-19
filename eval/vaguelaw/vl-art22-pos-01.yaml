@@ -1,0 +1,5 @@
+id: vl-art22-pos-01
+question_id: GDPR-22
+state: "The model alone approves or rejects each loan application and the result is applied to the customer directly, with no human review."
+expect_yes: true
+source: "Synthetic GDPR Art. 22: solely automated, significant effect."
