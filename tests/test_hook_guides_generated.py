@@ -39,6 +39,30 @@ def test_kiro_steering_is_up_to_date():
     assert actual == expected, "eu-ai-compliance.md is stale — run: python3 adapters/generate_guides.py"
 
 
+def test_cursor_rules_is_up_to_date():
+    gen = _load_generator()
+    checks = load_catalog()["checks"]
+    expected = gen.render_cursor(checks)
+    actual = (_ROOT / "adapters" / "cursor" / "rules" / "eu-ai-compliance.mdc").read_text(encoding="utf-8")
+    assert actual == expected, "cursor rules stale — run: python3 adapters/generate_guides.py"
+
+
+def test_copilot_instructions_is_up_to_date():
+    gen = _load_generator()
+    checks = load_catalog()["checks"]
+    expected = gen.render_copilot(checks)
+    actual = (_ROOT / "adapters" / "copilot" / "copilot-instructions.md").read_text(encoding="utf-8")
+    assert actual == expected, "copilot instructions stale — run: python3 adapters/generate_guides.py"
+
+
+def test_codex_agents_is_up_to_date():
+    gen = _load_generator()
+    checks = load_catalog()["checks"]
+    expected = gen.render_codex(checks)
+    actual = (_ROOT / "adapters" / "codex" / "AGENTS.md").read_text(encoding="utf-8")
+    assert actual == expected, "codex AGENTS.md stale — run: python3 adapters/generate_guides.py"
+
+
 def test_guides_mention_core_rules():
     for name in ("adapters/claude-code/CLAUDE.md",
                  "adapters/kiro/steering/eu-ai-compliance.md"):
