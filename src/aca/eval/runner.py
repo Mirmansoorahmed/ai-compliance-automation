@@ -246,24 +246,50 @@ def _score_set(cases: list[dict], adapter, policy_data) -> dict:
         "per_language": by_lang,
         "per_concept": by_concept,
         "benign_false_block_rate": benign["benign_false_block_rate"],
+        "benign_block_rate": benign["benign_block_rate"],
+        "benign_four_eyes_rate": benign["benign_four_eyes_rate"],
+        "benign_ask_rate": benign["benign_ask_rate"],
+        "benign_review_rate": benign["benign_review_rate"],
         "benign_routed_to_ask_rate": benign["benign_routed_to_ask_rate"],
     }
 
 
 def _benign_rates(results: list["CaseResult"]) -> dict:
-    """False-block (strict) and routed-to-ask rates on benign/ambiguous cases."""
+    """Benign/ambiguous outcome rates, split by tier (Fix #3).
+
+    Reports the benign share sent to each tier separately:
+      - benign_block_rate      : deny (a confirmed prohibited pattern)
+      - benign_four_eyes_rate  : four-eyes (a full validated element match)
+      - benign_ask_rate        : ask (similarity / partial / low-confidence)
+    ``benign_false_block_rate`` = block + four-eyes (both are a BLOCK outcome: a
+    benign case wrongly requiring a hard review). ``benign_review_rate`` = block
+    + four-eyes + ask (the whole cost of routing benign cases to a human). The
+    ASK calibrator's cap is on (ask + four-eyes); see calibrate_ask.
+    """
     benign = [r for r in results if r.category in ("benign", "ambiguous")]
     if not benign:
-        return {"benign_false_block_rate": None, "benign_routed_to_ask_rate": None, "n_benign": 0}
-    # Strict false block = a benign case that asserts the FULL pattern (deny tier
-    # once confirmed). Routed-to-ask = benign case sent to a human (the cost of
-    # the partial rule; should stay low).
-    false_blocks = sum(1 for r in benign if r.detected_pattern)
-    routed_ask = sum(1 for r in benign if r.routed_to_review)
+        return {
+            "benign_false_block_rate": None, "benign_block_rate": None,
+            "benign_four_eyes_rate": None, "benign_ask_rate": None,
+            "benign_review_rate": None,
+            # Back-compat alias (older docs/tests used this name for ask).
+            "benign_routed_to_ask_rate": None, "n_benign": 0,
+        }
+    n = len(benign)
+    block = sum(1 for r in benign if r.tier == "deny")
+    four_eyes = sum(1 for r in benign if r.tier == "four-eyes")
+    ask = sum(1 for r in benign if r.tier == "ask")
     return {
-        "benign_false_block_rate": round(false_blocks / len(benign), 4),
-        "benign_routed_to_ask_rate": round(routed_ask / len(benign), 4),
-        "n_benign": len(benign),
+        # A benign case reaching a BLOCK outcome = deny OR four-eyes (both are a
+        # hard, blocking human-review gate). ASK is a softer route, reported
+        # separately.
+        "benign_false_block_rate": round((block + four_eyes) / n, 4),
+        "benign_block_rate": round(block / n, 4),
+        "benign_four_eyes_rate": round(four_eyes / n, 4),
+        "benign_ask_rate": round(ask / n, 4),
+        "benign_review_rate": round((block + four_eyes + ask) / n, 4),
+        "benign_routed_to_ask_rate": round(ask / n, 4),
+        "n_benign": n,
     }
 
 
@@ -450,13 +476,14 @@ def main(argv: list[str] | None = None) -> int:  # pragma: no cover - CLI glue
         return f"n/a ({m.get('precision_na_reason') or 'no positives'})"
 
     def _line(cid, m):
-        # strict recall = full element match (BLOCK/four-eyes); review recall =
-        # BLOCK + ASK (routed_to_review); false-block = benign reaching BLOCK;
-        # benign->ASK = benign routed to a human by the similarity tier.
+        # strict recall = full validated element match (BLOCK/four-eyes);
+        # review recall = BLOCK + four-eyes + ASK (routed_to_review); the benign
+        # split: false_block = block+four-eyes, 4eyes, ask reported separately.
         return (f"    {cid:12} strict_recall={m.get('recall')} "
                 f"review_recall={m.get('routed_to_review')} "
-                f"false_block={m.get('benign_false_block_rate')} "
-                f"benign_to_ask={m.get('benign_routed_to_ask_rate')} n={m['n']}")
+                f"benign[false_block={m.get('benign_false_block_rate')} "
+                f"4eyes={m.get('benign_four_eyes_rate')} ask={m.get('benign_ask_rate')}] "
+                f"n={m['n']}")
 
     for name, section in (("tuning", report.per_concept), ("held-out v2", report.held_out_v2)):
         pc = section.get("per_concept", {})
@@ -465,8 +492,9 @@ def main(argv: list[str] | None = None) -> int:  # pragma: no cover - CLI glue
         ov = section.get("per_language", {}).get("overall", {})
         print(f"  {name} per-concept (n={section.get('n_cases')}): overall "
               f"strict_recall={ov.get('recall')} review_recall={ov.get('routed_to_review')} "
-              f"false_block={section.get('benign_false_block_rate')} "
-              f"benign_to_ask={section.get('benign_routed_to_ask_rate')}")
+              f"benign[false_block={section.get('benign_false_block_rate')} "
+              f"4eyes={section.get('benign_four_eyes_rate')} ask={section.get('benign_ask_rate')} "
+              f"review={section.get('benign_review_rate')}]")
         for cid in sorted(pc):
             print(_line(cid, pc[cid]))
     return 0
