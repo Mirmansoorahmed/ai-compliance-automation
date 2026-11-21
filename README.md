@@ -87,34 +87,33 @@ _Source: committed eval run 2026-11-18 14:02 UTC, git `6ead950c`, embedder `st:s
 
 ### Per-concept, 13 concepts (after the similarity ASK tier + element exemplars)
 
-The recall fix (ASK similarity tier, then element-level exemplars — see [`docs/v2/DETECTION-DIAGNOSIS.md`](docs/v2/DETECTION-DIAGNOSIS.md)) is built and calibrated on the tuning set only. The runner now reports four columns **per concept and overall**: **strict recall** (full element match → BLOCK/four-eyes), **review recall** (BLOCK + ASK, i.e. strict + partial + similarity routed to a human), **false-block rate** (benign reaching BLOCK — held at 0 on tuning by the element-margin calibration), and **benign→ASK** (benign sent to a human by the similarity tier, capped at ≤ 0.15 on tuning).
+The recall fix (ASK similarity tier, then element-level exemplars — see [`docs/v2/DETECTION-DIAGNOSIS.md`](docs/v2/DETECTION-DIAGNOSIS.md)) is built and calibrated on the tuning set only. The runner reports five columns **per concept and overall**: **strict recall** (full validated element match → BLOCK/four-eyes), **review recall** (BLOCK + four-eyes + ASK — everything routed to a human), and the benign outcomes split into **benign→BLOCK** (= block + four-eyes, the false-block rate), **benign→four-eyes** and **benign→ASK**. The ASK threshold is calibrated so the **combined** benign review rate (ASK + four-eyes) stays ≤ 0.15 on tuning; the element margins are calibrated so the benign/cross-concept full-match rate is 0 on tuning.
 
 These real-model numbers are **to be run by the owner** (the sandbox cannot load the model). Placeholder table — the owner fills it from `make eval` on a machine with the model installed:
 
-| Concept | strict recall | review recall | false-block | benign→ASK |
-|---|---|---|---|---|
-| AIA-5-1-a | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED |
-| AIA-5-1-b | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED |
-| AIA-5-1-c | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED |
-| AIA-5-1-d | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED |
-| AIA-5-1-f | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED |
-| AIA-5-1-g | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED |
-| AIA-A3-1c | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED |
-| AIA-A3-4a | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED |
-| AIA-A3-4b | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED |
-| AIA-A3-5b | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED |
-| AIA-A3-5c | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED |
-| GDPR-9 | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED |
-| GDPR-22 | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED |
-| **overall** | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED |
+| Concept | strict recall | review recall | benign→BLOCK | benign→4-eyes | benign→ASK |
+|---|---|---|---|---|---|
+| AIA-5-1-a | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED |
+| AIA-5-1-b | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED |
+| AIA-5-1-c | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED |
+| AIA-5-1-d | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED |
+| AIA-5-1-f | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED |
+| AIA-5-1-g | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED |
+| AIA-A3-1c | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED |
+| AIA-A3-4a | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED |
+| AIA-A3-4b | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED |
+| AIA-A3-5b | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED |
+| AIA-A3-5c | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED |
+| GDPR-9 | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED |
+| GDPR-22 | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED |
+| **overall** | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED |
 
-Owner commands to produce the real numbers:
+Owner commands to produce the real numbers (single calibrate command — element margins first, then ASK thresholds on top):
 
 ```bash
 pip install -e ".[embeddings]"
-python -m aca.eval.calibrate_ask --write-thresholds       # tuning only; benign->ASK <= 0.15
-python -m aca.eval.calibrate_elements --write-margins     # tuning only; concept false-block = 0
-make eval                                                 # writes the per-concept table above
+python -m aca.eval.calibrate --write        # tuning only: element margins, then ASK thresholds (benign review <= 0.15)
+make eval                                   # writes the per-concept table above
 ```
 
 > **Honest reading.** This run used the real pinned multilingual MiniLM model (`paraphrase-multilingual-MiniLM-L12-v2`) on CPU. On the tuning set: precision 1.0, strict recall 0.82 (DE and EN alike), and **every attack is routed to a human** (routed-to-review 1.0) via the partial-pattern rule, while benign false-block stays 0.0 and only 6.25% of benign cases are sent to `ask`.
