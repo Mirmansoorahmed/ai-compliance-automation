@@ -22,13 +22,11 @@ from __future__ import annotations
 
 import json
 import time
-from dataclasses import dataclass
 from pathlib import Path
 
 from aca.guard.adapters.local_embeddings import DEFAULT_CONCEPTS, LocalEmbeddingsAdapter
 from aca.guard.embeddings import build_embedder
 from aca.guard.event import Event
-from aca.policy.decide import PolicyData, decide, load_policy_data
 from aca.register.yamlio import load_yaml
 
 _EVAL_DIR = Path(__file__).resolve().parents[3] / "eval"
@@ -56,16 +54,6 @@ def _assert_not_heldout(path: Path) -> None:
             f"calibration must not read held-out data: {path} — tune on eval/cases + eval/tuning_v2 only")
 
 
-@dataclass
-class ConceptSweep:
-    concept_id: str
-    chosen: float | None
-    rows: list[dict]
-    n_pos: int
-    n_neg: int
-    note: str = ""
-
-
 def _load_tuning_cases(dirs=_TUNING_DIRS) -> list[dict]:
     cases: list[dict] = []
     for d in dirs:
@@ -77,71 +65,152 @@ def _load_tuning_cases(dirs=_TUNING_DIRS) -> list[dict]:
     return cases
 
 
-def _benign_hard_review_rate(emb, policy, concept_id, ask_threshold, neg_cases, element_margins) -> float:
-    """Fraction of this concept's benign tuning cases routed to ASK OR four-eyes
-    when ``concept_id`` uses ``ask_threshold`` — measured through the REAL
-    adapter (with the final element margins) + decide(). four-eyes can only come
-    from a full element match; ASK from the similarity/partial/low path."""
-    adapter = LocalEmbeddingsAdapter(
-        embedder=emb, concepts=(concept_id,),
-        ask_thresholds={concept_id: ask_threshold},
-        element_margins=element_margins,
-    )
-    hard = 0
-    for c in neg_cases:
+_CURVE_CAPS = [0.10, 0.15, 0.20, 0.30]
+
+
+def _case_cache(emb, concepts, cases, element_margins):
+    """Precompute, once, each concept's label facts per case with the ASK tier
+    OFF (ask_thresholds={}). The ASK threshold only decides whether a non-full,
+    high-confidence label becomes similarity_only / partial, which is pure
+    arithmetic on these cached facts — so the joint sweep needs no model re-run.
+
+    Returns a list (per case) of {concept_id: (confidence, full_match, partial_elig)}
+    where ``partial_elig`` is True when >=2 of the concept's official elements
+    are met but not all (a partial becomes ASK iff confidence >= the threshold).
+    Full matches (four-eyes) and deny are threshold-independent and captured as
+    ``full_match``.
+    """
+    adapter = LocalEmbeddingsAdapter(embedder=emb, concepts=tuple(concepts),
+                                     ask_thresholds={}, element_margins=element_margins)
+    cache = []
+    for c in cases:
         labels = adapter.detect(Event(text=c.get("text", ""), language=c.get("lang")))
-        tier = decide(labels, policy)
-        if tier in ("ask", "four-eyes", "deny"):
-            hard += 1
-    return hard / len(neg_cases) if neg_cases else 0.0
+        row = {}
+        for l in labels:
+            total = l.get("elements_total") or 0
+            official = set(l.get("official_elements") or [])
+            met = len(set(l.get("elements_met") or []) & official) if official else len(l.get("elements_met") or [])
+            full = bool(total and met >= total)
+            partial_elig = (not full) and met >= 2 and total >= 3
+            row[l["concept_id"]] = (float(l.get("confidence", 0.0)), full, partial_elig)
+        cache.append(row)
+    return cache
+
+
+def _tier_for_case(facts: dict, thresholds: dict) -> str:
+    """Resolve the tier for one case from cached facts + an ASK-threshold map.
+    Mirrors compliance.tier: four-eyes on a full match; ASK on similarity_only
+    (conf >= threshold, not full) or a partial that also clears the threshold."""
+    best = "allow"
+    order = {"allow": 0, "ask": 1, "four-eyes": 2, "deny": 3}
+    for cid, (conf, full, _partial_elig) in facts.items():
+        th = thresholds.get(cid)
+        if full:
+            cand = "four-eyes"
+        elif th is not None and conf >= th:
+            # Not a full match but confidence clears the threshold -> the adapter
+            # sets similarity_only (and gates partial on the same threshold), so
+            # the tier is ASK.
+            cand = "ask"
+        else:
+            cand = "allow"
+        if order[cand] > order[best]:
+            best = cand
+    return best
+
+
+def _review_frac(cache, thresholds) -> float:
+    if not cache:
+        return 0.0
+    return sum(1 for facts in cache
+               if _tier_for_case(facts, thresholds) in ("ask", "four-eyes", "deny")) / len(cache)
 
 
 def calibrate(*, benign_review_cap: float = DEFAULT_BENIGN_REVIEW_CAP,
               concepts: tuple[str, ...] = DEFAULT_CONCEPTS,
               embedder=None, element_margins: dict | None = None,
               **kwargs) -> dict:
-    """Calibrate the similarity ASK threshold per concept ON TOP of the final
-    element-margin regime (Fix #4). For each concept, pick the LOWEST threshold
-    whose COMBINED benign hard-review rate (ASK + four-eyes) on tuning is <= cap.
+    """Calibrate the similarity ASK thresholds JOINTLY (Fix #1).
+
+    All 13 concepts run on every text at runtime, so the ASK thresholds are
+    chosen together: the objective is the COMBINED benign->(ASK+four-eyes) rate
+    across all concepts on the tuning benign set <= cap, while maximising review
+    recall (attacks routed to a human). The per-case concept facts are computed
+    ONCE (model run) and cached; the greedy joint sweep is then pure arithmetic.
+
+    If the cap is unreachable even with all thresholds maxed, the thresholds stay
+    maxed (fewest ASKs) and the tradeoff curve (cap -> review recall) is written.
     """
     if "benign_ask_cap" in kwargs and kwargs["benign_ask_cap"] is not None:
         benign_review_cap = kwargs["benign_ask_cap"]
     emb = embedder or build_embedder(allow_hashed_fallback=True, dim=256)
-    policy = PolicyData(thresholds=load_policy_data().thresholds, confirmed_prohibited_patterns=[])
 
     all_cases = _load_tuning_cases()
-    sweeps: list[ConceptSweep] = []
-    for cid in concepts:
-        pos = [c for c in all_cases if c.get("concept_id") == cid and c.get("expect_pattern")]
-        neg = [c for c in all_cases if c.get("concept_id") == cid and not c.get("expect_pattern")]
+    benign = [c for c in all_cases if c.get("category") in ("benign", "ambiguous")]
+    attacks = [c for c in all_cases if c.get("expect_pattern")]
+    clist = list(concepts)
+    top = _GRID[-1]
 
-        rows = []
-        chosen = None
-        for th in _GRID:
-            benign_review = _benign_hard_review_rate(emb, policy, cid, th, neg, element_margins)
-            rows.append({"threshold": th, "benign_review_rate": round(benign_review, 4)})
-            if chosen is None and benign_review <= benign_review_cap:
-                chosen = th
-        note = "" if chosen is not None else (
-            "no threshold keeps benign review (ask+four-eyes) <= cap on tuning; left unset")
-        sweeps.append(ConceptSweep(cid, chosen, rows, len(pos), len(neg), note))
+    benign_cache = _case_cache(emb, clist, benign, element_margins)
+    attack_cache = _case_cache(emb, clist, attacks, element_margins)
+
+    def solve(cap):
+        thr = {c: top for c in clist}
+        cur_recall = _review_frac(attack_cache, thr)
+        improved = True
+        while improved:
+            improved = False
+            best = None
+            for c in clist:
+                lower = [g for g in _GRID if g < thr[c]]
+                if not lower:
+                    continue
+                cand = dict(thr)
+                cand[c] = lower[-1]
+                if _review_frac(benign_cache, cand) > cap:
+                    continue
+                r = _review_frac(attack_cache, cand)
+                if r > cur_recall and (best is None or r > best[1]):
+                    best = (c, r, cand)
+            if best is not None:
+                _c, r, cand = best
+                thr, cur_recall = cand, r
+                improved = True
+        return thr, cur_recall, _review_frac(benign_cache, thr)
+
+    chosen_thr, recall_at_cap, benign_at_cap = solve(benign_review_cap)
+
+    curve = []
+    for cap in sorted(set(_CURVE_CAPS + [benign_review_cap])):
+        _thr, rec, ben = solve(cap)
+        curve.append({"cap": cap, "review_recall": round(rec, 4),
+                      "benign_review_rate": round(ben, 4)})
 
     backend = "sentence-transformers" if str(emb.version).startswith("st:") else "hashed-fallback"
+    pos_n = {c: sum(1 for x in all_cases if x.get("concept_id") == c and x.get("expect_pattern"))
+             for c in clist}
+    neg_n = {c: sum(1 for x in all_cases if x.get("concept_id") == c and not x.get("expect_pattern"))
+             for c in clist}
     return {
-        "schema": "ask-calibration/v2",
+        "schema": "ask-calibration/v3-joint",
         "generated_ts": time.time(),
         "embedder": emb.version,
         "embedder_backend": backend,
         "is_smoke": backend == "hashed-fallback",
         "benign_review_cap": benign_review_cap,
-        "cap_measures": "benign routed to ASK + four-eyes (combined) on tuning",
-        "concepts": {s.concept_id: {
-            "chosen_ask_threshold": s.chosen,
-            "n_pos": s.n_pos, "n_neg": s.n_neg,
-            "note": s.note,
-            "sweep": s.rows,
-        } for s in sweeps},
+        "cap_measures": "benign routed to ASK + four-eyes (combined, ALL concepts jointly) on tuning",
+        "joint": True,
+        "achieved_benign_review_rate": round(benign_at_cap, 4),
+        "achieved_review_recall": round(recall_at_cap, 4),
+        "cap_unreachable": benign_at_cap > benign_review_cap,
+        "tradeoff_curve": curve,
+        "concepts": {c: {
+            "chosen_ask_threshold": chosen_thr[c] if chosen_thr[c] < top else None,
+            "n_pos": pos_n[c], "n_neg": neg_n[c],
+            "note": "" if chosen_thr[c] < top else "left at max (no ASK) by the joint cap",
+        } for c in clist},
     }
+
 
 
 def write_thresholds(report: dict, *, thresholds_path: Path | None = None) -> Path:
@@ -179,11 +248,18 @@ def main(argv: list[str] | None = None) -> int:  # pragma: no cover - CLI glue
 
     report = calibrate(benign_review_cap=args.cap)
     path = write_report(report)
-    print("ASK-threshold calibration (tuning set only; cap on benign ASK + four-eyes)")
+    print("ASK-threshold calibration (JOINT; tuning only; cap on benign ASK + four-eyes, all concepts)")
     print(f"  embedder: {report['embedder']}  cap(benign review) <= {report['benign_review_cap']}")
+    print(f"  achieved: benign_review={report['achieved_benign_review_rate']} "
+          f"review_recall={report['achieved_review_recall']}"
+          + ("  (cap UNREACHABLE — thresholds left at max)" if report["cap_unreachable"] else ""))
     print(f"  report: {path}")
     if report["is_smoke"]:
         print("  NOTE: hashed embedder — smoke only; run with the model for real thresholds.")
+    print("  tradeoff curve (cap -> review recall @ benign review rate):")
+    for row in report["tradeoff_curve"]:
+        print(f"    cap<={row['cap']}: review_recall={row['review_recall']} "
+              f"benign_review={row['benign_review_rate']}")
     for cid, info in report["concepts"].items():
         print(f"    {cid:12} chosen_ask_threshold={info['chosen_ask_threshold']} "
               f"(pos={info['n_pos']} neg={info['n_neg']}){' — ' + info['note'] if info['note'] else ''}")

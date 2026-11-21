@@ -18,41 +18,35 @@ from aca.eval.calibrate_ask import (
 )
 
 
-def test_calibrate_runs_on_tuning_and_covers_13_concepts():
-    report = calibrate(benign_ask_cap=0.15)
+def test_joint_calibrate_covers_13_concepts_and_reports_curve():
+    report = calibrate(benign_review_cap=0.15)
+    assert report["joint"] is True
     assert len(report["concepts"]) == 13
-    for cid, info in report["concepts"].items():
-        # Every concept has a sweep table; chosen may be None if the cap can't
-        # be met, but then the note explains it.
-        assert info["sweep"], f"{cid} has no sweep rows"
-        if info["chosen_ask_threshold"] is None:
-            assert info["note"]
+    # The tradeoff curve covers the standard caps (Fix #1).
+    caps = {row["cap"] for row in report["tradeoff_curve"]}
+    assert {0.10, 0.15, 0.20, 0.30} <= caps
+    for row in report["tradeoff_curve"]:
+        assert 0.0 <= row["review_recall"] <= 1.0
+        assert 0.0 <= row["benign_review_rate"] <= 1.0
 
 
-def test_chosen_threshold_respects_benign_review_cap():
+def test_joint_combined_benign_review_respects_cap_or_flags_unreachable():
     cap = 0.15
     report = calibrate(benign_review_cap=cap)
-    for cid, info in report["concepts"].items():
-        chosen = info["chosen_ask_threshold"]
-        if chosen is None:
-            continue
-        row = next(r for r in info["sweep"] if r["threshold"] == chosen)
-        # The cap is on the COMBINED benign review rate (ASK + four-eyes).
-        assert row["benign_review_rate"] <= cap, f"{cid}: benign review over cap at chosen threshold"
+    if report["cap_unreachable"]:
+        # When unreachable, thresholds are left at max; the achieved rate is the
+        # most conservative possible and the curve documents the tradeoff.
+        assert report["tradeoff_curve"]
+    else:
+        assert report["achieved_benign_review_rate"] <= cap
 
 
-def test_chosen_is_lowest_threshold_meeting_cap():
-    cap = 0.15
-    report = calibrate(benign_review_cap=cap)
-    for cid, info in report["concepts"].items():
-        chosen = info["chosen_ask_threshold"]
-        if chosen is None:
-            continue
-        # No lower threshold in the grid should also meet the cap.
-        for r in info["sweep"]:
-            if r["threshold"] < chosen:
-                assert r["benign_review_rate"] > cap, (
-                    f"{cid}: a lower threshold {r['threshold']} also met the cap")
+def test_joint_higher_cap_gives_at_least_as_much_recall():
+    # Monotonicity on the curve: a looser cap cannot reduce review recall.
+    report = calibrate(benign_review_cap=0.15)
+    curve = sorted(report["tradeoff_curve"], key=lambda r: r["cap"])
+    recalls = [r["review_recall"] for r in curve]
+    assert recalls == sorted(recalls), f"review recall not monotonic in cap: {recalls}"
 
 
 def test_write_thresholds_only_sets_ask_threshold(tmp_path):
