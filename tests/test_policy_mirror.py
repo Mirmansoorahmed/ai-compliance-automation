@@ -76,6 +76,30 @@ def test_high_conf_few_elements_is_ask():
     assert decide(labels, TEST_DATA) == "ask"
 
 
+def test_ask_on_similarity_only():
+    # Phase A: a similarity_only signal (no full element match) -> ask.
+    labels = [{
+        "concept_id": "AIA-5-1-c",
+        "elements_met": [],
+        "elements_total": 3,
+        "confidence": 0.6,
+        "similarity_only": True,
+    }]
+    assert decide(labels, TEST_DATA) == "ask"
+
+
+def test_similarity_only_never_blocks_at_high_conf():
+    # Phase A invariant: similarity_only cannot reach four-eyes/deny.
+    labels = [{
+        "concept_id": "AIA-5-1-c",
+        "elements_met": [],
+        "elements_total": 3,
+        "confidence": 0.99,
+        "similarity_only": True,
+    }]
+    assert decide(labels, TEST_DATA) == "ask"
+
+
 def test_strictest_outcome_wins_across_labels():
     labels = [
         {"concept_id": "AIA-5-1-c", "elements_met": ["join"], "confidence": 0.5},  # ask

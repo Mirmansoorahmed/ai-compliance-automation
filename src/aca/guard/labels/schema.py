@@ -41,6 +41,12 @@ class Label:
     elements_total: int | None = None
     # True when some-but-not-all elements are present (a "partial pattern").
     partial_pattern: bool = False
+    # True when the similarity margin (pos - neg) is at/above the concept's
+    # ask_threshold but the full element match is NOT met. A signal that the
+    # text is close to this concept's positives (and far from its hard
+    # negatives) without a confirmed legal-element match — OPA routes this to
+    # ASK (a human), never BLOCK. A signal, not a verdict.
+    similarity_only: bool = False
 
     def __post_init__(self) -> None:
         if not (0.0 <= float(self.confidence) <= 1.0):
@@ -57,6 +63,8 @@ class Label:
             d.pop("elements_total")
         if not d.get("partial_pattern"):
             d.pop("partial_pattern")
+        if not d.get("similarity_only"):
+            d.pop("similarity_only")
         return d
 
 

@@ -77,6 +77,11 @@ def decide(labels: list[dict], data: PolicyData) -> str:
         if label.get("partial_pattern"):
             consider("ask")
 
+        # Phase A: a similarity_only signal (confident margin, no full element
+        # match) routes to ASK — never four-eyes/deny. It only ever adds review.
+        if label.get("similarity_only"):
+            consider("ask")
+
         th = data.thresholds.get(concept_id)
         if not th:
             continue

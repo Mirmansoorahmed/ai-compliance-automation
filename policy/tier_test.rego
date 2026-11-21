@@ -95,3 +95,30 @@ test_high_conf_few_elements_is_ask if {
 		with data.thresholds as fixture_data.thresholds
 		with data.confirmed_prohibited_patterns as fixture_data.confirmed_prohibited_patterns
 }
+
+# Phase A: a similarity_only signal (no elements, no partial) routes to ASK.
+test_ask_on_similarity_only if {
+	tier.tier == "ask" with input as {"labels": [{
+		"concept_id": "AIA-5-1-c",
+		"elements_met": [],
+		"elements_total": 3,
+		"confidence": 0.6,
+		"similarity_only": true,
+	}]}
+		with data.thresholds as fixture_data.thresholds
+		with data.confirmed_prohibited_patterns as fixture_data.confirmed_prohibited_patterns
+}
+
+# Phase A invariant: similarity_only can NEVER reach four-eyes or deny, even at
+# high confidence, because the full element match is absent.
+test_similarity_only_never_blocks_at_high_conf if {
+	tier.tier == "ask" with input as {"labels": [{
+		"concept_id": "AIA-5-1-c",
+		"elements_met": [],
+		"elements_total": 3,
+		"confidence": 0.99,
+		"similarity_only": true,
+	}]}
+		with data.thresholds as fixture_data.thresholds
+		with data.confirmed_prohibited_patterns as fixture_data.confirmed_prohibited_patterns
+}

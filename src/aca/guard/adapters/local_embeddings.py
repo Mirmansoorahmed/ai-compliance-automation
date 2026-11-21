@@ -9,6 +9,9 @@ hashed-vector fallback, so this adapter works in CI with no network.
 
 from __future__ import annotations
 
+import json
+from pathlib import Path
+
 from aca.guard.embeddings import Embedder, build_embedder
 from aca.guard.event import Event
 from aca.guard.labels.schema import Label
@@ -27,6 +30,26 @@ DEFAULT_CONCEPTS = (
 )
 
 
+_THRESHOLDS_PATH = Path(__file__).resolve().parents[3] / "policy" / "data" / "thresholds.json"
+
+
+def _load_ask_thresholds() -> dict[str, float]:
+    """Per-concept ``ask_threshold`` from the signed thresholds data (Phase A).
+
+    Returns {} if the file or the field is absent, so the similarity tier is
+    simply inactive rather than erroring.
+    """
+    try:
+        data = json.loads(_THRESHOLDS_PATH.read_text(encoding="utf-8"))["thresholds"]
+    except Exception:
+        return {}
+    out: dict[str, float] = {}
+    for concept_id, th in data.items():
+        if isinstance(th, dict) and "ask_threshold" in th:
+            out[concept_id] = float(th["ask_threshold"])
+    return out
+
+
 class LocalEmbeddingsAdapter:
     name = "local_embeddings"
 
@@ -36,11 +59,17 @@ class LocalEmbeddingsAdapter:
         embedder: Embedder | None = None,
         concepts: tuple[str, ...] = DEFAULT_CONCEPTS,
         dim: int = 256,
+        ask_thresholds: dict[str, float] | None = None,
     ) -> None:
         self._embedder = embedder or build_embedder(allow_hashed_fallback=True, dim=dim)
         self._indexes: dict[str, ConceptIndex] = {
             c: load_concept(c, self._embedder) for c in concepts
         }
+        # Per-concept similarity ASK thresholds (Phase A): when the margin is at
+        # or above this and the full element match is NOT met, the label carries
+        # similarity_only -> OPA routes to ASK (never BLOCK). Loaded from signed
+        # thresholds data unless injected (tests/calibration).
+        self._ask_thresholds = ask_thresholds if ask_thresholds is not None else _load_ask_thresholds()
 
     def detect(self, event: Event) -> list[dict]:
         signals = run_stage0(event)
@@ -80,6 +109,17 @@ class LocalEmbeddingsAdapter:
             if partial:
                 evidence.append(f"partial_pattern:{met_count}/{total}")
 
+            # Phase A: a confident similarity match WITHOUT a full element match
+            # is a similarity_only signal -> ASK. Never set when the full match
+            # is present (that path is already four-eyes), so it only ever adds
+            # review, never a BLOCK.
+            ask_th = self._ask_thresholds.get(concept_id)
+            similarity_only = bool(
+                ask_th is not None and not full_match and s1.confidence >= ask_th
+            )
+            if similarity_only:
+                evidence.append(f"similarity_only:{round(s1.confidence, 4)}>={ask_th}")
+
             label = Label(
                 concept_id=concept_id,
                 confidence=round(s1.confidence, 4),
@@ -88,6 +128,7 @@ class LocalEmbeddingsAdapter:
                 detector_versions=detector_versions,
                 elements_total=total,
                 partial_pattern=partial,
+                similarity_only=similarity_only,
                 # pattern_id is only asserted when the full element set is met;
                 # it is still OPA (with signed confirmed-pattern data) that may
                 # turn that into a deny, never this adapter.

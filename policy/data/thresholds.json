@@ -1,7 +1,18 @@
 {
   "thresholds": {
-    "AIA-5-1-c": { "low": 0.45, "high": 0.8, "min_elements": 3 },
-    "AIA-5-1-f": { "low": 0.5, "high": 0.82, "min_elements": 2 },
+    "AIA-5-1-a": { "low": 0.45, "high": 0.8, "min_elements": 2, "ask_threshold": 0.5 },
+    "AIA-5-1-b": { "low": 0.45, "high": 0.8, "min_elements": 2, "ask_threshold": 0.5 },
+    "AIA-5-1-c": { "low": 0.45, "high": 0.8, "min_elements": 3, "ask_threshold": 0.5 },
+    "AIA-5-1-d": { "low": 0.45, "high": 0.8, "min_elements": 2, "ask_threshold": 0.5 },
+    "AIA-5-1-f": { "low": 0.5, "high": 0.82, "min_elements": 2, "ask_threshold": 0.5 },
+    "AIA-5-1-g": { "low": 0.45, "high": 0.8, "min_elements": 2, "ask_threshold": 0.5 },
+    "AIA-A3-1c": { "low": 0.45, "high": 0.8, "min_elements": 2, "ask_threshold": 0.5 },
+    "AIA-A3-4a": { "low": 0.45, "high": 0.8, "min_elements": 2, "ask_threshold": 0.5 },
+    "AIA-A3-4b": { "low": 0.45, "high": 0.8, "min_elements": 2, "ask_threshold": 0.5 },
+    "AIA-A3-5b": { "low": 0.45, "high": 0.8, "min_elements": 2, "ask_threshold": 0.5 },
+    "AIA-A3-5c": { "low": 0.45, "high": 0.8, "min_elements": 2, "ask_threshold": 0.5 },
+    "GDPR-9": { "low": 0.45, "high": 0.8, "min_elements": 2, "ask_threshold": 0.5 },
+    "GDPR-22": { "low": 0.45, "high": 0.8, "min_elements": 3, "ask_threshold": 0.5 },
     "ISO-A-5-14": { "low": 0.5, "high": 0.85, "min_elements": 2 }
   }
 }

@@ -12,7 +12,8 @@ package compliance.tier
 #   never mutated at runtime.
 #
 # Input shape:
-#   { "labels": [ {concept_id, pattern_id?, elements_met[], confidence}, ... ] }
+#   { "labels": [ {concept_id, pattern_id?, elements_met[], confidence,
+#                  partial_pattern?, similarity_only?}, ... ] }
 #
 # Illustrative mapping only; not a conformity claim.
 
@@ -55,6 +56,14 @@ ask_match if {
 ask_match if {
 	some l in input.labels
 	l.partial_pattern == true
+}
+
+# Phase A: a similarity_only signal (confident margin vs exemplars, but the full
+# legal-element match is NOT met) routes to ASK — a human review. It can never
+# reach four-eyes or deny, so it only ever adds review, never a BLOCK.
+ask_match if {
+	some l in input.labels
+	l.similarity_only == true
 }
 
 tier := "deny" if {
