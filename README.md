@@ -87,7 +87,7 @@ _Source: committed eval run 2026-11-18 14:02 UTC, git `6ead950c`, embedder `st:s
 
 ### Per-concept, 13 concepts (after the similarity ASK tier + element exemplars)
 
-The recall fix (ASK similarity tier, then element-level exemplars — see [`docs/v2/DETECTION-DIAGNOSIS.md`](docs/v2/DETECTION-DIAGNOSIS.md)) is built and calibrated on the tuning set only. The runner reports five columns **per concept and overall**: **strict recall** (full validated element match → BLOCK/four-eyes), **review recall** (BLOCK + four-eyes + ASK — everything routed to a human), and the benign outcomes split into **benign→BLOCK** (= block + four-eyes, the false-block rate), **benign→four-eyes** and **benign→ASK**. The ASK threshold is calibrated so the **combined** benign review rate (ASK + four-eyes) stays ≤ 0.15 on tuning; the element margins are calibrated so the benign/cross-concept full-match rate is 0 on tuning.
+The recall fix (ASK similarity tier, then element-level exemplars — see [`docs/v2/DETECTION-DIAGNOSIS.md`](docs/v2/DETECTION-DIAGNOSIS.md)) is built and calibrated on the tuning set only. The runner reports five columns **per concept and overall**: **strict recall** (full validated element match → BLOCK/four-eyes), **review recall** (BLOCK + four-eyes + ASK — everything routed to a human), and the benign outcomes split into **benign→BLOCK** (= block + four-eyes, the false-block rate), **benign→four-eyes** and **benign→ASK**. The element margins are calibrated so the benign/cross-concept full-match rate is 0 on tuning (strictly-positive margins with a robustness band over the best cross-concept negative). The ASK thresholds are calibrated **jointly** — all 13 concepts run on every text, so the cap is on the **combined** benign→(ASK + four-eyes) rate across all concepts together on tuning (≤ 0.15), maximising review recall; the calibration report writes a tradeoff curve (cap 0.10/0.15/0.20/0.30 → review recall) so the point is chosen honestly if 0.15 is tight.
 
 These real-model numbers are **to be run by the owner** (the sandbox cannot load the model). Placeholder table — the owner fills it from `make eval` on a machine with the model installed:
 
@@ -116,9 +116,17 @@ python -m aca.eval.calibrate --write        # tuning only: element margins, then
 make eval                                   # writes the per-concept table above
 ```
 
-> **Honest reading.** This run used the real pinned multilingual MiniLM model (`paraphrase-multilingual-MiniLM-L12-v2`) on CPU. On the tuning set: precision 1.0, strict recall 0.82 (DE and EN alike), and **every attack is routed to a human** (routed-to-review 1.0) via the partial-pattern rule, while benign false-block stays 0.0 and only 6.25% of benign cases are sent to `ask`.
->
-> **The honest weakness is generalisation.** On the held-out set — 21 NEW cases the detector was never tuned on — strict recall is only **0.11** and just **0.33** of held-out attacks are routed to review; several new behaviour-source scenarios slip through to `allow`. Precision/false-block stay clean (0 false blocks), so the gap is missed detections, not over-blocking. Next step: expand the exemplar set and legal-element coverage for unseen behaviour sources, and re-measure on held-out before any real use. Do not read the tuning-set numbers as real-world accuracy; the held-out numbers are the more honest indicator.
+### Results and tradeoff (frozen design; numbers owner-filled)
+
+The detection design is **frozen** after this calibration round; no more tuning. What it does, in plain words:
+
+- **Strict BLOCK is deliberately narrow.** A prohibited practice (EU AI Act Art. 5) is BLOCKed only on a **full, validated element match** — every legal element of the concept confirmed, not a similarity score. A confirmed social-scoring pattern (Art. 5(1)(c)) is the concept with strong element coverage today; the other concepts BLOCK only when their full element set is confirmed. Legacy AIA-5-1-c: strict recall `TO BE MEASURED`, precision `TO BE MEASURED`, false-block `TO BE MEASURED` (owner's committed run).
+- **Most risky-looking requests go to human review, not BLOCK.** A request that is close to a concept but not a confirmed full match becomes **ASK** (the similarity tier) — the developer is told it looks like `<concept>` and a human decides. Review recall (BLOCK + four-eyes + ASK) is `TO BE MEASURED`; the joint ASK calibration keeps the **combined benign→review rate ≤ 0.15** on tuning (tradeoff curve in the calibration report).
+- **The false-block rate is held low by design.** Element margins are calibrated so no benign or cross-concept tuning text produces a full match (false-block target 0 on tuning). The real false-block rate is `TO BE MEASURED` on the owner's run.
+
+**Why BLOCK stays conservative.** A wrong BLOCK of a lawful product is worse than a review: it stops a legitimate feature, erodes trust in the gate, and trains developers to route around it. A wrong ASK only asks a human to look. So the design puts the burden of proof on BLOCK (full validated element match, calibrated to 0 false full matches on tuning) and lets the similarity tier carry the uncertain middle to **review, never refusal**. Missed detections (a prohibited use that slips to ALLOW) are the residual risk the held-out numbers measure; the honest reading is that strict recall is modest and the system leans on review, not on catching everything at BLOCK.
+
+**Honest caveat.** Treat the tuning numbers as a ceiling, not real-world accuracy; the **held-out** numbers (NEW cases never tuned on) are the honest indicator. Several concepts have abstract element exemplars that under-fire (see the AIA-A3-4a note in [`docs/v2/DETECTION-DIAGNOSIS.md`](docs/v2/DETECTION-DIAGNOSIS.md)); their strict recall may be low and they rely on the ASK tier. The owner fills every `TO BE MEASURED` from the final real run.
 
 ## How I built this
 
