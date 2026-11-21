@@ -40,7 +40,7 @@ The same three stories appear in [`img/request-flow-v2.png`](img/request-flow-v2
 | 1 | **Guides** (feed-forward) | Rules the agent reads before it works: do-not-build list, high-risk list, how to write `use-case.yaml`. Generated from the catalog, one file per tool. | In the repo, plus centrally managed copies | New |
 | 2 | **Adapters** (hooks) | Thin scripts that catch a prompt or a tool call, send a normalised event to the policy service, and reply in the tool's own format. | Developer machine / cloud agent | New |
 | 3a | **Policy service** `POST /v1/check` | One API for all events (prompt, tool call, diff, deploy). Calls the Guard, reads `use-case.yaml`, asks OPA, returns the decision and obligations. | Container | New (wraps the existing `POST /v1/labels`) |
-| 3b | **Semantic Guard** | Emits labels: concept, legal elements met, confidence. Never decides. | Same container | **Exists** (ACA): Art. 5(1)(c) full, 5(1)(f) partial |
+| 3b | **Semantic Guard** | Emits labels: concept, legal elements met, confidence. Never decides. Element marking is **per-element embedding exemplars** across all 13 concepts (not keywords); a confident-but-unconfirmed match emits a `similarity_only` signal. | Same container | **Exists** (ACA): Art. 5(1)(c) + element exemplars for all 13 concepts (calibrated on tuning by the owner) |
 | 3c | **`use-case.yaml`** | The repo's declaration of intended purpose, Annex III area, role, data, owner and artefact links. | In each product repo | New |
 | 3d | **OPA policy bundle** | Rego + catalog data. Strictest outcome wins: deny > ask > warn > allow. Signed; changed only via a four-eyes PR. | OPA sidecar / CI runner / gate | **Exists** in part (deny/four-eyes/ask/allow tiers); WARN + obligations new |
 | 4 | **CI gate** | Required pull-request check: Guard scan of the diff, Semgrep, gitleaks, dependency scan, schema and artefact check, AI-BOM, a PR comment with obligations. | GitHub Actions | New (ACA has CI for its own tests) |
@@ -59,6 +59,33 @@ The same three stories appear in [`img/request-flow-v2.png`](img/request-flow-v2
 | **ALLOW** | Nothing visible; logged | Passes | Allowed |
 
 **Fail-safe (exists in ACA):** if the Guard is down or slow, deterministic checks still run and risky actions degrade to ASK, never to a silent allow. Prompt-hook timeouts in Claude Code block the prompt by design, which matches this rule.
+
+### 2.2 How a decision is reached inside the Guard (detection → tier)
+
+```
+prompt / tool call / diff
+        │
+        ▼
+Stage 0 deterministic signals ──► Stage 1 embedding similarity vs exemplars
+        │                               │
+        │                               ├─ per-ELEMENT exemplars: mark each legal
+        │                               │  element when sim(positives) − sim(negatives)
+        │                               │  ≥ the element's margin (calibrated on tuning,
+        │                               │  concept false-block = 0)
+        │                               │
+        │                               └─ similarity margin (pos − neg)
+        ▼                               ▼
+   full element match?            margin ≥ ask_threshold AND not a full match?
+        │  yes                          │  yes
+        ▼                               ▼
+   label: full pattern            label: similarity_only
+        │                               │
+        ▼                               ▼
+   OPA tier: BLOCK / four-eyes    OPA tier: ASK  (never BLOCK)
+        (a partial element match → ASK; nothing uncertain is ever allowed)
+```
+
+**ASK similarity tier (new).** A confident embedding match that does **not** confirm the full set of legal elements is labelled `similarity_only` and routed to **ASK**, never BLOCK — so a paraphrased high-risk request reaches a human instead of being allowed, while BLOCK stays gated on a full, validated element match. Thresholds and per-element margins are calibrated on the tuning set only (`aca.eval.calibrate_ask`, `aca.eval.calibrate_elements`); a concept whose tuning false-block cannot reach 0 has its full match disabled and falls back to this ASK tier.
 
 ### 2.2 Core contracts
 

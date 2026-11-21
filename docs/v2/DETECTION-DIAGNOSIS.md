@@ -73,3 +73,13 @@ Replace the `if concept_id == "AIA-5-1-c"` keyword block with **per-element exem
 3. **Option B** where a genuine legal judgement (Art. 6(3), Art. 22) is the bottleneck, reusing the vague-law classifier.
 
 In every option: calibrate only on the **tuning/dev** set, never the held-out set; keep BLOCK gated on a full, validated element match; and route everything uncertain to ASK.
+
+## Implemented
+
+Options A and C are now built (Phase A, then Phase C). Option B (the vague-law backend as an element decider) remains a proposal.
+
+**Option A — similarity ASK tier.** A per-concept `ask_threshold` (in `policy/data/thresholds.json`) plus a `similarity_only` label flag: when the stage-1 margin (pos − neg) is at or above the threshold and the full element match is NOT met, the Guard sets `similarity_only`, and OPA (`compliance.tier`) routes it to **ASK — never four-eyes or deny**. `/v1/check` escalates an otherwise-ALLOW result to ASK with the plain reason "similar to <concept> (score x), elements not confirmed — human review", which the Claude/Kiro/Cursor and MCP adapters surface. Thresholds are calibrated on tuning only by `python -m aca.eval.calibrate_ask`, which picks the lowest threshold keeping benign-routed-to-ASK ≤ 0.15 and never reads held-out data.
+
+**Option C — element-level exemplars.** The `if concept_id == "AIA-5-1-c"` keyword block is replaced by per-element exemplar sets under `exemplars/elements/` (6+6 DE/EN per element, all 13 concepts, disjoint from tuning and held-out). An element is marked met when its max similarity to the element's positives exceeds its max similarity to the element's negatives by a per-element margin, calibrated on tuning by `python -m aca.eval.calibrate_elements` with the constraint that the concept's tuning false-block rate is 0. A concept that cannot reach 0 has an element margin set to `null`, which **disables that concept's full match** so it falls back to Option A's ASK. Until the owner runs the real-model calibration, an uncalibrated concept keeps the prior behaviour (AIA-5-1-c via its keyword path; the other 12 cannot BLOCK), so the committed offline default introduces **no new BLOCK path** before validation.
+
+The real-model recall/false-block numbers from these are **to be run by the owner** (see the eval table placeholder in the README and the commands at the end of this change).

@@ -85,9 +85,50 @@ Held-out set (21 NEW cases, scored separately — the detector was not tuned on 
 
 _Source: committed eval run 2026-11-18 14:02 UTC, git `6ead950c`, embedder `st:sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2` (real multilingual MiniLM model, CPU; see [`eval/results/`](eval/results/))._
 
+### Per-concept, 13 concepts (after the similarity ASK tier + element exemplars)
+
+The recall fix (ASK similarity tier, then element-level exemplars — see [`docs/v2/DETECTION-DIAGNOSIS.md`](docs/v2/DETECTION-DIAGNOSIS.md)) is built and calibrated on the tuning set only. The runner now reports four columns **per concept and overall**: **strict recall** (full element match → BLOCK/four-eyes), **review recall** (BLOCK + ASK, i.e. strict + partial + similarity routed to a human), **false-block rate** (benign reaching BLOCK — held at 0 on tuning by the element-margin calibration), and **benign→ASK** (benign sent to a human by the similarity tier, capped at ≤ 0.15 on tuning).
+
+These real-model numbers are **to be run by the owner** (the sandbox cannot load the model). Placeholder table — the owner fills it from `make eval` on a machine with the model installed:
+
+| Concept | strict recall | review recall | false-block | benign→ASK |
+|---|---|---|---|---|
+| AIA-5-1-a | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED |
+| AIA-5-1-b | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED |
+| AIA-5-1-c | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED |
+| AIA-5-1-d | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED |
+| AIA-5-1-f | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED |
+| AIA-5-1-g | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED |
+| AIA-A3-1c | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED |
+| AIA-A3-4a | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED |
+| AIA-A3-4b | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED |
+| AIA-A3-5b | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED |
+| AIA-A3-5c | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED |
+| GDPR-9 | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED |
+| GDPR-22 | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED |
+| **overall** | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED |
+
+Owner commands to produce the real numbers:
+
+```bash
+pip install -e ".[embeddings]"
+python -m aca.eval.calibrate_ask --write-thresholds       # tuning only; benign->ASK <= 0.15
+python -m aca.eval.calibrate_elements --write-margins     # tuning only; concept false-block = 0
+make eval                                                 # writes the per-concept table above
+```
+
 > **Honest reading.** This run used the real pinned multilingual MiniLM model (`paraphrase-multilingual-MiniLM-L12-v2`) on CPU. On the tuning set: precision 1.0, strict recall 0.82 (DE and EN alike), and **every attack is routed to a human** (routed-to-review 1.0) via the partial-pattern rule, while benign false-block stays 0.0 and only 6.25% of benign cases are sent to `ask`.
 >
 > **The honest weakness is generalisation.** On the held-out set — 21 NEW cases the detector was never tuned on — strict recall is only **0.11** and just **0.33** of held-out attacks are routed to review; several new behaviour-source scenarios slip through to `allow`. Precision/false-block stay clean (0 false blocks), so the gap is missed detections, not over-blocking. Next step: expand the exemplar set and legal-element coverage for unseen behaviour sources, and re-measure on held-out before any real use. Do not read the tuning-set numbers as real-world accuracy; the held-out numbers are the more honest indicator.
+
+## How I built this
+
+**What I owned.** The policy core (the 120-check catalog, the `/v1/check` engine, the OPA tier + check + deploy policies and their Python mirrors), the Semantic Guard detection (stages 0–1, exemplars and legal elements), the editor/CI/deploy/runtime adapters, the evidence pack, and the eval discipline (tuning vs held-out kept disjoint, every published number carrying a committed run's timestamp + git SHA, or `TO BE MEASURED`).
+
+**What didn't work (and the fix).**
+
+- **Detection for the 12 non-social-scoring concepts quietly recalled 0.** After widening coverage to 13 concepts, a real-model eval showed held-out recall `0.0` for every concept except AIA-5-1-c, with `elements_met = []` on every miss. The cause was in the code, not the model: the legal-element step was a keyword block hard-coded `if concept_id == "AIA-5-1-c"`, so no other concept could ever mark an element, and a paraphrase that avoided the literal keywords missed even for AIA-5-1-c. I wrote this up from the code in [`docs/v2/DETECTION-DIAGNOSIS.md`](docs/v2/DETECTION-DIAGNOSIS.md), then fixed it in two steps: an **ASK similarity tier** (a confident embedding match with no confirmed elements routes to a human, never a BLOCK) and **element-level exemplars** (each legal element of all 13 concepts has its own positives/negatives; an element is met when similarity clears a per-element margin, calibrated on the tuning set to keep false blocks at 0). BLOCK still requires a full, validated element match; everything uncertain goes to ASK. The real per-concept recall is the owner's next measured run (the placeholder table above).
+- **Tuning numbers read as if they were real-world accuracy.** The first eval reported only the tuning set, which flatters the detector. The fix was to keep a held-out set strictly disjoint from tuning and exemplars (enforced by a test), report it separately, and label the tuning-set figures as not a real-world claim.
 
 ## Hybrid profile (optional Azure adapters)
 
