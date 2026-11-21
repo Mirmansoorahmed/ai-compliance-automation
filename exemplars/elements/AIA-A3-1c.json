@@ -1,0 +1,41 @@
+{
+  "concept_id": "AIA-A3-1c",
+  "elements": {
+    "infers_emotional_state": {
+      "positives": [
+        "It estimates how each person feels.",
+        "It reads mood from expression or tone.",
+        "It infers emotion per individual.",
+        "Es schätzt, wie sich jede Person fühlt.",
+        "Es liest Stimmung aus Ausdruck oder Ton.",
+        "Es leitet Emotion je Einzelperson ab."
+      ],
+      "negatives": [
+        "It counts footfall, inferring no feelings.",
+        "It measures queue length only.",
+        "No emotion is inferred.",
+        "Es zählt Besucher, ohne Gefühle abzuleiten.",
+        "Es misst nur die Schlangenlänge.",
+        "Es wird keine Emotion abgeleitet."
+      ]
+    },
+    "outside_work_or_education_context": {
+      "positives": [
+        "The subjects are shoppers, not staff.",
+        "It applies to consumers in a store.",
+        "The context is a public kiosk, not a workplace.",
+        "Die Betroffenen sind Käufer, keine Mitarbeiter.",
+        "Es betrifft Verbraucher im Laden.",
+        "Der Kontext ist ein öffentliches Terminal, kein Arbeitsplatz."
+      ],
+      "negatives": [
+        "The subjects are employees during work.",
+        "It runs on students in a classroom.",
+        "The context is the workplace.",
+        "Die Betroffenen sind Beschäftigte während der Arbeit.",
+        "Es läuft bei Lernenden im Klassenraum.",
+        "Der Kontext ist der Arbeitsplatz."
+      ]
+    }
+  }
+}

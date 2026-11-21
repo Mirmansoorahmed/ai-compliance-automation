@@ -1,0 +1,41 @@
+{
+  "concept_id": "AIA-A3-5c",
+  "elements": {
+    "life_or_health_insurance_context": {
+      "positives": [
+        "This is life or health insurance for people.",
+        "The setting is personal health cover.",
+        "It concerns a natural person's life policy.",
+        "Es ist eine Lebens- oder Krankenversicherung für Personen.",
+        "Der Rahmen ist die persönliche Krankendeckung.",
+        "Es betrifft die Lebenspolice einer natürlichen Person."
+      ],
+      "negatives": [
+        "It is commercial cargo insurance for a fleet.",
+        "The setting is property catastrophe cover.",
+        "It concerns a company, not a person.",
+        "Es ist eine gewerbliche Frachtversicherung für eine Flotte.",
+        "Der Rahmen ist eine Immobilien-Katastrophendeckung.",
+        "Es betrifft ein Unternehmen, keine Person."
+      ]
+    },
+    "risk_assessment_or_pricing_for_persons": {
+      "positives": [
+        "It sets the premium from predicted risk.",
+        "It assesses each applicant's risk.",
+        "It prices cover per individual.",
+        "Es setzt die Prämie aus dem vorhergesagten Risiko.",
+        "Es bewertet das Risiko jedes Antragstellers.",
+        "Es bepreist die Deckung je Einzelperson."
+      ],
+      "negatives": [
+        "It only reconciles premium payments.",
+        "It sends renewal reminders, no pricing.",
+        "It rates regional risk for a portfolio.",
+        "Es gleicht nur Prämienzahlungen ab.",
+        "Es sendet Verlängerungserinnerungen, keine Bepreisung.",
+        "Es bewertet das regionale Risiko eines Portfolios."
+      ]
+    }
+  }
+}

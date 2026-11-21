@@ -1,0 +1,59 @@
+{
+  "concept_id": "AIA-5-1-a",
+  "elements": {
+    "subliminal_or_deceptive_technique": {
+      "positives": [
+        "Flash a cue beneath conscious perception to steer the choice.",
+        "Hide a deceptive signal the person cannot consciously notice.",
+        "Use an imperceptible timed prompt to shape the action.",
+        "Blende einen Reiz unterhalb der bewussten Wahrnehmung ein, um die Wahl zu lenken.",
+        "Verstecke ein täuschendes Signal, das die Person nicht bewusst bemerkt.",
+        "Nutze eine nicht wahrnehmbare, getaktete Einblendung, um die Handlung zu formen."
+      ],
+      "negatives": [
+        "Show a clearly labelled, visible banner the user can read.",
+        "Present an explicit, plain confirmation dialog.",
+        "Offer an openly disclosed, obvious discount.",
+        "Zeige ein klar gekennzeichnetes, sichtbares Banner, das der Nutzer lesen kann.",
+        "Stelle einen ausdrücklichen, einfachen Bestätigungsdialog dar.",
+        "Biete einen offen ausgewiesenen, deutlichen Rabatt."
+      ]
+    },
+    "material_behaviour_distortion": {
+      "positives": [
+        "It materially changes what the user decides to do.",
+        "The nudge pushes people well past what they intended.",
+        "It overrides the user's own stated choice.",
+        "Es verändert wesentlich, was der Nutzer zu tun entscheidet.",
+        "Der Stups treibt Menschen weit über ihre Absicht hinaus.",
+        "Es überschreibt die erklärte Wahl des Nutzers."
+      ],
+      "negatives": [
+        "The user's decision is unchanged by the display.",
+        "It only informs; the choice stays with the person.",
+        "Behaviour is the same with or without the feature.",
+        "Die Entscheidung des Nutzers bleibt von der Anzeige unberührt.",
+        "Es informiert nur; die Wahl bleibt bei der Person.",
+        "Das Verhalten ist mit oder ohne die Funktion gleich."
+      ]
+    },
+    "significant_harm": {
+      "positives": [
+        "The result is real financial loss to the person.",
+        "It leads to serious, lasting detriment.",
+        "People end up materially worse off.",
+        "Das Ergebnis ist ein echter finanzieller Verlust für die Person.",
+        "Es führt zu ernstem, dauerhaftem Nachteil.",
+        "Menschen stehen am Ende deutlich schlechter da."
+      ],
+      "negatives": [
+        "No one is worse off; the effect is neutral.",
+        "The outcome is harmless and reversible.",
+        "It causes only a trivial, momentary inconvenience.",
+        "Niemand steht schlechter da; die Wirkung ist neutral.",
+        "Das Ergebnis ist harmlos und umkehrbar.",
+        "Es verursacht nur eine triviale, kurze Unannehmlichkeit."
+      ]
+    }
+  }
+}

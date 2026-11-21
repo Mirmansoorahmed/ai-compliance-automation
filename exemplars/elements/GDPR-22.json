@@ -1,0 +1,59 @@
+{
+  "concept_id": "GDPR-22",
+  "elements": {
+    "solely_automated_decision": {
+      "positives": [
+        "The model decides alone, with no human review.",
+        "The outcome is applied automatically.",
+        "No person is in the loop.",
+        "Das Modell entscheidet allein, ohne menschliche Prüfung.",
+        "Das Ergebnis wird automatisch angewandt.",
+        "Kein Mensch ist eingebunden."
+      ],
+      "negatives": [
+        "A named officer reviews and signs it.",
+        "A human makes the final call.",
+        "The model only proposes; a person decides.",
+        "Ein benannter Sachbearbeiter prüft und zeichnet es.",
+        "Ein Mensch trifft die endgültige Entscheidung.",
+        "Das Modell schlägt nur vor; eine Person entscheidet."
+      ]
+    },
+    "about_a_natural_person": {
+      "positives": [
+        "The decision is about an individual person.",
+        "It concerns a named customer.",
+        "The subject is a natural person.",
+        "Die Entscheidung betrifft eine einzelne Person.",
+        "Es betrifft einen benannten Kunden.",
+        "Der Betroffene ist eine natürliche Person."
+      ],
+      "negatives": [
+        "It concerns a company's bond rating.",
+        "The subject is a machine's maintenance.",
+        "It is about aggregate inventory.",
+        "Es betrifft das Rating einer Unternehmensanleihe.",
+        "Der Gegenstand ist die Wartung einer Maschine.",
+        "Es geht um den aggregierten Lagerbestand."
+      ]
+    },
+    "legal_or_similarly_significant_effect": {
+      "positives": [
+        "It grants or refuses credit.",
+        "It closes the person's account.",
+        "It has a significant effect on them.",
+        "Es gewährt oder verweigert Kredit.",
+        "Es schließt das Konto der Person.",
+        "Es hat eine erhebliche Auswirkung auf sie."
+      ],
+      "negatives": [
+        "It sends an informational newsletter.",
+        "The effect on the person is trivial.",
+        "It changes a cosmetic display preference.",
+        "Es sendet einen informativen Newsletter.",
+        "Die Wirkung auf die Person ist unbedeutend.",
+        "Es ändert eine kosmetische Anzeige-Einstellung."
+      ]
+    }
+  }
+}

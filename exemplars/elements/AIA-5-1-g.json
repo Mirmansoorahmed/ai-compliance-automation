@@ -1,0 +1,59 @@
+{
+  "concept_id": "AIA-5-1-g",
+  "elements": {
+    "uses_biometric_data": {
+      "positives": [
+        "It processes face images or voiceprints.",
+        "It works from fingerprints or iris scans.",
+        "Biometric features are the input.",
+        "Es verarbeitet Gesichtsbilder oder Stimmprofile.",
+        "Es arbeitet mit Fingerabdrücken oder Iris-Scans.",
+        "Biometrische Merkmale sind die Eingabe."
+      ],
+      "negatives": [
+        "It uses only the account number and balance.",
+        "The input is order history, not biometrics.",
+        "No biometric data is involved.",
+        "Es nutzt nur Kontonummer und Saldo.",
+        "Die Eingabe ist die Bestellhistorie, keine Biometrie.",
+        "Es sind keine biometrischen Daten beteiligt."
+      ]
+    },
+    "categorises_individuals": {
+      "positives": [
+        "It sorts each person into a category.",
+        "It assigns individuals to groups.",
+        "It labels each person by a class.",
+        "Es sortiert jede Person in eine Kategorie.",
+        "Es ordnet Einzelpersonen Gruppen zu.",
+        "Es etikettiert jede Person mit einer Klasse."
+      ],
+      "negatives": [
+        "It returns only a 1:1 verification result.",
+        "It counts people without classifying them.",
+        "No per-person category is produced.",
+        "Es liefert nur ein 1:1-Verifizierungsergebnis.",
+        "Es zählt Personen, ohne sie zu klassifizieren.",
+        "Es wird keine personenbezogene Kategorie erzeugt."
+      ]
+    },
+    "infers_sensitive_trait": {
+      "positives": [
+        "It deduces ethnicity, religion or orientation.",
+        "It guesses political opinion from the data.",
+        "It infers a protected characteristic.",
+        "Es leitet Ethnie, Religion oder Orientierung ab.",
+        "Es errät die politische Meinung aus den Daten.",
+        "Es leitet ein geschütztes Merkmal ab."
+      ],
+      "negatives": [
+        "It outputs only a yes/no identity match.",
+        "It infers no protected trait at all.",
+        "It estimates age band for a game rating only.",
+        "Es gibt nur einen Ja/Nein-Identitätsabgleich aus.",
+        "Es leitet überhaupt kein geschütztes Merkmal ab.",
+        "Es schätzt nur die Altersgruppe für eine Spielfreigabe."
+      ]
+    }
+  }
+}

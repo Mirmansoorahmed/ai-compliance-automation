@@ -1,0 +1,59 @@
+{
+  "concept_id": "AIA-5-1-c",
+  "elements": {
+    "person_identifiable_behaviour_join": {
+      "positives": [
+        "Link several behaviour logs to each named employee.",
+        "Join per-person activity from many sources together.",
+        "Combine identifiable conduct data for each worker.",
+        "Verknüpfe mehrere Verhaltensprotokolle je benanntem Mitarbeiter.",
+        "Füge personenbezogene Aktivität aus vielen Quellen zusammen.",
+        "Kombiniere identifizierbare Verhaltensdaten je Beschäftigtem."
+      ],
+      "negatives": [
+        "Use only aggregate, anonymous team totals.",
+        "No per-person data is joined at all.",
+        "Keep sources separate and unlinked.",
+        "Nutze nur aggregierte, anonyme Teamsummen.",
+        "Es werden gar keine personenbezogenen Daten verknüpft.",
+        "Halte Quellen getrennt und unverbunden."
+      ]
+    },
+    "aggregated_score_or_ranking": {
+      "positives": [
+        "Roll the signals into a single per-person score.",
+        "Rank people by a combined index.",
+        "Produce one overall grade per individual.",
+        "Fasse die Signale zu einem Wert je Person zusammen.",
+        "Reihe Personen nach einem kombinierten Index.",
+        "Erzeuge eine Gesamtnote je Einzelperson."
+      ],
+      "negatives": [
+        "Report raw counts with no scoring or ranking.",
+        "Show a dashboard, not a league table.",
+        "No composite index is computed.",
+        "Berichte Rohzahlen ohne Bewertung oder Ranking.",
+        "Zeige ein Dashboard, keine Bestenliste.",
+        "Es wird kein zusammengesetzter Index berechnet."
+      ]
+    },
+    "adverse_action": {
+      "positives": [
+        "Cut the lowest scorers from the bonus pool.",
+        "Use the ranking for dismissals.",
+        "Deny promotion to the bottom band.",
+        "Streiche die schlechtesten aus dem Bonustopf.",
+        "Nutze die Rangliste für Kündigungen.",
+        "Verweigere dem untersten Band die Beförderung."
+      ],
+      "negatives": [
+        "Use the data only for a voluntary wellbeing nudge.",
+        "No one faces any consequence from it.",
+        "It informs training offers, nothing adverse.",
+        "Nutze die Daten nur für einen freiwilligen Gesundheitshinweis.",
+        "Niemand erfährt daraus eine Konsequenz.",
+        "Es informiert Schulungsangebote, nichts Nachteiliges."
+      ]
+    }
+  }
+}
