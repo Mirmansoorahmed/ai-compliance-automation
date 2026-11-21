@@ -33,6 +33,31 @@ _FAILSAFE = {
 }
 
 
+def _similarity_escalation(labels: list[dict]) -> dict | None:
+    """Phase A: build an ASK result from the strongest similarity_only label.
+
+    Returns None if no label is similarity_only. The reason is plain language
+    the adapters show: "similar to <concept> (score x), elements not confirmed
+    — human review". Never BLOCK.
+    """
+    sims = [l for l in labels if l.get("similarity_only")]
+    if not sims:
+        return None
+    top = max(sims, key=lambda l: l.get("confidence", 0.0))
+    cid = top.get("concept_id", "a regulated concept")
+    score = round(float(top.get("confidence", 0.0)), 2)
+    reason = (f"similar to {cid} (score {score}), elements not confirmed — human review")
+    return {
+        "decision": "ASK",
+        "check_ids": [cid],
+        "reasons": [{"check_id": cid, "decision": "ASK", "source": "similarity tier",
+                     "title": reason, "obligations": []}],
+        "obligations": [],
+        "missing_artefacts": [],
+        "similarity_only": True,
+    }
+
+
 class CheckService:
     def __init__(self, *, guard=None, policy: CheckPolicy | None = None, use_cases: dict | None = None):
         # ``guard`` must expose label_with_health(event) -> (labels, healthy) or
@@ -94,6 +119,15 @@ class CheckService:
             partial_social=partial_social,
         )
         out = result.to_dict()
+
+        # Phase A: a similarity_only label (confident margin, no confirmed
+        # element match) escalates an otherwise-ALLOW result to ASK — never
+        # BLOCK. It carries a plain reason the adapters surface to the developer.
+        if out["decision"] == "ALLOW":
+            sim = _similarity_escalation(labels)
+            if sim is not None:
+                out = sim
+
         # Carry labels only (no raw text) for traceability, like /v1/labels.
         out["labels"] = labels
         return out
