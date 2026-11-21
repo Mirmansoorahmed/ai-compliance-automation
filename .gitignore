@@ -236,3 +236,4 @@ report/*.pdf
 # Per-run eval artifacts (owner commits the real MiniLM run separately).
 eval/results/concept-separation-*.json
 eval/results/vaguelaw-eval-*.json
+eval/results/ask-calibration-*.json
