@@ -140,21 +140,21 @@ class LocalEmbeddingsAdapter:
                         evidence.append(f"stageA:{el}")
                 detector_versions["stageA"] = stage_a.version
 
-            total = len(index.elements)
-            met_count = len(set(index.elements) & set(elements_met))
+            official = list(index.elements)
+            total = len(official)
+            # Fix #4: intersect with the concept's OFFICIAL element set before
+            # counting, and emit only official element names in the label, so a
+            # keyword/stage-A union name that is not a real element of this
+            # concept can never inflate the count toward a false full match.
+            elements_met = [e for e in elements_met if e in set(official)]
+            met_count = len(set(official) & set(elements_met))
             full_match = total > 0 and met_count == total
             # Phase C: if a concept's element margins are disabled (tuning could
-            # not reach a 0 false-block margin), its full match is turned off so
-            # it can never BLOCK; it falls back to Phase A's similarity ASK.
+            # not reach a safe margin), its full match is turned off so it can
+            # never BLOCK; it falls back to Phase A's similarity ASK.
             if full_match_disabled:
                 full_match = False
                 evidence.append("full_match_disabled")
-            # Partial pattern: >= 2 of the concept's elements present but not all.
-            # OPA maps this to `ask` (four-eyes) — a conservative routing to a
-            # human, never an allow. It is a signal, not a verdict.
-            partial = (not full_match) and met_count >= 2 and total >= 3
-            if partial:
-                evidence.append(f"partial_pattern:{met_count}/{total}")
 
             # Phase A: a confident similarity match WITHOUT a full element match
             # is a similarity_only signal -> ASK. Never set when the full match
@@ -167,10 +167,24 @@ class LocalEmbeddingsAdapter:
             if similarity_only:
                 evidence.append(f"similarity_only:{round(s1.confidence, 4)}>={ask_th}")
 
+            # Partial pattern: >= 2 of the concept's elements present but not all.
+            # Fix #2: a partial pattern routes to ASK only when it also clears the
+            # concept's calibrated ask_threshold, so the ASK calibrator controls
+            # it (no irreducible ASK from partials below the margin). When no
+            # ask_threshold is set for the concept, the partial signal is not
+            # emitted (it cannot be calibrated, so it does not add ASK).
+            partial = (
+                (not full_match) and met_count >= 2 and total >= 3
+                and ask_th is not None and s1.confidence >= ask_th
+            )
+            if partial:
+                evidence.append(f"partial_pattern:{met_count}/{total}")
+
             label = Label(
                 concept_id=concept_id,
                 confidence=round(s1.confidence, 4),
                 elements_met=elements_met,
+                official_elements=official,
                 evidence_refs=evidence,
                 detector_versions=detector_versions,
                 elements_total=total,

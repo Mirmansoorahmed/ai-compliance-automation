@@ -126,6 +126,29 @@ def test_similarity_only_with_partial_elements_is_ask():
     assert decide(labels, TEST_DATA) == "ask"
 
 
+def test_foreign_element_name_does_not_inflate_full_match():
+    # Fix #4: a name outside the official element set must not count.
+    labels = [{
+        "concept_id": "AIA-5-1-c",
+        "elements_met": ["join", "score", "not_an_element"],
+        "official_elements": ["join", "score", "adverse"],
+        "elements_total": 3,
+        "confidence": 0.85,
+    }]
+    assert decide(labels, TEST_DATA) == "ask"
+
+
+def test_all_official_elements_met_is_four_eyes_despite_foreign_name():
+    labels = [{
+        "concept_id": "AIA-5-1-c",
+        "elements_met": ["join", "score", "adverse", "foreign"],
+        "official_elements": ["join", "score", "adverse"],
+        "elements_total": 3,
+        "confidence": 0.1,
+    }]
+    assert decide(labels, TEST_DATA) == "four-eyes"
+
+
 def test_similarity_only_with_all_elements_is_still_ask():
     # Fix #2: a similarity_only label never reaches four-eyes, even if all
     # elements appear met — only a validated (non-similarity) full match does.

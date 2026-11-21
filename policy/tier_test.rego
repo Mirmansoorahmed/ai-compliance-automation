@@ -183,3 +183,32 @@ test_high_conf_partial_elements_no_full_match_is_ask if {
 		with data.thresholds as fixture_data.thresholds
 		with data.confirmed_prohibited_patterns as fixture_data.confirmed_prohibited_patterns
 }
+
+# Fix #4: a name outside the concept's OFFICIAL element set must NOT count toward
+# a full match. Here only 2 official elements are met plus 1 foreign name, so it
+# is not four-eyes (it is ASK via the low-confidence path).
+test_foreign_element_name_does_not_inflate_full_match if {
+	tier.tier == "ask" with input as {"labels": [{
+		"concept_id": "AIA-5-1-c",
+		"elements_met": ["join", "score", "not_an_element_of_this_concept"],
+		"official_elements": ["join", "score", "adverse"],
+		"elements_total": 3,
+		"confidence": 0.85,
+	}]}
+		with data.thresholds as fixture_data.thresholds
+		with data.confirmed_prohibited_patterns as fixture_data.confirmed_prohibited_patterns
+}
+
+# Fix #4: all three OFFICIAL elements met (plus an ignored foreign name) IS a
+# full match -> four-eyes.
+test_all_official_elements_met_is_four_eyes if {
+	tier.tier == "four-eyes" with input as {"labels": [{
+		"concept_id": "AIA-5-1-c",
+		"elements_met": ["join", "score", "adverse", "foreign"],
+		"official_elements": ["join", "score", "adverse"],
+		"elements_total": 3,
+		"confidence": 0.1,
+	}]}
+		with data.thresholds as fixture_data.thresholds
+		with data.confirmed_prohibited_patterns as fixture_data.confirmed_prohibited_patterns
+}

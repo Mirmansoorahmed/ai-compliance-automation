@@ -64,13 +64,21 @@ def decide(labels: list[dict], data: PolicyData) -> str:
         concept_id = label.get("concept_id")
         elements_met = label.get("elements_met") or []
         elements_total = label.get("elements_total")
+        # Fix #4: count only elements that belong to the concept's OFFICIAL set
+        # (when provided). A name outside the official set cannot count toward a
+        # full match.
+        official = label.get("official_elements")
+        if official:
+            met_count = len(set(elements_met) & set(official))
+        else:
+            met_count = len(set(elements_met))
 
         # Four-eyes requires a FULL, VALIDATED element match: every legal element
         # present AND the label is not merely a similarity signal. A
         # similarity_only label, or any label short of a full match, can never
         # reach four-eyes — it is ASK at most. BLOCK/four-eyes only on a full
         # element match; everything uncertain to ASK.
-        if (elements_total and len(set(elements_met)) >= elements_total
+        if (elements_total and met_count >= elements_total
                 and not label.get("similarity_only")):
             consider("four-eyes")
 

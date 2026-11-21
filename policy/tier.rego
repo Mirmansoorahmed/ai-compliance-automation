@@ -37,8 +37,18 @@ deny_match if {
 four_eyes_match if {
 	some l in input.labels
 	l.elements_total
-	count(l.elements_met) >= l.elements_total
+	count(_official_met(l)) >= l.elements_total
 	not l.similarity_only
+}
+
+# Fix #4: count only elements that belong to the concept's OFFICIAL element set
+# (when the label carries one). A name outside the official set cannot count
+# toward a full match. If official_elements is absent, fall back to elements_met.
+_official_met(l) := met if {
+	l.official_elements
+	met := {e | some e in l.elements_met; e in l.official_elements}
+} else := met if {
+	met := {e | some e in l.elements_met}
 }
 
 # --- ask: concept present at or above the low threshold, OR a partial pattern
