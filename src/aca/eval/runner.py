@@ -449,20 +449,26 @@ def main(argv: list[str] | None = None) -> int:  # pragma: no cover - CLI glue
             return str(m["precision"])
         return f"n/a ({m.get('precision_na_reason') or 'no positives'})"
 
-    pc = report.per_concept.get("per_concept", {})
-    if pc:
-        print(f"  tuning per-concept (n={report.per_concept['n_cases']}, all 13 concepts):")
+    def _line(cid, m):
+        # strict recall = full element match (BLOCK/four-eyes); review recall =
+        # BLOCK + ASK (routed_to_review); false-block = benign reaching BLOCK;
+        # benign->ASK = benign routed to a human by the similarity tier.
+        return (f"    {cid:12} strict_recall={m.get('recall')} "
+                f"review_recall={m.get('routed_to_review')} "
+                f"false_block={m.get('benign_false_block_rate')} "
+                f"benign_to_ask={m.get('benign_routed_to_ask_rate')} n={m['n']}")
+
+    for name, section in (("tuning", report.per_concept), ("held-out v2", report.held_out_v2)):
+        pc = section.get("per_concept", {})
+        if not pc:
+            continue
+        ov = section.get("per_language", {}).get("overall", {})
+        print(f"  {name} per-concept (n={section.get('n_cases')}): overall "
+              f"strict_recall={ov.get('recall')} review_recall={ov.get('routed_to_review')} "
+              f"false_block={section.get('benign_false_block_rate')} "
+              f"benign_to_ask={section.get('benign_routed_to_ask_rate')}")
         for cid in sorted(pc):
-            m = pc[cid]
-            print(f"    {cid:12} prec={_prec(m)} recall={m['recall']} "
-                  f"routed={m['routed_to_review']} n={m['n']}")
-    hv2 = report.held_out_v2.get("per_concept", {})
-    if hv2:
-        print(f"  held-out v2 per-concept (n={report.held_out_v2['n_cases']}):")
-        for cid in sorted(hv2):
-            m = hv2[cid]
-            print(f"    {cid:12} prec={_prec(m)} recall={m['recall']} "
-                  f"routed={m['routed_to_review']} n={m['n']}")
+            print(_line(cid, pc[cid]))
     return 0
 
 
