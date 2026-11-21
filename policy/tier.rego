@@ -28,20 +28,17 @@ deny_match if {
 }
 
 # --- four-eyes: a full legal-element match, OR concept present at high
-# confidence with enough elements. A full element match routes to four-eyes
-# regardless of similarity confidence — the elements themselves are the signal,
-# so a correctly-detected attack is never allowed on a low embedding score. ---
+# confidence with enough elements. Four-eyes requires a FULL, VALIDATED element
+# match: every legal element is present (count == elements_total) AND the label
+# is not merely a similarity signal. A similarity_only label — or any label with
+# fewer than all elements — can never reach four-eyes; it is ASK at most. This is
+# the Phase-A/C safety invariant: BLOCK/four-eyes only on a full element match,
+# everything uncertain to ASK. ---
 four_eyes_match if {
 	some l in input.labels
 	l.elements_total
 	count(l.elements_met) >= l.elements_total
-}
-
-four_eyes_match if {
-	some l in input.labels
-	th := data.thresholds[l.concept_id]
-	l.confidence >= th.high
-	count(l.elements_met) >= th.min_elements
+	not l.similarity_only
 }
 
 # --- ask: concept present at or above the low threshold, OR a partial pattern

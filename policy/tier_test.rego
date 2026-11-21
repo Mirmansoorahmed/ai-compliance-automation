@@ -122,3 +122,45 @@ test_similarity_only_never_blocks_at_high_conf if {
 		with data.thresholds as fixture_data.thresholds
 		with data.confirmed_prohibited_patterns as fixture_data.confirmed_prohibited_patterns
 }
+
+# Fix #2: similarity_only with 1..n-1 elements present AND high confidence must
+# still be ASK — never four-eyes — because the FULL element match is absent.
+test_similarity_only_with_partial_elements_high_conf_is_ask if {
+	tier.tier == "ask" with input as {"labels": [{
+		"concept_id": "AIA-5-1-c",
+		"elements_met": ["join", "score"],
+		"elements_total": 3,
+		"confidence": 0.99,
+		"similarity_only": true,
+	}]}
+		with data.thresholds as fixture_data.thresholds
+		with data.confirmed_prohibited_patterns as fixture_data.confirmed_prohibited_patterns
+}
+
+# Fix #2: even if ALL elements appear met, a similarity_only label never reaches
+# four-eyes — only a validated (non-similarity) full match does.
+test_similarity_only_with_all_elements_is_still_ask_not_four_eyes if {
+	tier.tier == "ask" with input as {"labels": [{
+		"concept_id": "AIA-5-1-c",
+		"elements_met": ["join", "score", "adverse"],
+		"elements_total": 3,
+		"confidence": 0.99,
+		"similarity_only": true,
+	}]}
+		with data.thresholds as fixture_data.thresholds
+		with data.confirmed_prohibited_patterns as fixture_data.confirmed_prohibited_patterns
+}
+
+# Fix #2: high confidence with enough elements but NO full match and NO
+# similarity flag no longer reaches four-eyes (the confidence-only path is gone);
+# it is ASK.
+test_high_conf_partial_elements_no_full_match_is_ask if {
+	tier.tier == "ask" with input as {"labels": [{
+		"concept_id": "AIA-5-1-c",
+		"elements_met": ["join", "score"],
+		"elements_total": 3,
+		"confidence": 0.95,
+	}]}
+		with data.thresholds as fixture_data.thresholds
+		with data.confirmed_prohibited_patterns as fixture_data.confirmed_prohibited_patterns
+}

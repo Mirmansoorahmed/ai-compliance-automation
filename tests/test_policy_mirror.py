@@ -25,10 +25,24 @@ def test_deny_on_confirmed_pattern():
     assert decide(labels, TEST_DATA) == "deny"
 
 
-def test_four_eyes_on_high_conf_enough_elements():
+def test_four_eyes_requires_full_validated_match_not_just_confidence():
+    # Fix #2: high confidence + enough elements but NO elements_total (no full
+    # validated match) is now ASK, not four-eyes. The confidence-only four-eyes
+    # path is removed.
     labels = [{
         "concept_id": "AIA-5-1-c",
         "elements_met": ["join", "score", "adverse"],
+        "confidence": 0.85,
+    }]
+    assert decide(labels, TEST_DATA) == "ask"
+
+
+def test_four_eyes_on_full_validated_match():
+    # A full element match (count == total) with no similarity flag -> four-eyes.
+    labels = [{
+        "concept_id": "AIA-5-1-c",
+        "elements_met": ["join", "score", "adverse"],
+        "elements_total": 3,
         "confidence": 0.85,
     }]
     assert decide(labels, TEST_DATA) == "four-eyes"
@@ -93,6 +107,31 @@ def test_similarity_only_never_blocks_at_high_conf():
     labels = [{
         "concept_id": "AIA-5-1-c",
         "elements_met": [],
+        "elements_total": 3,
+        "confidence": 0.99,
+        "similarity_only": True,
+    }]
+    assert decide(labels, TEST_DATA) == "ask"
+
+
+def test_similarity_only_with_partial_elements_is_ask():
+    # Fix #2: 1..n-1 elements + high confidence + similarity_only -> ASK.
+    labels = [{
+        "concept_id": "AIA-5-1-c",
+        "elements_met": ["join", "score"],
+        "elements_total": 3,
+        "confidence": 0.99,
+        "similarity_only": True,
+    }]
+    assert decide(labels, TEST_DATA) == "ask"
+
+
+def test_similarity_only_with_all_elements_is_still_ask():
+    # Fix #2: a similarity_only label never reaches four-eyes, even if all
+    # elements appear met — only a validated (non-similarity) full match does.
+    labels = [{
+        "concept_id": "AIA-5-1-c",
+        "elements_met": ["join", "score", "adverse"],
         "elements_total": 3,
         "confidence": 0.99,
         "similarity_only": True,

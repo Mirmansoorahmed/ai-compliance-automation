@@ -65,11 +65,13 @@ def decide(labels: list[dict], data: PolicyData) -> str:
         elements_met = label.get("elements_met") or []
         elements_total = label.get("elements_total")
 
-        # A FULL legal-element match (all elements present) routes to four-eyes
-        # regardless of similarity confidence: the elements themselves are the
-        # signal. This prevents a correctly-detected attack from being allowed
-        # just because an embedding score was low.
-        if elements_total and len(set(elements_met)) >= elements_total:
+        # Four-eyes requires a FULL, VALIDATED element match: every legal element
+        # present AND the label is not merely a similarity signal. A
+        # similarity_only label, or any label short of a full match, can never
+        # reach four-eyes — it is ASK at most. BLOCK/four-eyes only on a full
+        # element match; everything uncertain to ASK.
+        if (elements_total and len(set(elements_met)) >= elements_total
+                and not label.get("similarity_only")):
             consider("four-eyes")
 
         # A PARTIAL pattern (some-but-not-all elements) routes to ask (human
@@ -87,10 +89,11 @@ def decide(labels: list[dict], data: PolicyData) -> str:
             continue
         confidence = float(label.get("confidence", 0.0))
 
-        # Pure-similarity fallback for cases where elements were not marked.
-        if confidence >= th["high"] and len(elements_met) >= th.get("min_elements", 1):
-            consider("four-eyes")
-        elif confidence >= th["low"]:
+        # Similarity fallback to ASK (never four-eyes) when elements were not
+        # fully marked: at/above the low threshold routes to a human. The old
+        # confidence-only four-eyes path is removed — four-eyes needs the full
+        # element match above, not a high embedding score alone.
+        if confidence >= th["low"]:
             consider("ask")
 
     return best
