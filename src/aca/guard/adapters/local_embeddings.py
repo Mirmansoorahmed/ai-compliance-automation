@@ -61,6 +61,7 @@ class LocalEmbeddingsAdapter:
         concepts: tuple[str, ...] = DEFAULT_CONCEPTS,
         dim: int = 256,
         ask_thresholds: dict[str, float] | None = None,
+        element_margins: dict | None = None,
     ) -> None:
         self._embedder = embedder or build_embedder(allow_hashed_fallback=True, dim=dim)
         self._indexes: dict[str, ConceptIndex] = {
@@ -72,13 +73,13 @@ class LocalEmbeddingsAdapter:
         # thresholds data unless injected (tests/calibration).
         self._ask_thresholds = ask_thresholds if ask_thresholds is not None else _load_ask_thresholds()
         # Phase C: per-element exemplar indexes (embedding-driven element marking
-        # for all 13 concepts). Absent for a concept -> fall back to stage-1's
-        # keyword elements (AIA-5-1-c only). A concept whose margins are disabled
-        # (null in element_margins.json) cannot reach a full match and so falls
-        # back to Phase A's ASK.
+        # for all 13 concepts). ``element_margins`` can be injected (calibration
+        # sweeps candidate margins); otherwise the signed element_margins.json is
+        # used. A concept with no calibrated entry keeps the prior behaviour and
+        # its full match stays disabled until calibrated.
         self._element_indexes: dict[str, ElementIndex] = {}
         for c in concepts:
-            ei = load_element_index(c, self._embedder)
+            ei = load_element_index(c, self._embedder, margins=element_margins)
             if ei is not None:
                 self._element_indexes[c] = ei
 
