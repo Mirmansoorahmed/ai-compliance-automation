@@ -28,6 +28,7 @@ from pathlib import Path
 from aca.guard.adapters.local_embeddings import DEFAULT_CONCEPTS, LocalEmbeddingsAdapter
 from aca.guard.embeddings import build_embedder
 from aca.guard.event import Event
+from aca.policy.decide import PolicyData, decide, load_policy_data
 from aca.register.yamlio import load_yaml
 
 _EVAL_DIR = Path(__file__).resolve().parents[3] / "eval"
@@ -35,7 +36,11 @@ _TUNING_DIRS = (_EVAL_DIR / "cases", _EVAL_DIR / "tuning_v2")
 _THRESHOLDS_PATH = Path(__file__).resolve().parents[3] / "policy" / "data" / "thresholds.json"
 _RESULTS_DIR = _EVAL_DIR / "results"
 
-DEFAULT_BENIGN_ASK_CAP = 0.15
+# The cap is on the COMBINED benign hard-review rate: benign cases routed to ASK
+# OR four-eyes on tuning (Fix #3/#4). four-eyes comes from a full element match,
+# so the ASK threshold is calibrated ON TOP of the final element-margin regime.
+DEFAULT_BENIGN_REVIEW_CAP = 0.15
+DEFAULT_BENIGN_ASK_CAP = DEFAULT_BENIGN_REVIEW_CAP  # back-compat alias
 # Candidate thresholds swept (coarse grid; the owner can refine).
 _GRID = [round(x / 100, 2) for x in range(5, 100, 5)]  # 0.05 .. 0.95
 
@@ -72,57 +77,64 @@ def _load_tuning_cases(dirs=_TUNING_DIRS) -> list[dict]:
     return cases
 
 
-def _margin_for(adapter: LocalEmbeddingsAdapter, concept_id: str, case: dict) -> tuple[float, bool]:
-    """Return (confidence margin, full_match) for a case under a concept."""
-    labels = adapter.detect(Event(text=case.get("text", ""), language=case.get("lang")))
-    label = next((l for l in labels if l["concept_id"] == concept_id), None)
-    if label is None:
-        return 0.0, False
-    total = label.get("elements_total") or 0
-    met = len(set(label.get("elements_met") or []))
-    full = bool(total and met >= total)
-    return float(label.get("confidence", 0.0)), full
+def _benign_hard_review_rate(emb, policy, concept_id, ask_threshold, neg_cases, element_margins) -> float:
+    """Fraction of this concept's benign tuning cases routed to ASK OR four-eyes
+    when ``concept_id`` uses ``ask_threshold`` — measured through the REAL
+    adapter (with the final element margins) + decide(). four-eyes can only come
+    from a full element match; ASK from the similarity/partial/low path."""
+    adapter = LocalEmbeddingsAdapter(
+        embedder=emb, concepts=(concept_id,),
+        ask_thresholds={concept_id: ask_threshold},
+        element_margins=element_margins,
+    )
+    hard = 0
+    for c in neg_cases:
+        labels = adapter.detect(Event(text=c.get("text", ""), language=c.get("lang")))
+        tier = decide(labels, policy)
+        if tier in ("ask", "four-eyes", "deny"):
+            hard += 1
+    return hard / len(neg_cases) if neg_cases else 0.0
 
 
-def calibrate(*, benign_ask_cap: float = DEFAULT_BENIGN_ASK_CAP,
+def calibrate(*, benign_review_cap: float = DEFAULT_BENIGN_REVIEW_CAP,
               concepts: tuple[str, ...] = DEFAULT_CONCEPTS,
-              embedder=None) -> dict:
-    # Disable the similarity tier during calibration so we sweep the raw margin.
+              embedder=None, element_margins: dict | None = None,
+              **kwargs) -> dict:
+    """Calibrate the similarity ASK threshold per concept ON TOP of the final
+    element-margin regime (Fix #4). For each concept, pick the LOWEST threshold
+    whose COMBINED benign hard-review rate (ASK + four-eyes) on tuning is <= cap.
+    """
+    if "benign_ask_cap" in kwargs and kwargs["benign_ask_cap"] is not None:
+        benign_review_cap = kwargs["benign_ask_cap"]
     emb = embedder or build_embedder(allow_hashed_fallback=True, dim=256)
-    adapter = LocalEmbeddingsAdapter(embedder=emb, concepts=concepts, ask_thresholds={})
+    policy = PolicyData(thresholds=load_policy_data().thresholds, confirmed_prohibited_patterns=[])
 
     all_cases = _load_tuning_cases()
     sweeps: list[ConceptSweep] = []
     for cid in concepts:
         pos = [c for c in all_cases if c.get("concept_id") == cid and c.get("expect_pattern")]
         neg = [c for c in all_cases if c.get("concept_id") == cid and not c.get("expect_pattern")]
-        # Margins, excluding cases already a full element match (those route to
-        # four-eyes anyway and are not what the similarity tier is for).
-        pos_margins = [m for m, full in (_margin_for(adapter, cid, c) for c in pos) if not full]
-        neg_margins = [m for m, full in (_margin_for(adapter, cid, c) for c in neg) if not full]
 
         rows = []
         chosen = None
         for th in _GRID:
-            benign_ask = (sum(1 for m in neg_margins if m >= th) / len(neg_margins)) if neg_margins else 0.0
-            pos_ask = (sum(1 for m in pos_margins if m >= th) / len(pos_margins)) if pos_margins else 0.0
-            rows.append({"threshold": th,
-                         "benign_routed_to_ask": round(benign_ask, 4),
-                         "pos_routed_to_ask": round(pos_ask, 4)})
-            if chosen is None and benign_ask <= benign_ask_cap:
+            benign_review = _benign_hard_review_rate(emb, policy, cid, th, neg, element_margins)
+            rows.append({"threshold": th, "benign_review_rate": round(benign_review, 4)})
+            if chosen is None and benign_review <= benign_review_cap:
                 chosen = th
         note = "" if chosen is not None else (
-            "no threshold keeps benign-ASK <= cap on tuning; left unset (concept stays ALLOW on similarity)")
+            "no threshold keeps benign review (ask+four-eyes) <= cap on tuning; left unset")
         sweeps.append(ConceptSweep(cid, chosen, rows, len(pos), len(neg), note))
 
     backend = "sentence-transformers" if str(emb.version).startswith("st:") else "hashed-fallback"
     return {
-        "schema": "ask-calibration/v1",
+        "schema": "ask-calibration/v2",
         "generated_ts": time.time(),
         "embedder": emb.version,
         "embedder_backend": backend,
         "is_smoke": backend == "hashed-fallback",
-        "benign_ask_cap": benign_ask_cap,
+        "benign_review_cap": benign_review_cap,
+        "cap_measures": "benign routed to ASK + four-eyes (combined) on tuning",
         "concepts": {s.concept_id: {
             "chosen_ask_threshold": s.chosen,
             "n_pos": s.n_pos, "n_neg": s.n_neg,
@@ -159,16 +171,16 @@ def main(argv: list[str] | None = None) -> int:  # pragma: no cover - CLI glue
 
     p = argparse.ArgumentParser(prog="python -m aca.eval.calibrate_ask",
                                 description="Calibrate per-concept similarity ASK thresholds on the tuning set.")
-    p.add_argument("--cap", type=float, default=DEFAULT_BENIGN_ASK_CAP,
-                   help="max benign-routed-to-ASK rate on tuning (default 0.15)")
+    p.add_argument("--cap", type=float, default=DEFAULT_BENIGN_REVIEW_CAP,
+                   help="max benign review rate (ASK + four-eyes combined) on tuning (default 0.15)")
     p.add_argument("--write-thresholds", action="store_true",
                    help="write the chosen thresholds back into policy/data/thresholds.json")
     args = p.parse_args(argv)
 
-    report = calibrate(benign_ask_cap=args.cap)
+    report = calibrate(benign_review_cap=args.cap)
     path = write_report(report)
-    print("ASK-threshold calibration (tuning set only)")
-    print(f"  embedder: {report['embedder']}  cap(benign->ASK) <= {report['benign_ask_cap']}")
+    print("ASK-threshold calibration (tuning set only; cap on benign ASK + four-eyes)")
+    print(f"  embedder: {report['embedder']}  cap(benign review) <= {report['benign_review_cap']}")
     print(f"  report: {path}")
     if report["is_smoke"]:
         print("  NOTE: hashed embedder — smoke only; run with the model for real thresholds.")

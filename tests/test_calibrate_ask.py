@@ -29,20 +29,21 @@ def test_calibrate_runs_on_tuning_and_covers_13_concepts():
             assert info["note"]
 
 
-def test_chosen_threshold_respects_benign_cap():
+def test_chosen_threshold_respects_benign_review_cap():
     cap = 0.15
-    report = calibrate(benign_ask_cap=cap)
+    report = calibrate(benign_review_cap=cap)
     for cid, info in report["concepts"].items():
         chosen = info["chosen_ask_threshold"]
         if chosen is None:
             continue
         row = next(r for r in info["sweep"] if r["threshold"] == chosen)
-        assert row["benign_routed_to_ask"] <= cap, f"{cid}: benign-ASK over cap at chosen threshold"
+        # The cap is on the COMBINED benign review rate (ASK + four-eyes).
+        assert row["benign_review_rate"] <= cap, f"{cid}: benign review over cap at chosen threshold"
 
 
 def test_chosen_is_lowest_threshold_meeting_cap():
     cap = 0.15
-    report = calibrate(benign_ask_cap=cap)
+    report = calibrate(benign_review_cap=cap)
     for cid, info in report["concepts"].items():
         chosen = info["chosen_ask_threshold"]
         if chosen is None:
@@ -50,7 +51,7 @@ def test_chosen_is_lowest_threshold_meeting_cap():
         # No lower threshold in the grid should also meet the cap.
         for r in info["sweep"]:
             if r["threshold"] < chosen:
-                assert r["benign_routed_to_ask"] > cap, (
+                assert r["benign_review_rate"] > cap, (
                     f"{cid}: a lower threshold {r['threshold']} also met the cap")
 
 
@@ -62,7 +63,7 @@ def test_write_thresholds_only_sets_ask_threshold(tmp_path):
     dst.write_text(src.read_text(encoding="utf-8"), encoding="utf-8")
     before = json.loads(dst.read_text())
 
-    report = calibrate(benign_ask_cap=0.15)
+    report = calibrate(benign_review_cap=0.15)
     write_thresholds(report, thresholds_path=dst)
     after = json.loads(dst.read_text())
 
