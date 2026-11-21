@@ -15,6 +15,7 @@ from pathlib import Path
 from aca.guard.embeddings import Embedder, build_embedder
 from aca.guard.event import Event
 from aca.guard.labels.schema import Label
+from aca.guard.stages.elements import ElementIndex, load_element_index, mark_elements
 from aca.guard.stages.exemplars import ConceptIndex, load_concept
 from aca.guard.stages.stage0 import run_stage0
 from aca.guard.stages.stage1 import run_stage1
@@ -70,12 +71,23 @@ class LocalEmbeddingsAdapter:
         # similarity_only -> OPA routes to ASK (never BLOCK). Loaded from signed
         # thresholds data unless injected (tests/calibration).
         self._ask_thresholds = ask_thresholds if ask_thresholds is not None else _load_ask_thresholds()
+        # Phase C: per-element exemplar indexes (embedding-driven element marking
+        # for all 13 concepts). Absent for a concept -> fall back to stage-1's
+        # keyword elements (AIA-5-1-c only). A concept whose margins are disabled
+        # (null in element_margins.json) cannot reach a full match and so falls
+        # back to Phase A's ASK.
+        self._element_indexes: dict[str, ElementIndex] = {}
+        for c in concepts:
+            ei = load_element_index(c, self._embedder)
+            if ei is not None:
+                self._element_indexes[c] = ei
 
     def detect(self, event: Event) -> list[dict]:
         signals = run_stage0(event)
         labels: list[dict] = []
         # Stage A runs only when there is an artefact/diff to analyse.
         stage_a = run_stage_a(event.artefact) if event.artefact else None
+        query_vec = self._embedder.embed(f"{event.text}\n{event.artefact}".strip())
 
         for concept_id, index in self._indexes.items():
             s1 = run_stage1(event, index, self._embedder, signals)
@@ -85,13 +97,41 @@ class LocalEmbeddingsAdapter:
             if s1.nearest_negative:
                 evidence.append(f"stage1:nearest_negative={s1.nearest_negative}")
 
-            # Fold stage-A artefact elements into the element set for AIA-5-1-c.
-            elements_met = list(s1.elements_met)
             detector_versions = {
                 "stage0": signals.version,
                 "stage1": s1.version,
                 "embedder": self._embedder.version,
             }
+
+            # Phase C: element marking is embedding-driven (per-element exemplars)
+            # for every concept whose margins are CALIBRATED. An uncalibrated
+            # concept (no entry in element_margins.json — the committed default)
+            # does not use element marking at all: it falls back to the prior
+            # behaviour (stage-1 keyword elements for AIA-5-1-c, none otherwise),
+            # so the offline/hashed default is unchanged and element-driven
+            # BLOCK only switches on after the owner calibrates on tuning.
+            element_index = self._element_indexes.get(concept_id)
+            full_match_disabled = False
+            if element_index is not None and element_index.calibrated:
+                # Calibrated concept: embedding-driven element marking.
+                elements_met = mark_elements(query_vec, element_index)
+                for el in elements_met:
+                    evidence.append(f"element:{el}")
+                full_match_disabled = element_index.full_match_disabled
+                # Keep stage-0 keyword hits for AIA-5-1-c as an extra signal.
+                if concept_id == "AIA-5-1-c":
+                    for el in s1.elements_met:
+                        if el not in elements_met:
+                            elements_met.append(el)
+                            evidence.append(f"stage1kw:{el}")
+            else:
+                # Uncalibrated concept: prior behaviour only (stage-1 keyword
+                # elements for AIA-5-1-c, none for the others). The committed
+                # offline default stays here until the owner calibrates.
+                elements_met = list(s1.elements_met)
+                if element_index is not None:
+                    full_match_disabled = element_index.full_match_disabled
+
             if stage_a is not None and concept_id == "AIA-5-1-c":
                 for el in stage_a.elements_met:
                     if el not in elements_met:
@@ -102,6 +142,12 @@ class LocalEmbeddingsAdapter:
             total = len(index.elements)
             met_count = len(set(index.elements) & set(elements_met))
             full_match = total > 0 and met_count == total
+            # Phase C: if a concept's element margins are disabled (tuning could
+            # not reach a 0 false-block margin), its full match is turned off so
+            # it can never BLOCK; it falls back to Phase A's similarity ASK.
+            if full_match_disabled:
+                full_match = False
+                evidence.append("full_match_disabled")
             # Partial pattern: >= 2 of the concept's elements present but not all.
             # OPA maps this to `ask` (four-eyes) — a conservative routing to a
             # human, never an allow. It is a signal, not a verdict.

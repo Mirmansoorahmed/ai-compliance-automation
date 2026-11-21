@@ -1,0 +1,5 @@
+{
+  "_doc": "Per-element similarity margins for Phase C element marking. An element is MET when max-sim-to-positives minus max-sim-to-negatives >= margin. Calibrated on the TUNING set only (eval/cases + eval/tuning_v2) by `python -m aca.eval.calibrate_elements --write-margins`, with the constraint that the tuning false-block rate is 0. A concept whose elements are all set (no null) can reach a full match (-> BLOCK/four-eyes); an element with margin null is DISABLED, which turns off that concept's full match so it falls back to the Phase A ASK tier. The values below are conservative placeholders to be replaced by a real-model calibration run.",
+  "default_margin": 0.05,
+  "concepts": {}
+}
