@@ -42,6 +42,10 @@ _MARGINS_PATH = Path(__file__).resolve().parents[3] / "policy" / "data" / "eleme
 _RESULTS_DIR = _EVAL_DIR / "results"
 
 DEFAULT_FLOOR = 0.05
+# Fix #3: a chosen element margin must beat the best cross-concept negative on
+# tuning by at least this robustness band, so a floor margin is never selected
+# on a single boundary case.
+DEFAULT_DELTA = 0.03
 # Candidate margins swept — all strictly above 0 (>= the floor).
 _GRID = [round(x / 100, 2) for x in range(5, 80, 3)]  # 0.05 .. 0.77
 
@@ -88,7 +92,7 @@ def _adapter_elements_for_concept(emb, concept_id, margins_dict, texts):
 
 
 def calibrate(*, concepts: tuple[str, ...] = DEFAULT_CONCEPTS, embedder=None,
-              floor: float = DEFAULT_FLOOR) -> dict:
+              floor: float = DEFAULT_FLOOR, delta: float = DEFAULT_DELTA) -> dict:
     emb = embedder or build_embedder(allow_hashed_fallback=True, dim=256)
     all_cases = _load_tuning_cases()
 
@@ -107,14 +111,25 @@ def calibrate(*, concepts: tuple[str, ...] = DEFAULT_CONCEPTS, embedder=None,
         pos_texts = [c.get("text", "") for c in pos_cases]
         nonpos_texts = [c.get("text", "") for c in nonpos_cases]
 
-        # Raw per-element margins for positives and non-positives (used to pick a
-        # per-element starting threshold that still marks positives).
-        pos_vecs = [_element_margin_vec(emb, index, t) for t in pos_texts]
+        # Fix #3: per element, the best (highest) raw similarity margin over the
+        # CROSS-CONCEPT non-positive texts — i.e. every other concept's benign
+        # and positive texts act as negatives for this element. The chosen margin
+        # must beat that by ``delta`` (a robustness band) so a floor margin is
+        # never picked on a single boundary case. Scored on TUNING only.
+        nonpos_vecs = [_element_margin_vec(emb, index, t) for t in nonpos_texts]
+        cross_neg_max = {
+            e: max((v[e] for v in nonpos_vecs), default=0.0) for e in elements
+        }
 
-        # Start each element at the floor; raise the threshold to break any
-        # false full match, checking the REAL adapter element set (with the
-        # stage-0 union) each round.
-        chosen: dict[str, float | None] = {e: floor for e in elements}
+        # Start each element at max(floor, cross-neg-max + delta), then raise
+        # further to break any residual false full match, checking the REAL
+        # adapter element set (with the stage-0 union) each round.
+        def _start(e):
+            want = max(floor, round(cross_neg_max[e] + delta, 4))
+            # Snap up to the next grid point at or above ``want``.
+            at_or_above = [g for g in _GRID if g >= want]
+            return at_or_above[0] if at_or_above else _GRID[-1]
+        chosen: dict[str, float | None] = {e: _start(e) for e in elements}
 
         def false_full_count(assignment):
             marks = _adapter_elements_for_concept(
@@ -157,6 +172,11 @@ def calibrate(*, concepts: tuple[str, ...] = DEFAULT_CONCEPTS, embedder=None,
         if pfc == 0 and not disabled:
             warnings.append("0 tuning positives reach a full match at the chosen margins "
                             "(strict recall will be 0 — data or element design)")
+        # Fix #3: flag any element sitting at the floor (robustness band did not
+        # lift it, i.e. cross-concept negatives are far — fine — but note it).
+        at_floor = [e for e in elements if chosen[e] == floor]
+        if at_floor:
+            warnings.append(f"elements at the floor margin ({floor}): {', '.join(at_floor)}")
 
         out_concepts[cid] = {e: {"margin": chosen[e]} for e in elements}
         out_concepts[cid]["_meta"] = {
@@ -164,20 +184,23 @@ def calibrate(*, concepts: tuple[str, ...] = DEFAULT_CONCEPTS, embedder=None,
             "pos_full_match_count": pfc,
             "n_pos": len(pos_cases),
             "n_nonpos": len(nonpos_texts),
+            "cross_neg_max": {e: round(cross_neg_max[e], 4) for e in elements},
             "disabled_elements": disabled,
             "full_match_disabled": bool(disabled),
             "warnings": warnings,
             "floor": floor,
+            "delta": delta,
         }
 
     backend = "sentence-transformers" if str(emb.version).startswith("st:") else "hashed-fallback"
     return {
-        "schema": "element-margins/v2",
+        "schema": "element-margins/v3",
         "generated_ts": time.time(),
         "embedder": emb.version,
         "embedder_backend": backend,
         "is_smoke": backend == "hashed-fallback",
         "floor": floor,
+        "delta": delta,
         "default_margin": floor,
         "concepts": out_concepts,
     }
@@ -219,9 +242,11 @@ def main(argv: list[str] | None = None) -> int:  # pragma: no cover - CLI glue
                    help="write the calibrated margins into policy/data/element_margins.json")
     p.add_argument("--floor", type=float, default=DEFAULT_FLOOR,
                    help="minimum per-element margin (strictly > 0; default 0.05)")
+    p.add_argument("--delta", type=float, default=DEFAULT_DELTA,
+                   help="robustness band above the best cross-concept negative (default 0.03)")
     args = p.parse_args(argv)
 
-    report = calibrate(floor=args.floor)
+    report = calibrate(floor=args.floor, delta=args.delta)
     path = write_report(report)
     print("Element-margin calibration (tuning only; cross-concept false-full-match target = 0)")
     print(f"  embedder: {report['embedder']}  floor={report['floor']}")
