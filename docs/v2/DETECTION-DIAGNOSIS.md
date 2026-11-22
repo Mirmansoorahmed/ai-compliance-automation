@@ -110,7 +110,20 @@ After the first full real-model run, recall rose but almost every benign case wa
 4. **Official-element intersection.** `decide()` and `compliance.tier` now intersect `elements_met` with the concept's **official** element set before counting a full match (a keyword/stage-A union name outside the set can no longer inflate the count). The adapter also emits `official_elements` and only official element names.
 5. **Stronger calibrator audit.** The no-held-out test hooks `Path.read_text`/`read_bytes`, `os.open` and `builtins.open` (not only `load_yaml`) and asserts no held-out path is opened during a full combined calibration.
 
-**Results and tradeoff (frozen; numbers owner-filled).** Strict **BLOCK** is deliberately narrow — only a full, validated element match, calibrated to **0 false full matches on tuning**. The uncertain middle goes to **human review (ASK)**, never refusal, with the combined benign→review rate capped on tuning. **BLOCK stays conservative on purpose: a wrong block of a lawful product is worse than a review** — it stops a legitimate feature and teaches developers to bypass the gate, whereas a wrong ASK only asks a human to look. The residual risk is missed detections (a prohibited use slipping to ALLOW), which the held-out numbers measure. All real numbers are **owner-filled** from the final run; this repo invents none.
+**Results and tradeoff (frozen).** Strict **BLOCK** is deliberately narrow — only a full, validated element match, calibrated to **0 false full matches on tuning**. The uncertain middle goes to **human review (ASK)**, never refusal, with the combined benign→review rate capped on tuning. **BLOCK stays conservative on purpose: a wrong block of a lawful product is worse than a review** — it stops a legitimate feature and teaches developers to bypass the gate, whereas a wrong ASK only asks a human to look. The residual risk is missed detections (a prohibited use slipping to ALLOW), which the held-out numbers measure.
+
+The owner's final real-model run (multilingual MiniLM, calibration on tuning only), frozen joint ASK cap 0.15:
+
+| Split | Precision | Strict recall | Review recall | False block | Benign→review |
+|---|---|---|---|---|---|
+| Legacy set (54) | 1.0 | 0.818 | 1.00 (22/22) | 0.0 | 0.188 |
+| Legacy held-out (21) | 1.0 | 0.111 | 0.333 (3/9) | 0.0 | 0.333 |
+| Tuning (210) | 1.0 | 0.18 | 0.79 (79/100) | 0.0 | 0.146 |
+| Held-out v2 (156, never seen) | n/a (no BLOCKs) | 0.0 | 0.782 (61/78) | 0.0 | 0.256 |
+
+Tradeoff curve (calibrator, tuning) — review recall / benign→review at each cap: 0.05 → 0.59 / 0.046; 0.10 → 0.69 / 0.10; 0.15 → 0.77 / 0.146; 0.20 → 0.77 / 0.20 (no gain); 0.30 → 0.86 / 0.30. **0.15 is the knee** — beyond it benign review rises without buying recall. Vague-law router: accuracy 0.829, ECE 0.160, ASK-rate 0.271 (48 cases). Concept-separation leave-one-out: 1.0 or 0.857 on all 13 concepts. Tests: 435 pytest pass (hashed embedder), OPA 32/32.
+
+The honest reading: only `AIA-5-1-c` reaches full element matches on tuning, so strict auto-BLOCK recall on unseen data is 0.0 and the system leans on the review tier (78.2% of unseen attacks routed to a human), at the cost of 25.6% of unseen benign prompts also going to review. The 0.15 cap is tuning-only and does not fully transfer. Next: concrete per-element exemplars for the 12 concepts with zero full matches, a German-native embedder bake-off, and a re-check of the cap on a fresh held-out set.
 
 **Owner commands (single calibrate + eval).** Set `ACA_REQUIRE_MODEL=1` so the real MiniLM model is used and every step **fails loudly** if it is absent (the vague-law and concept-separation CLIs previously fell back to the hashed embedder silently; they now use the same loader as the eval runner):
 
