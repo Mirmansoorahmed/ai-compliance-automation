@@ -1,5 +1,5 @@
 {
-  "_doc": "Signed label-tier thresholds. ask_threshold (the Phase-A similarity ASK tier) is NOT set by default: the similarity tier stays OFF until the owner runs `python -m aca.eval.calibrate --write` on the real model, which writes a calibrated ask_threshold per concept (the value the joint calibrator actually evaluated). An absent ask_threshold means no ASK for that concept, and the adapter records ask_thresholds_loaded:false with the resolved path in the eval JSON.",
+  "_doc_thresholds": "Signed label-tier thresholds. ask_threshold (the Phase-A similarity ASK tier) is NOT set by default: the similarity tier stays OFF until the owner runs `python -m aca.eval.calibrate --write` on the real model, which writes a calibrated ask_threshold per concept (the value the joint calibrator actually evaluated). An absent ask_threshold means no ASK for that concept, and the adapter records ask_thresholds_loaded:false with the resolved path in the eval JSON.",
   "thresholds": {
     "AIA-5-1-a": { "low": 0.45, "high": 0.8, "min_elements": 2 },
     "AIA-5-1-b": { "low": 0.45, "high": 0.8, "min_elements": 2 },

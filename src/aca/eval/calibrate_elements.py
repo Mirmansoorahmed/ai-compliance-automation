@@ -211,7 +211,7 @@ def calibrate(*, concepts: tuple[str, ...] = DEFAULT_CONCEPTS, embedder=None,
 def write_margins(report: dict, *, margins_path: Path | None = None) -> Path:
     path = margins_path or _MARGINS_PATH
     doc = {
-        "_doc": ("Per-element similarity margins for Phase C. Calibrated on the tuning set "
+        "_doc_element_margins": ("Per-element similarity margins for Phase C. Calibrated on the tuning set "
                  "only; margins are strictly > 0 (floor). A concept's full match fires only "
                  "when EVERY element clears its margin; calibration drives the tuning "
                  "false-full-match rate (incl. cross-concept) to 0, else the concept's full "
