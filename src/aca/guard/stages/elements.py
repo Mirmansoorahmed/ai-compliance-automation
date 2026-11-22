@@ -25,8 +25,10 @@ from pathlib import Path
 
 from aca.guard.embeddings import Embedder, cosine
 
-_ELEMENTS_DIR = Path(__file__).resolve().parents[4] / "exemplars" / "elements"
-_MARGINS_PATH = Path(__file__).resolve().parents[4] / "policy" / "data" / "element_margins.json"
+from aca.paths import element_margins_path as _element_margins_path, repo_root as _repo_root
+
+_ELEMENTS_DIR = _repo_root() / "exemplars" / "elements"
+_MARGINS_PATH = _element_margins_path()
 
 DEFAULT_MARGIN = 0.05
 

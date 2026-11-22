@@ -36,9 +36,11 @@ from aca.guard.event import Event
 from aca.guard.stages.elements import load_element_index
 from aca.register.yamlio import load_yaml
 
+from aca.paths import element_margins_path as _shared_margins_path
+
 _EVAL_DIR = Path(__file__).resolve().parents[3] / "eval"
 _TUNING_DIRS = (_EVAL_DIR / "cases", _EVAL_DIR / "tuning_v2")
-_MARGINS_PATH = Path(__file__).resolve().parents[3] / "policy" / "data" / "element_margins.json"
+_MARGINS_PATH = _shared_margins_path()
 _RESULTS_DIR = _EVAL_DIR / "results"
 
 DEFAULT_FLOOR = 0.05

@@ -27,11 +27,12 @@ from pathlib import Path
 from aca.guard.adapters.local_embeddings import DEFAULT_CONCEPTS, LocalEmbeddingsAdapter
 from aca.guard.embeddings import build_embedder
 from aca.guard.event import Event
+from aca.paths import thresholds_path as _shared_thresholds_path
 from aca.register.yamlio import load_yaml
 
 _EVAL_DIR = Path(__file__).resolve().parents[3] / "eval"
 _TUNING_DIRS = (_EVAL_DIR / "cases", _EVAL_DIR / "tuning_v2")
-_THRESHOLDS_PATH = Path(__file__).resolve().parents[3] / "policy" / "data" / "thresholds.json"
+_THRESHOLDS_PATH = _shared_thresholds_path()
 _RESULTS_DIR = _EVAL_DIR / "results"
 
 # The cap is on the COMBINED benign hard-review rate: benign cases routed to ASK
@@ -225,19 +226,27 @@ def calibrate(*, benign_review_cap: float = DEFAULT_BENIGN_REVIEW_CAP,
         "achieved_review_recall": round(recall_at_cap, 4),
         "cap_unreachable": benign_at_cap > benign_review_cap,
         "tradeoff_curve": curve,
+        "top": top,
         "concepts": {c: {
-            "chosen_ask_threshold": chosen_thr[c] if chosen_thr[c] < top else None,
+            # Fix 2: report the EXACT threshold the calibrator evaluated. A
+            # concept with no ASK is ``top`` (the grid max), not None — writing
+            # that exact value makes the reloaded file reproduce the calibrator's
+            # numbers. ``active`` is the human-readable "ASK is on" flag.
+            "chosen_ask_threshold": chosen_thr[c],
+            "active": chosen_thr[c] < top,
             "n_pos": pos_n[c], "n_neg": neg_n[c],
-            "note": "" if chosen_thr[c] < top else "left at max (no ASK) by the joint cap",
+            "note": "" if chosen_thr[c] < top else "no ASK (threshold at grid max)",
         } for c in clist},
     }
-
 
 
 def write_thresholds(report: dict, *, thresholds_path: Path | None = None) -> Path:
     path = thresholds_path or _THRESHOLDS_PATH
     data = json.loads(path.read_text(encoding="utf-8"))
     th = data["thresholds"]
+    # Fix 2: write the EXACT value the calibrator evaluated for every concept
+    # (including ``top`` for the no-ASK ones), so reload -> score reproduces the
+    # calibrator's claimed benign/recall numbers. No stale placeholder is left.
     for cid, info in report["concepts"].items():
         chosen = info["chosen_ask_threshold"]
         if cid in th and chosen is not None:

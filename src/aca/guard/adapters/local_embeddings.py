@@ -10,9 +10,12 @@ hashed-vector fallback, so this adapter works in CI with no network.
 from __future__ import annotations
 
 import json
-from pathlib import Path
+import logging
 
 from aca.guard.embeddings import Embedder, build_embedder
+from aca.paths import thresholds_path as _thresholds_path
+
+log = logging.getLogger("aca.guard.adapter")
 from aca.guard.event import Event
 from aca.guard.labels.schema import Label
 from aca.guard.stages.elements import ElementIndex, load_element_index, mark_elements
@@ -31,24 +34,46 @@ DEFAULT_CONCEPTS = (
 )
 
 
-_THRESHOLDS_PATH = Path(__file__).resolve().parents[3] / "policy" / "data" / "thresholds.json"
-
-
 def _load_ask_thresholds() -> dict[str, float]:
     """Per-concept ``ask_threshold`` from the signed thresholds data (Phase A).
 
-    Returns {} if the file or the field is absent, so the similarity tier is
-    simply inactive rather than erroring.
+    The path is resolved by the shared ``aca.paths`` helper (Fix 1) so the
+    adapter, the element stage and the calibrators all agree. A missing file or
+    an absent ``ask_threshold`` field yields {} AND logs a WARNING naming the
+    resolved path — the earlier silent {} (from a wrong path) disabled the ASK
+    tier in the official eval without any signal. ``ask_thresholds_loaded`` /
+    the resolved path are recorded in the eval JSON (see the eval runner).
     """
+    path = _thresholds_path()
     try:
-        data = json.loads(_THRESHOLDS_PATH.read_text(encoding="utf-8"))["thresholds"]
-    except Exception:
+        data = json.loads(path.read_text(encoding="utf-8"))["thresholds"]
+    except Exception as exc:
+        log.warning("ask thresholds unavailable at %s (%s); similarity ASK tier is OFF", path, exc)
         return {}
     out: dict[str, float] = {}
     for concept_id, th in data.items():
         if isinstance(th, dict) and "ask_threshold" in th:
             out[concept_id] = float(th["ask_threshold"])
+    if not out:
+        log.warning("no ask_threshold set in %s; similarity ASK tier is OFF", path)
     return out
+
+
+def ask_thresholds_status() -> dict:
+    """What the adapter would load for the ASK tier, for eval-JSON metadata.
+
+    Returns {path, exists, n_active_ask_thresholds, ask_thresholds_loaded}. Used
+    by the eval runner (Fix 4) so a reader can see which operating point was
+    scored and whether the ASK tier was actually on.
+    """
+    path = _thresholds_path()
+    loaded = _load_ask_thresholds()
+    return {
+        "path": str(path),
+        "exists": path.is_file(),
+        "n_active_ask_thresholds": len(loaded),
+        "ask_thresholds_loaded": bool(loaded),
+    }
 
 
 class LocalEmbeddingsAdapter:
