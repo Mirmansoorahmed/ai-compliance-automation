@@ -104,7 +104,7 @@ The real-model recall/false-block numbers from these are **to be run by the owne
 
 After the first full real-model run, recall rose but almost every benign case was routed to review (benign→ASK ≈ 0.46) and a couple of new false blocks appeared. This round fixed the causes; **the detection design is now frozen — no more tuning.**
 
-1. **Joint ASK calibration.** The ASK thresholds were calibrated per concept in isolation, but all 13 concepts run on every text, so the per-concept caps compounded to ~0.46 at runtime. The ASK calibrator is now **joint**: it precomputes each concept's label facts per tuning case once, then greedily sets the per-concept thresholds so the **combined** benign→(ASK + four-eyes) rate across all concepts together is ≤ cap, maximising review recall. If 0.15 is unreachable it picks the best point and writes a **tradeoff curve** (cap 0.10/0.15/0.20/0.30 → review recall) into the calibration report.
+1. **Joint ASK calibration.** The ASK thresholds were calibrated per concept in isolation, but all 13 concepts run on every text, so the per-concept caps compounded to ~0.46 at runtime. The ASK calibrator is now **joint**: it precomputes each concept's label facts per tuning case once, then sets the per-concept thresholds so the **combined** benign→(ASK + four-eyes) rate across all concepts together is ≤ cap, maximising review recall. The optimiser is **greedy coordinate ascent** that tries every candidate threshold per concept and keeps the setting with the highest attack review recall while the cap holds, iterating to convergence (deterministic tie-break toward the higher threshold) — it does **not** stop at the first feasible point. (An earlier version did stop early and switched ASK off for every concept, wasting the whole 0.15 budget; fixed.) It writes a **tradeoff curve** (caps 0.05 / 0.10 / 0.15 / 0.20 / 0.30 → benign review and review recall) into the calibration report.
 2. **Irreducible ASK removed.** A `partial_pattern` (or `confidence ≥ low`) used to add ASK that no threshold could remove. A partial now routes to ASK **only when it also clears the concept's calibrated `ask_threshold`**, and the stage-1 low-confidence ASK path was removed — so the ASK calibrator fully controls the ASK rate.
 3. **Cross-concept robustness.** Element margins must be strictly > 0 and now beat the **best cross-concept negative** on tuning by a configurable `delta` (default 0.03). During calibration every other concept's benign and positive texts act as negatives for each element, so a floor margin is never chosen on a single boundary case (which is how GDPR-22 element margins had over-marked).
 4. **Official-element intersection.** `decide()` and `compliance.tier` now intersect `elements_met` with the concept's **official** element set before counting a full match (a keyword/stage-A union name outside the set can no longer inflate the count). The adapter also emits `official_elements` and only official element names.
@@ -112,11 +112,14 @@ After the first full real-model run, recall rose but almost every benign case wa
 
 **Results and tradeoff (frozen; numbers owner-filled).** Strict **BLOCK** is deliberately narrow — only a full, validated element match, calibrated to **0 false full matches on tuning**. The uncertain middle goes to **human review (ASK)**, never refusal, with the combined benign→review rate capped on tuning. **BLOCK stays conservative on purpose: a wrong block of a lawful product is worse than a review** — it stops a legitimate feature and teaches developers to bypass the gate, whereas a wrong ASK only asks a human to look. The residual risk is missed detections (a prohibited use slipping to ALLOW), which the held-out numbers measure. All real numbers are **owner-filled** from the final run; this repo invents none.
 
-**Owner commands (single calibrate + eval):**
+**Owner commands (single calibrate + eval).** Set `ACA_REQUIRE_MODEL=1` so the real MiniLM model is used and every step **fails loudly** if it is absent (the vague-law and concept-separation CLIs previously fell back to the hashed embedder silently; they now use the same loader as the eval runner):
 
 ```bash
 pip install -e ".[embeddings]"
-python -m aca.eval.calibrate --write   # tuning only: element margins (floor+delta) then JOINT ASK thresholds (combined benign review <= 0.15); writes both files + a report with the tradeoff curve
+export ACA_REQUIRE_MODEL=1
+python -m aca.eval.calibrate --write   # tuning only: element margins (floor+delta) then JOINT ASK thresholds (combined benign review <= 0.15, recall maximised); writes both files + a report with the tradeoff curve
 make eval                              # fills the per-concept table (5 columns) in the README
-opa test policy                        # must stay green (30/30)
+python -m aca.eval.concepts --require-model     # per-concept separation (fails loudly without the model)
+python -m aca.vaguelaw.eval --require-model     # vague-law eval (fails loudly without the model)
+opa test policy                        # must stay green
 ```

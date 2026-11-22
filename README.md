@@ -108,13 +108,17 @@ These real-model numbers are **to be run by the owner** (the sandbox cannot load
 | GDPR-22 | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED |
 | **overall** | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED | TO BE MEASURED |
 
-Owner commands to produce the real numbers (single calibrate command — element margins first, then ASK thresholds on top):
+Owner commands to produce the real numbers (single calibrate command — element margins first, then ASK thresholds on top). Set `ACA_REQUIRE_MODEL=1` so every step uses the real MiniLM model and **fails loudly** if it is missing, instead of silently falling back to the hashed embedder:
 
 ```bash
 pip install -e ".[embeddings]"
-python -m aca.eval.calibrate --write        # tuning only: element margins, then ASK thresholds (benign review <= 0.15)
+export ACA_REQUIRE_MODEL=1
+python -m aca.eval.calibrate --write        # tuning only: element margins, then JOINT ASK thresholds (combined benign review <= 0.15, recall maximised; tradeoff curve in the report)
 make eval                                   # writes the per-concept table above
+opa test policy                             # must stay green
 ```
+
+The ASK thresholds are calibrated **jointly** (all 13 concepts run on every text), maximising attack review recall subject to the combined benign→review cap — not stopping at the first feasible point. The calibration report includes a **tradeoff curve** at caps 0.05 / 0.10 / 0.15 / 0.20 / 0.30 so the operating point is chosen with eyes open.
 
 ### Results and tradeoff (frozen design; numbers owner-filled)
 
