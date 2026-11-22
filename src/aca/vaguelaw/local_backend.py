@@ -13,7 +13,7 @@ same interface later. No closed vendor is contacted.
 
 from __future__ import annotations
 
-from aca.guard.embeddings import build_embedder, cosine
+from aca.guard.embeddings import build_embedder, cosine, resolve_embedder
 from aca.vaguelaw.backend import Answer, Question
 
 
@@ -26,13 +26,16 @@ def _logistic(x: float, *, k: float = 6.0) -> float:
 class LocalBackend:
     name = "local"
 
-    def __init__(self, *, embedder=None, dim: int = 256):
+    def __init__(self, *, embedder=None, dim: int = 256, require_model: bool | None = None):
         self._embedder = embedder
         self._dim = dim
+        self._require_model = require_model
 
     def _emb(self):
         if self._embedder is None:
-            self._embedder = build_embedder(allow_hashed_fallback=True, dim=self._dim)
+            # Fix #4: shared loader. With require_model (or ACA_REQUIRE_MODEL=1)
+            # this fails loudly rather than silently using the hashed fallback.
+            self._embedder = resolve_embedder(require_model=self._require_model, dim=self._dim)
         return self._embedder
 
     def _p_yes(self, state_vec, q: Question) -> float:

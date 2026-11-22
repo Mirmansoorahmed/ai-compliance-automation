@@ -25,7 +25,7 @@ import time
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from aca.guard.embeddings import build_embedder, cosine
+from aca.guard.embeddings import build_embedder, cosine, resolve_embedder
 
 _EXEMPLAR_DIR = Path(__file__).resolve().parents[3] / "exemplars"
 _RESULTS_DIR = Path(__file__).resolve().parents[3] / "eval" / "results"
@@ -102,9 +102,13 @@ def smoke_concept(path: Path, embedder) -> ConceptSmoke:
     )
 
 
-def run_smoke(*, exemplar_dir: Path | None = None) -> dict:
+def run_smoke(*, exemplar_dir: Path | None = None, require_model: bool | None = None,
+              embedder=None) -> dict:
     base = exemplar_dir or _EXEMPLAR_DIR
-    embedder = build_embedder(allow_hashed_fallback=True, dim=256)
+    # Fix #4: use the shared loader. With require_model (or ACA_REQUIRE_MODEL=1)
+    # this fails loudly if the real model is absent instead of silently using
+    # the hashed fallback.
+    embedder = embedder or resolve_embedder(require_model=require_model, dim=256)
     results = []
     for path in sorted(base.glob("*.json")):
         results.append(smoke_concept(path, embedder))
@@ -130,8 +134,15 @@ def write_report(report: dict, *, results_dir: Path | None = None) -> Path:
     return path
 
 
-def main() -> int:  # pragma: no cover - CLI glue
-    report = run_smoke()
+def main(argv: list[str] | None = None) -> int:  # pragma: no cover - CLI glue
+    import argparse
+    p = argparse.ArgumentParser(prog="python -m aca.eval.concepts",
+                                description="Per-concept exemplar separation check.")
+    p.add_argument("--require-model", action="store_true",
+                   help="fail loudly if the real sentence-transformers model is not available "
+                        "(also via ACA_REQUIRE_MODEL=1)")
+    args = p.parse_args(argv)
+    report = run_smoke(require_model=True if args.require_model else None)
     path = write_report(report)
     print("Per-concept exemplar separation check")
     print(f"  {report['label']}")

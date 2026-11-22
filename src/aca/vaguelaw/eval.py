@@ -166,13 +166,13 @@ def write_report(result: EvalResult, *, results_dir: Path | None = None) -> Path
     return path
 
 
-def _make_backend(name: str):
+def _make_backend(name: str, *, require_model: bool | None = None):
     if name == "fake":
         from aca.vaguelaw.fake_backend import FakeBackend
         return FakeBackend()
     if name == "local":
         from aca.vaguelaw.local_backend import LocalBackend
-        return LocalBackend()
+        return LocalBackend(require_model=require_model)
     raise SystemExit(f"unknown backend {name!r}; choose local or fake")
 
 
@@ -183,10 +183,13 @@ def run(argv: list[str]) -> int:
                                 description="Evaluate the vague-law classifier (accuracy, ECE, ASK rate).")
     p.add_argument("--backend", choices=["local", "fake"], default="local",
                    help="local = open-source MiniLM/hashed backend; fake = deterministic (default local)")
+    p.add_argument("--require-model", action="store_true",
+                   help="fail loudly if the real sentence-transformers model is not available "
+                        "(local backend only; also via ACA_REQUIRE_MODEL=1)")
     p.add_argument("--no-write", action="store_true", help="do not write a result JSON")
     args = p.parse_args(argv)
 
-    backend = _make_backend(args.backend)
+    backend = _make_backend(args.backend, require_model=True if args.require_model else None)
     result = evaluate(backend)
 
     acc = result.accuracy if result.accuracy is not None else "n/a"
