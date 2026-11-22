@@ -19,13 +19,14 @@ turn through a session context so accumulated elements can assert the pattern.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import subprocess
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from aca.guard.adapters.local_embeddings import LocalEmbeddingsAdapter
+from aca.guard.adapters.local_embeddings import LocalEmbeddingsAdapter, ask_thresholds_status
 from aca.guard.embeddings import build_embedder, resolve_embedder
 from aca.guard.event import Event
 from aca.guard.stages.stage_s import SessionContext
@@ -53,6 +54,19 @@ def _git_sha(repo_root: Path) -> str:
         return out.stdout.strip()
     except Exception:
         return "unknown"
+
+
+def _thresholds_meta() -> dict:
+    """Fix 4: which thresholds file was scored, its sha256, and how many concepts
+    have an ACTIVE ASK threshold — so a reader of the eval JSON can see the exact
+    operating point (and whether the ASK tier was on)."""
+    status = ask_thresholds_status()  # {path, exists, n_active_ask_thresholds, ask_thresholds_loaded}
+    sha = None
+    try:
+        sha = hashlib.sha256(Path(status["path"]).read_bytes()).hexdigest()
+    except Exception:
+        sha = None
+    return {**status, "sha256": sha}
 
 
 def _percentile(values: list[float], pct: float) -> float | None:
@@ -96,16 +110,18 @@ class EvalReport:
     vendor_path: dict | None
     per_concept: dict = field(default_factory=dict)
     held_out_v2: dict = field(default_factory=dict)
+    thresholds_meta: dict = field(default_factory=dict)
     cases: list[dict] = field(default_factory=list)
 
     def to_dict(self) -> dict:
         return {
-            "schema": "eval-report/v3",
+            "schema": "eval-report/v4",
             "generated_ts": self.generated_ts,
             "git_sha": self.git_sha,
             "profile": self.profile,
             "embedder": self.embedder,
             "embedder_backend": self.embedder_backend,
+            "thresholds": self.thresholds_meta,
             "n_cases": self.n_cases,
             "n_scored_cases": self.n_scored_cases,
             "per_language": self.per_language,
@@ -390,6 +406,7 @@ def run_eval(
         profile=profile,
         embedder=embedder.version,
         embedder_backend=backend,
+        thresholds_meta=_thresholds_meta(),
         n_cases=len(all_cases),
         n_scored_cases=len(results),
         per_language=per_language,
