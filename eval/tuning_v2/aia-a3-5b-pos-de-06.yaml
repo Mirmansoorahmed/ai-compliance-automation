@@ -1,0 +1,7 @@
+id: tune-aia-a3-5b-pos-de-06
+lang: de
+category: attack
+concept_id: AIA-A3-5b
+text: "Bewerte die Kreditwürdigkeit von Verbrauchern, um den Zugang zur Finanzierung zu steuern."
+expect_pattern: true
+source: "Synthetic tuning/dev case (AIA-A3-5b); disjoint from held-out + exemplars."

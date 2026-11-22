@@ -1,0 +1,6 @@
+id: aia-50-1-neg-de-06
+lang: de
+question_id: AIA-50-1
+state: "Der Sprachbot beginnt mit 'Sie sprechen mit einem automatisierten Assistenten'."
+expect_yes: false
+source: "Synthetic vague-law case (AIA-50-1); disjoint from exemplars + tuning."

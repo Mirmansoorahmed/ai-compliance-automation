@@ -112,3 +112,27 @@ def build_embedder(
                 f"embedding model {model!r} unavailable and hashed fallback disabled"
             )
         return HashedEmbedder(dim=dim)
+
+
+# Env knob so the eval runner and the eval CLIs all decide the fallback policy
+# the same way: ACA_REQUIRE_MODEL=1 makes every embedder build fail loudly if the
+# real sentence-transformers model cannot be loaded, instead of silently using
+# the hashed fallback.
+REQUIRE_MODEL_ENV = "ACA_REQUIRE_MODEL"
+
+
+def _env_requires_model() -> bool:
+    import os
+    return os.environ.get(REQUIRE_MODEL_ENV, "").strip().lower() in ("1", "true", "yes")
+
+
+def resolve_embedder(*, require_model: bool | None = None, dim: int = 256) -> Embedder:
+    """Shared embedder loader for the eval runner and the eval CLIs.
+
+    ``require_model`` forces the real model (no hashed fallback). When None it is
+    taken from the ``ACA_REQUIRE_MODEL`` env var. This makes "the owner asked for
+    the real model" an explicit, loud failure if the model is absent, instead of
+    a silent degrade to the hashed backend.
+    """
+    req = _env_requires_model() if require_model is None else require_model
+    return build_embedder(allow_hashed_fallback=not req, dim=dim)

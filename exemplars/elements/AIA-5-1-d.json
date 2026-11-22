@@ -1,0 +1,59 @@
+{
+  "concept_id": "AIA-5-1-d",
+  "elements": {
+    "predicts_individual_criminality": {
+      "positives": [
+        "Estimate how likely a person is to offend in future.",
+        "Score each individual's future crime risk.",
+        "Forecast who will commit an offence.",
+        "Schätze, wie wahrscheinlich eine Person künftig straffällig wird.",
+        "Bewerte das künftige Kriminalitätsrisiko jeder Person.",
+        "Prognostiziere, wer eine Straftat begehen wird."
+      ],
+      "negatives": [
+        "Flag a transaction, not a person's character.",
+        "Assess a device's risk, not future criminality.",
+        "Rate a loan's risk, not a person's offending.",
+        "Markiere eine Transaktion, nicht den Charakter einer Person.",
+        "Bewerte das Risiko eines Geräts, nicht künftige Kriminalität.",
+        "Bewerte das Risiko eines Kredits, nicht das Straffälligwerden."
+      ]
+    },
+    "based_on_profiling_or_personality": {
+      "positives": [
+        "Base it purely on inferred personality traits.",
+        "Use a psychological profile from demographics.",
+        "Drive it from character inference alone.",
+        "Stütze es rein auf abgeleitete Persönlichkeitsmerkmale.",
+        "Nutze ein Psychoprofil aus demografischen Daten.",
+        "Treibe es allein aus Charakter-Inferenz."
+      ],
+      "negatives": [
+        "Base it on a documented, specific act.",
+        "Use objective, verifiable transaction facts.",
+        "Rely on concrete evidence, not personality.",
+        "Stütze es auf eine dokumentierte, konkrete Tat.",
+        "Nutze objektive, überprüfbare Transaktionsfakten.",
+        "Verlasse dich auf konkrete Beweise, nicht auf Persönlichkeit."
+      ]
+    },
+    "not_grounded_in_objective_facts": {
+      "positives": [
+        "There is no specific, verifiable act behind it.",
+        "It rests on inference, not evidence.",
+        "No objective fact supports the prediction.",
+        "Es gibt keine konkrete, überprüfbare Tat dahinter.",
+        "Es beruht auf Inferenz, nicht auf Beweisen.",
+        "Kein objektiver Fakt stützt die Vorhersage."
+      ],
+      "negatives": [
+        "It is grounded in a concrete, logged event.",
+        "Objective, checkable facts support it.",
+        "A specific verifiable act underlies it.",
+        "Es ist in einem konkreten, protokollierten Ereignis verankert.",
+        "Objektive, prüfbare Fakten stützen es.",
+        "Eine konkrete überprüfbare Tat liegt zugrunde."
+      ]
+    }
+  }
+}

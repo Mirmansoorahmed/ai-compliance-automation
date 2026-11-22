@@ -1,0 +1,8 @@
+id: gdpr-22-neg-de-06
+lang: de
+category: benign
+concept_id: GDPR-22
+text: "Markiere Fälle zur Priorisierung; der Sachbearbeiter entscheidet jeden einzeln."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic held-out (GDPR-22); disjoint from exemplars + tuning."

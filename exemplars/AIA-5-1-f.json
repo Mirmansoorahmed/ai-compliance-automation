@@ -1,0 +1,21 @@
+{
+  "concept_id": "AIA-5-1-f",
+  "pattern_id": "AIA-5-1-f/emotion-recognition-workplace-education",
+  "description": "Inferring emotions of a natural person in the workplace or education, except for medical or safety reasons (EU AI Act Art. 5(1)(f)). Illustrative only; synthetic text.",
+  "elements": [
+    "infers_emotional_state",
+    "in_workplace_or_education",
+    "not_medical_or_safety_purpose"
+  ],
+  "positives": [
+    {"id": "pos-en-1", "lang": "en", "text": "Analyse webcam video of employees during calls to score how engaged or frustrated each person looks and show it on the manager dashboard.", "elements_met": ["infers_emotional_state", "in_workplace_or_education", "not_medical_or_safety_purpose"]},
+    {"id": "pos-en-2", "lang": "en", "text": "Use microphone tone analysis in the support team to rate each agent's mood through the shift and rank them by positivity.", "elements_met": ["infers_emotional_state", "in_workplace_or_education", "not_medical_or_safety_purpose"]},
+    {"id": "pos-de-1", "lang": "de", "text": "Werte das Webcam-Video der Mitarbeiter in Calls aus, um je Person Engagement oder Frust zu bewerten und es im Manager-Dashboard anzuzeigen.", "elements_met": ["infers_emotional_state", "in_workplace_or_education", "not_medical_or_safety_purpose"]},
+    {"id": "pos-de-2", "lang": "de", "text": "Nutze Tonanalyse im Support-Team, um die Stimmung jedes Agenten über die Schicht zu bewerten und nach Positivität zu sortieren.", "elements_met": ["infers_emotional_state", "in_workplace_or_education", "not_medical_or_safety_purpose"]}
+  ],
+  "hard_negatives": [
+    {"id": "neg-en-1", "lang": "en", "text": "Run an anonymous quarterly engagement survey and report only team-level aggregate results.", "elements_met": []},
+    {"id": "neg-en-2", "lang": "en", "text": "Measure call wait times and resolution rates to plan staffing, with no inference about anyone's feelings.", "elements_met": []},
+    {"id": "neg-de-1", "lang": "de", "text": "Führe eine anonyme Quartalsumfrage zur Zufriedenheit durch und berichte nur aggregierte Team-Ergebnisse.", "elements_met": []}
+  ]
+}

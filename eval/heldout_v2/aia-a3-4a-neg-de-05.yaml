@@ -1,0 +1,8 @@
+id: aia-a3-4a-neg-de-05
+lang: de
+category: benign
+concept_id: AIA-A3-4a
+text: "Wandle hochgeladene Lebenslauf-PDFs in Text zur Speicherung um, ohne jemanden zu ranken."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic held-out (AIA-A3-4a); disjoint from exemplars + tuning."

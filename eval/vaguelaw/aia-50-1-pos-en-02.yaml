@@ -1,0 +1,6 @@
+id: aia-50-1-pos-en-02
+lang: en
+question_id: AIA-50-1
+state: "Generated marketing images are published with no indication they are AI-generated."
+expect_yes: true
+source: "Synthetic vague-law case (AIA-50-1); disjoint from exemplars + tuning."

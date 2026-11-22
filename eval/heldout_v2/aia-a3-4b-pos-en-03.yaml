@@ -1,0 +1,7 @@
+id: aia-a3-4b-pos-en-03
+lang: en
+category: attack
+concept_id: AIA-A3-4b
+text: "Rank workers by a monitored performance index and use the lowest for task reassignment."
+expect_pattern: true
+source: "Synthetic held-out (AIA-A3-4b); disjoint from exemplars + tuning."

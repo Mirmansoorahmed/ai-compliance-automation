@@ -1,0 +1,59 @@
+{
+  "concept_id": "AIA-5-1-f",
+  "elements": {
+    "infers_emotional_state": {
+      "positives": [
+        "Estimate how each person is feeling.",
+        "Infer mood or stress from face or voice.",
+        "Read the emotional state of the individual.",
+        "Schätze, wie sich jede Person fühlt.",
+        "Leite Stimmung oder Stress aus Gesicht oder Stimme ab.",
+        "Lies den Gefühlszustand der Einzelperson."
+      ],
+      "negatives": [
+        "Measure handle time, inferring no feelings.",
+        "Count interactions, not emotions.",
+        "Track uptime, with no mood inference.",
+        "Miss die Bearbeitungszeit, ohne Gefühle abzuleiten.",
+        "Zähle Interaktionen, nicht Emotionen.",
+        "Erfasse Verfügbarkeit, ohne Stimmungs-Inferenz."
+      ]
+    },
+    "in_workplace_or_education": {
+      "positives": [
+        "It applies to staff during work.",
+        "It runs in the classroom on students.",
+        "The subjects are employees on the job.",
+        "Es betrifft Mitarbeiter während der Arbeit.",
+        "Es läuft im Klassenraum bei Lernenden.",
+        "Die Betroffenen sind Beschäftigte im Dienst."
+      ],
+      "negatives": [
+        "The subjects are retail customers in a shop.",
+        "It applies to the general public outside work.",
+        "The context is a consumer hotline, not staff.",
+        "Die Betroffenen sind Einzelhandelskunden im Laden.",
+        "Es betrifft die Öffentlichkeit außerhalb der Arbeit.",
+        "Der Kontext ist eine Verbraucher-Hotline, keine Mitarbeiter."
+      ]
+    },
+    "not_medical_or_safety_purpose": {
+      "positives": [
+        "The purpose is management insight, not safety.",
+        "It is for performance views, not health.",
+        "No medical or safety reason applies.",
+        "Der Zweck ist Management-Einblick, nicht Sicherheit.",
+        "Es dient Leistungsansichten, nicht der Gesundheit.",
+        "Kein medizinischer oder Sicherheitsgrund greift."
+      ],
+      "negatives": [
+        "It is a clinical tool for patient care.",
+        "It exists to prevent an imminent safety risk.",
+        "The purpose is medical diagnosis.",
+        "Es ist ein klinisches Werkzeug zur Patientenversorgung.",
+        "Es dient der Abwehr einer unmittelbaren Sicherheitsgefahr.",
+        "Der Zweck ist die medizinische Diagnose."
+      ]
+    }
+  }
+}

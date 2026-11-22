@@ -1,0 +1,6 @@
+id: aia-5-1-a-neg-de-05
+lang: de
+question_id: AIA-5-1-a
+state: "Zeige einen ehrlichen Countdown für eine echte, offengelegte Aktion, die der Nutzer ignorieren kann."
+expect_yes: false
+source: "Synthetic vague-law case (AIA-5-1-a); disjoint from exemplars + tuning."

@@ -1,0 +1,6 @@
+id: gdpr-22-neg-de-04
+lang: de
+question_id: GDPR-22
+state: "Ein benannter Underwriter prüft den Vorschlag des Modells und zeichnet die Endentscheidung."
+expect_yes: false
+source: "Synthetic vague-law case (GDPR-22); disjoint from exemplars + tuning."

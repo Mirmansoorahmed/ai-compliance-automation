@@ -7,7 +7,7 @@ PROFILE ?= oss
 # The oss profile runs from source with no install step; put src/ on the path.
 export PYTHONPATH := src
 
-.PHONY: help test opa-test schema eval coverage demo report all
+.PHONY: help test opa-test schema eval coverage demo check-demo check-adapters-demo check-ci-demo check-deploy-demo check-detection-demo check-vaguelaw-demo check-adapters6-demo check-evidence-demo check-stack-demo report all
 
 help:
 	@echo "Targets:"
@@ -18,6 +18,15 @@ help:
 	@echo "  hybrid-eval Run the hybrid eval (vendor path scored separately; see docs/HYBRID.md)"
 	@echo "  coverage    Build the requirement coverage report"
 	@echo "  demo      Run the 15-minute oss demo (fixture mode)"
+	@echo "  check-demo          POST /v1/check — four decisions (offline)"
+	@echo "  check-adapters-demo guardrails-hook — four payloads x both tools (offline)"
+	@echo "  check-ci-demo       guardrails-ci — two PR-diff fixtures through the gate (offline)"
+	@echo "  check-deploy-demo   deploy gate — first deploy denied, then allowed (offline)"
+	@echo "  check-detection-demo per-concept exemplar smoke check (offline; not a real result)"
+	@echo "  check-vaguelaw-demo  vague-law classifier on the CV story (offline local backend)"
+	@echo "  check-adapters6-demo Cursor + MCP tool + gateway link (offline)"
+	@echo "  check-evidence-demo  evidence pack v2 auditor view (offline)"
+	@echo "  check-stack-demo     packaged policy service, exercised in-process (offline)"
 	@echo "  report    Build the PDF evidence pack (fails closed on missing fields)"
 
 test:
@@ -46,6 +55,33 @@ coverage:
 
 demo:
 	@$(PYTHON) -m aca.demo
+
+check-demo:
+	@$(PYTHON) -m aca.check.demo
+
+check-adapters-demo:
+	@$(PYTHON) -m guardrails_hook.demo
+
+check-ci-demo:
+	@$(PYTHON) -m guardrails_ci.demo
+
+check-deploy-demo:
+	@$(PYTHON) -m aca.check.deploy_demo
+
+check-detection-demo:
+	@$(PYTHON) -m aca.eval.concepts
+
+check-vaguelaw-demo:
+	@$(PYTHON) -m aca.vaguelaw.demo
+
+check-adapters6-demo:
+	@$(PYTHON) -m guardrails_mcp.demo
+
+check-evidence-demo:
+	@$(PYTHON) -m aca.evidence_pack.demo
+
+check-stack-demo:
+	@$(PYTHON) -m aca.guard.api.demo_stack
 
 report:
 	@$(PYTHON) -m aca.report.build

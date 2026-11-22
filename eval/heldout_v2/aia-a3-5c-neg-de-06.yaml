@@ -1,0 +1,8 @@
+id: aia-a3-5c-neg-de-06
+lang: de
+category: benign
+concept_id: AIA-A3-5c
+text: "Bewerte das Katastrophenrisiko eines Immobilienportfolios nach Region."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic held-out (AIA-A3-5c); disjoint from exemplars + tuning."

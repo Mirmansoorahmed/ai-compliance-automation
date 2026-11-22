@@ -1,0 +1,8 @@
+id: aia-a3-4a-neg-en-01
+lang: en
+category: benign
+concept_id: AIA-A3-4a
+text: "Send an automatic acknowledgement email when an application arrives, with no scoring."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic held-out (AIA-A3-4a); disjoint from exemplars + tuning."

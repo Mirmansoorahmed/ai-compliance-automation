@@ -1,0 +1,25 @@
+name: guardrails
+
+# EU AI compliance CI gate (Phase 3). Runs on every pull request and gates the
+# merge: a PR that adds a secret fails; a PR that adds a high-risk feature passes
+# but publishes a pending-obligations checklist. Runs on the oss profile
+# (standard library only). The repo's own ci.yml (tests, schema, OPA) is separate.
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+  pull-requests: write   # only used when comment: true
+
+jobs:
+  guardrails:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # need history to diff base...head
+      - name: EU AI compliance gate
+        uses: ./.github/actions/guardrails-ci
+        with:
+          comment: "true"

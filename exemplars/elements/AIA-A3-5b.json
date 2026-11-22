@@ -1,0 +1,41 @@
+{
+  "concept_id": "AIA-A3-5b",
+  "elements": {
+    "assesses_natural_person_creditworthiness": {
+      "positives": [
+        "It judges a person's creditworthiness.",
+        "It builds a consumer credit score.",
+        "It estimates an individual's default risk.",
+        "Es beurteilt die Kreditwürdigkeit einer Person.",
+        "Es erstellt einen Verbraucher-Kreditscore.",
+        "Es schätzt das Ausfallrisiko einer Einzelperson."
+      ],
+      "negatives": [
+        "It scores one transaction for fraud.",
+        "It rates a corporate bond, not a person.",
+        "It shows the customer their own spending.",
+        "Es bewertet eine Transaktion auf Betrug.",
+        "Es bewertet eine Unternehmensanleihe, keine Person.",
+        "Es zeigt dem Kunden seine eigenen Ausgaben."
+      ]
+    },
+    "affects_access_to_credit": {
+      "positives": [
+        "The score decides loan eligibility.",
+        "It sets the borrowing limit.",
+        "It gates access to financing.",
+        "Der Score entscheidet die Kreditvergabe.",
+        "Es legt das Kreditlimit fest.",
+        "Es steuert den Zugang zur Finanzierung."
+      ],
+      "negatives": [
+        "It only flags a payment for review.",
+        "It has no bearing on credit decisions.",
+        "It informs a budgeting tip only.",
+        "Es markiert nur eine Zahlung zur Prüfung.",
+        "Es hat keinen Einfluss auf Kreditentscheidungen.",
+        "Es informiert nur einen Spartipp."
+      ]
+    }
+  }
+}

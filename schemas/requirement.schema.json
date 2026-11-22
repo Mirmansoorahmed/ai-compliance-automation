@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://ai-compliance-automation/schemas/requirement.schema.json",
+  "$id": "https://ai-semantic-guardrails-eu/schemas/requirement.schema.json",
   "title": "Requirement",
   "description": "A versioned legal/ISMS obligation (DESIGN.md §5.1). Titles are in our own words; never copied statute or standard text.",
   "type": "object",

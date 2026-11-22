@@ -1,0 +1,97 @@
+name: "guardrails-ci"
+description: "EU AI compliance CI gate: scan a PR diff, run the /v1/check decision engine, write a report + AI-BOM, and gate the merge."
+
+inputs:
+  base:
+    description: "Base git ref to diff against."
+    required: false
+    default: "origin/${{ github.base_ref }}"
+  head:
+    description: "Head git ref."
+    required: false
+    default: "HEAD"
+  ask-passes:
+    description: "Treat an ASK decision as a pass (exit 0) instead of a failure."
+    required: false
+    default: "false"
+  comment:
+    description: "Post/update a single PR comment with the report (needs pull-requests: write)."
+    required: false
+    default: "false"
+  python-version:
+    description: "Python version for the gate (stdlib only on the oss profile)."
+    required: false
+    default: "3.11"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python-version }}
+
+    - name: Fetch base ref for the diff
+      shell: bash
+      run: git fetch --no-tags --depth=1 origin "${{ github.base_ref }}" || true
+
+    - name: Run guardrails-ci
+      id: gate
+      shell: bash
+      run: |
+        set -o pipefail
+        ARGS=(--base "${{ inputs.base }}" --head "${{ inputs.head }}")
+        if [ "${{ inputs.ask-passes }}" = "true" ]; then ARGS+=(--ask-passes); fi
+        # Do not abort the job on a non-zero gate exit yet — we want to publish
+        # the report first, then fail the step at the end.
+        set +e
+        PYTHONPATH=src python3 -m guardrails_ci "${ARGS[@]}" --quiet
+        echo "exit_code=$?" >> "$GITHUB_OUTPUT"
+        set -e
+
+    - name: Append report to the job summary
+      if: always()
+      shell: bash
+      run: |
+        if [ -f ci-report.md ]; then cat ci-report.md >> "$GITHUB_STEP_SUMMARY"; fi
+
+    - name: Upload report and AI-BOM
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: guardrails-ci
+        path: |
+          ci-report.md
+          ai-bom.json
+        if-no-files-found: warn
+
+    - name: Post or update the PR comment
+      if: ${{ always() && inputs.comment == 'true' && github.event_name == 'pull_request' }}
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          if (!fs.existsSync('ci-report.md')) return;
+          const body = fs.readFileSync('ci-report.md', 'utf8');
+          const marker = '<!-- guardrails-ci -->';
+          const tagged = `${marker}\n${body}`;
+          const { owner, repo } = context.repo;
+          const issue_number = context.issue.number;
+          const comments = await github.rest.issues.listComments({ owner, repo, issue_number });
+          const existing = comments.data.find(c => c.body && c.body.includes(marker));
+          if (existing) {
+            await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body: tagged });
+          } else {
+            await github.rest.issues.createComment({ owner, repo, issue_number, body: tagged });
+          }
+
+    - name: Fail the job on a blocking decision
+      if: always()
+      shell: bash
+      run: |
+        code="${{ steps.gate.outputs.exit_code }}"
+        if [ "$code" != "0" ]; then
+          echo "guardrails-ci gate failed (exit $code)."
+          exit "$code"
+        fi
+        echo "guardrails-ci gate passed."

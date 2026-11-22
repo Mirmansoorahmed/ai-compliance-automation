@@ -1,6 +1,6 @@
 # Agent security framework mapping
 
-This maps **AI Compliance Automation (ACA)** onto a three-layer model for securing
+This maps **AI Semantic Guardrails EU** (formerly *AI Compliance Automation*, ACA) onto a three-layer model for securing
 AI agents — **Information**, **Instructions**, **Actions** — plus a **Testing**
 discipline. ACA is the contextual *slow path* next to the deterministic Agent
 Access Governance Gateway (the PEP); its core component is the **Semantic Guard**,

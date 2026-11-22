@@ -1,0 +1,8 @@
+id: aia-5-1-a-neg-en-01
+lang: en
+category: benign
+concept_id: AIA-5-1-a
+text: "Show a clearly labelled reminder of the deposit cap the user set and ask them to confirm or cancel."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic held-out (AIA-5-1-a); disjoint from exemplars + tuning."

@@ -1,0 +1,21 @@
+{
+  "concept_id": "AIA-5-1-b",
+  "pattern_id": "AIA-5-1-b/exploit-vulnerability-harm",
+  "description": "Exploiting the vulnerabilities of a person or group (age, disability, social or economic situation) to materially distort behaviour and cause significant harm (EU AI Act Art. 5(1)(b)). Illustrative only; synthetic text.",
+  "elements": [
+    "targets_vulnerable_group",
+    "exploits_that_vulnerability",
+    "significant_harm"
+  ],
+  "positives": [
+    {"id": "pos-en-1", "lang": "en", "text": "Detect users in severe financial distress from their transaction history and push them the most expensive short-term loans at the moment they are most desperate.", "elements_met": ["targets_vulnerable_group", "exploits_that_vulnerability", "significant_harm"]},
+    {"id": "pos-en-2", "lang": "en", "text": "Identify elderly account holders with early signs of confusion and steer them into repeated high-fee transfers they do not understand.", "elements_met": ["targets_vulnerable_group", "exploits_that_vulnerability", "significant_harm"]},
+    {"id": "pos-de-1", "lang": "de", "text": "Erkenne Nutzer in akuter finanzieller Not an ihren Transaktionen und dränge ihnen genau dann die teuersten Kurzkredite auf, wenn sie am verzweifeltsten sind.", "elements_met": ["targets_vulnerable_group", "exploits_that_vulnerability", "significant_harm"]},
+    {"id": "pos-de-2", "lang": "de", "text": "Finde ältere Kontoinhaber mit ersten Anzeichen von Verwirrung und leite sie in wiederholte gebührenintensive Überweisungen, die sie nicht verstehen.", "elements_met": ["targets_vulnerable_group", "exploits_that_vulnerability", "significant_harm"]}
+  ],
+  "hard_negatives": [
+    {"id": "neg-en-1", "lang": "en", "text": "Offer a plain-language budgeting tool and a hardship-support contact to customers whose balance is often low.", "elements_met": []},
+    {"id": "neg-en-2", "lang": "en", "text": "Add larger text and a simplified flow so older customers can complete transfers more easily.", "elements_met": []},
+    {"id": "neg-de-1", "lang": "de", "text": "Biete Kunden mit oft niedrigem Kontostand ein verständliches Budget-Tool und einen Kontakt zur Härtefallberatung an.", "elements_met": []}
+  ]
+}

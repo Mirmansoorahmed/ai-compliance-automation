@@ -1,0 +1,74 @@
+# Vague-law question sets (Phase 5b).
+#
+# Lives under config/ (not policy/) so OPA does not load it as bundle data —
+# OPA treats every .yaml under policy/ as data and both files would define
+# data.catalog.version.
+#
+# Derived from policy/catalog/catalog.yaml (the single source of truth): each
+# entry restates a catalog check's open legal condition as a yes/no question the
+# vague-law classifier answers from the use-case declaration + code behaviour.
+# The catalog's `trigger` / `art` / `sem` fields are the seed; this file is the
+# curated, machine-readable form. Synthetic, illustrative; not a legal test.
+#
+# Per question:
+#   id          catalog check id this question serves
+#   question    the yes/no question (plain language)
+#   act_label   the answer that should drive the catalog decision (e.g. BLOCK/ASK)
+#   act_threshold  confidence at/above which we act on act_label
+#   ask_below      confidence below which we route to ASK (a human) instead
+#   positives / negatives  short exemplar phrasings for the local backend
+version: "1"
+questions:
+  - id: "AIA-6-3"
+    question: "Is the claimed 'not high-risk' Annex III exception INVALID because the system profiles natural persons or makes/affects a decision about them?"
+    act_label: "ASK"
+    act_threshold: 0.6
+    ask_below: 0.6
+    positives:
+      - "The system scores each applicant individually, so the narrow-exception claim does not hold."
+      - "It profiles people per person, which blocks the Art. 6(3) exception."
+      - "Es bewertet jede Person einzeln, daher greift die Ausnahme nach Art. 6(3) nicht."
+    negatives:
+      - "It only reformats documents and never evaluates a person, so the exception may hold."
+      - "A purely preparatory language sort with no per-person scoring."
+      - "Reine Sprachsortierung ohne personenbezogene Bewertung."
+
+  - id: "GDPR-22"
+    question: "Is this a decision based SOLELY on automated processing with a legal or similarly significant effect on a natural person (no meaningful human involvement)?"
+    act_label: "ASK"
+    act_threshold: 0.6
+    ask_below: 0.6
+    positives:
+      - "The model alone approves or rejects the loan and the result is applied directly."
+      - "Accounts are closed automatically with no human review."
+      - "Das Modell entscheidet den Kreditantrag allein, ohne menschliche Prüfung."
+    negatives:
+      - "A named officer reviews and signs the final decision."
+      - "The model only proposes; a human decides."
+      - "Ein Sachbearbeiter trifft die endgültige Entscheidung."
+
+  - id: "AIA-5-1-a"
+    question: "Does the system use subliminal or purposefully deceptive techniques that materially distort behaviour and are likely to cause significant harm?"
+    act_label: "BLOCK"
+    act_threshold: 0.7
+    ask_below: 0.5
+    positives:
+      - "Hidden cues below awareness push users past their own spending limits, causing harm."
+      - "Deceptive fake scarcity the person cannot notice drives a harmful purchase."
+    negatives:
+      - "A clearly labelled reminder of the limit the user set."
+      - "An honest A/B test of two visible headlines."
+
+  - id: "AIA-50-1"
+    question: "Does the system interact with people or generate synthetic content WITHOUT the transparency disclosure Art. 50 requires (that they are dealing with AI / that content is AI-generated)?"
+    act_label: "ASK"
+    act_threshold: 0.6
+    ask_below: 0.6
+    positives:
+      - "A chatbot answers customers while pretending to be a human agent."
+      - "AI-generated images are published with no 'AI-generated' marking."
+      - "Ein Chatbot gibt sich als menschlicher Mitarbeiter aus."
+    negatives:
+      - "The assistant states it is an AI at the start of the chat."
+      - "Generated media is labelled as AI-generated."
+      - "Der Assistent weist zu Beginn darauf hin, dass er eine KI ist."

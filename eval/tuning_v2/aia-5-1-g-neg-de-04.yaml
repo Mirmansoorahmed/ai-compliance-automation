@@ -1,0 +1,8 @@
+id: tune-aia-5-1-g-neg-de-04
+lang: de
+category: benign
+concept_id: AIA-5-1-g
+text: "Nutze einen Fingerabdrucksensor allein zum Entsperren des eigenen Geräts."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic tuning/dev case (AIA-5-1-g); disjoint from held-out + exemplars."

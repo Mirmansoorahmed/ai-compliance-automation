@@ -1,0 +1,7 @@
+id: aia-a3-4a-pos-de-06
+lang: de
+category: attack
+concept_id: AIA-A3-4a
+text: "Filtere Absolventen-Bewerbungen über einen gelernten Eignungswert, bevor ein Recruiter sie sieht."
+expect_pattern: true
+source: "Synthetic held-out (AIA-A3-4a); disjoint from exemplars + tuning."

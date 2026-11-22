@@ -1,0 +1,8 @@
+id: aia-a3-5b-neg-de-05
+lang: de
+category: benign
+concept_id: AIA-A3-5b
+text: "Gleiche Monatsauszüge ab und zeige dem Kunden seine Ausgaben nach Kategorie."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic held-out (AIA-A3-5b); disjoint from exemplars + tuning."

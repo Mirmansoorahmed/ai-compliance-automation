@@ -1,0 +1,6 @@
+id: aia-5-1-a-neg-de-04
+lang: de
+question_id: AIA-5-1-a
+state: "Zeige einen klar gekennzeichneten Hinweis auf das gesetzte Einzahlungslimit und lass bestätigen oder abbrechen."
+expect_yes: false
+source: "Synthetic vague-law case (AIA-5-1-a); disjoint from exemplars + tuning."

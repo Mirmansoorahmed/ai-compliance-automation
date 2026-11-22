@@ -1,0 +1,6 @@
+id: gdpr-22-pos-en-01
+lang: en
+question_id: GDPR-22
+state: "The decision to grant or refuse credit is made entirely by the model and applied without review."
+expect_yes: true
+source: "Synthetic vague-law case (GDPR-22); disjoint from exemplars + tuning."

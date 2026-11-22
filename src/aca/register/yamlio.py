@@ -62,6 +62,10 @@ def _scalar(token: str) -> Any:
     token = token.strip()
     if token == "" or token in ("~", "null", "Null", "NULL"):
         return None
+    if token == "[]":
+        return []
+    if token == "{}":
+        return {}
     if len(token) >= 2 and token[0] == token[-1] and token[0] in ("'", '"'):
         return token[1:-1]
     low = token.lower()

@@ -1,0 +1,28 @@
+id: uc-hr-reliability-index
+title: Employee reliability index from joined behaviour data
+intended_purpose: join behaviour sources per employee into a reliability score and cut the bottom from the bonus pool
+ai_system: true
+role: deployer
+annex_iii: []
+art6_3_exception: false
+profiling: true
+decision_effect: solely_automated
+affected_persons:
+  - employees
+personal_data:
+  - badge_logs
+  - chat_activity
+  - canteen_data
+special_categories: []
+countries_of_processing:
+  - DE
+owner: hr-tech-lead
+human_overseer: none
+artefacts:
+  risk_management: null
+  dpia: null
+  fria: null
+  oversight_plan: null
+  eval_report: null
+  worker_information: null
+approvals: []

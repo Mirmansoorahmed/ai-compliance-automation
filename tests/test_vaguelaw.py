@@ -1,0 +1,146 @@
+"""Phase 5b — vague-law classifier: backends, routing, questions, eval, Jev guard.
+
+Tests use the deterministic FakeBackend (or the offline hashed LocalBackend)
+only. The closed Jev backend is never constructed — a test asserts it refuses to
+enable without the operator's explicit env + synthetic-data acknowledgement.
+"""
+
+import pytest
+
+from aca.catalog.loader import load_catalog
+from aca.vaguelaw import FakeBackend, LocalBackend
+from aca.vaguelaw.backend import Answer, Question
+from aca.vaguelaw.classify import ACT, ASK, NO, classify
+from aca.vaguelaw.eval import evaluate
+from aca.vaguelaw.questions import load_questions, question_by_id
+
+
+# --- question sets ------------------------------------------------------------
+
+def test_questions_load_and_reference_catalog_ids():
+    questions = load_questions()
+    assert questions
+    ids = {c["id"] for c in load_catalog()["checks"]}
+    for q in questions:
+        assert q.id in ids, f"question {q.id} not a catalog id"
+        assert 0.0 < q.act_threshold <= 1.0
+        assert q.question
+
+
+def test_question_by_id():
+    q = question_by_id("GDPR-22")
+    assert q is not None and q.act_label == "ASK"
+
+
+def test_questions_file_is_not_under_policy_dir():
+    # Regression guard: questions.yaml must NOT live under policy/, or OPA loads
+    # it as bundle data and collides with catalog.yaml on data.catalog.version.
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[1]
+    assert (root / "config" / "vaguelaw" / "questions.yaml").is_file()
+    assert not (root / "policy" / "catalog" / "questions.yaml").exists()
+    # No stray non-Rego yaml that would shadow data.catalog under policy/catalog/.
+    extra = [p.name for p in (root / "policy" / "catalog").glob("*.yaml") if p.name != "catalog.yaml"]
+    assert extra == [], f"unexpected yaml under policy/catalog/: {extra}"
+
+
+# --- routing (deterministic, scripted FakeBackend) ---------------------------
+
+def _q(qid="Q", act="BLOCK", thr=0.6):
+    return Question(id=qid, question="?", act_label=act, act_threshold=thr, ask_below=thr)
+
+
+def test_route_act_when_confident_yes():
+    be = FakeBackend(script={"Q": 0.9})
+    r = classify("state", [_q()], be)[0]
+    assert r.route == ACT
+    assert r.act_label == "BLOCK"
+
+
+def test_route_no_when_confident_no():
+    be = FakeBackend(script={"Q": 0.1})
+    r = classify("state", [_q()], be)[0]
+    assert r.route == NO
+
+
+def test_route_ask_when_uncertain():
+    be = FakeBackend(script={"Q": 0.5})
+    r = classify("state", [_q()], be)[0]
+    assert r.route == ASK
+
+
+def test_missing_answer_routes_to_ask():
+    class _Empty:
+        name = "empty"
+        def decide(self, state, questions):
+            return []
+    r = classify("state", [_q()], _Empty())[0]
+    assert r.route == ASK
+
+
+# --- local backend (offline hashed) ------------------------------------------
+
+def test_local_backend_runs_offline():
+    be = LocalBackend()
+    qs = load_questions()
+    answers = be.decide("The model alone approves or rejects the loan with no human review.", qs)
+    assert len(answers) == len(qs)
+    for a in answers:
+        assert 0.0 <= a.p_yes <= 1.0
+        assert a.backend.startswith("local:")
+
+
+# --- eval harness -------------------------------------------------------------
+
+def test_demo_case_a_is_refused_or_escalated(capsys):
+    # The vague-law demo's case A (Art. 6(3) exception claimed while profiling)
+    # must end up refused/escalated (route ACT -> ASK, or a fail-safe ASK),
+    # never accepted (NO). The demo prints an honest verdict either way.
+    from aca.vaguelaw import demo as vl_demo
+    from aca.vaguelaw.classify import NO, classify
+    from aca.vaguelaw.local_backend import LocalBackend
+    from aca.vaguelaw.questions import load_questions
+
+    rc = vl_demo.main()
+    assert rc == 0
+    text = capsys.readouterr().out
+    assert "A. Annex III exception claimed" in text
+    assert "Legend:" in text
+    assert "expected" in text and "got" in text  # expected vs actual printed
+
+    # Directly assert case A does not resolve to "accepted" (NO).
+    qs = {q.id: q for q in load_questions()}
+    case_a = next(c for c in vl_demo._CASES if c["title"].startswith("A."))
+    r = classify(case_a["state"], [qs[case_a["qid"]]], LocalBackend())[0]
+    assert r.route != NO, "case A must not be accepted as a valid exception"
+
+
+def test_eval_runs_with_fake_backend():
+    # Script confident, correct answers so the smoke accuracy is well-defined.
+    be = FakeBackend(script={"AIA-6-3": 0.9, "GDPR-22": 0.9})
+    res = evaluate(be)
+    assert res.n >= 1
+    # accuracy/ece/ask_rate are floats or None; the note marks it smoke.
+    assert res.ask_rate is not None
+    assert "smoke" in res.note.lower()
+
+
+# --- Jev backend is disabled by default --------------------------------------
+
+def test_jev_backend_disabled_without_env(monkeypatch):
+    monkeypatch.delenv("VAGUELAW_JEV_ENABLED", raising=False)
+    monkeypatch.delenv("VAGUELAW_JEV_API_KEY", raising=False)
+    from aca.vaguelaw.jev_backend import JevBackend, JevBackendDisabled
+    with pytest.raises(JevBackendDisabled):
+        JevBackend()
+
+
+def test_jev_backend_requires_key_and_synthetic_ack(monkeypatch):
+    from aca.vaguelaw.jev_backend import JevBackend, JevBackendDisabled
+    monkeypatch.setenv("VAGUELAW_JEV_ENABLED", "1")
+    monkeypatch.delenv("VAGUELAW_JEV_API_KEY", raising=False)
+    with pytest.raises(JevBackendDisabled):
+        JevBackend(synthetic_ok=True)  # no key
+    monkeypatch.setenv("VAGUELAW_JEV_API_KEY", "fake-synthetic-key")
+    with pytest.raises(JevBackendDisabled):
+        JevBackend(synthetic_ok=False)  # synthetic not acknowledged

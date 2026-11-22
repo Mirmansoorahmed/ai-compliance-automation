@@ -1,0 +1,31 @@
+# Fixture use-case.yaml for the CV pre-screening case (Annex III 4(a) -> WARN).
+# Mirrors the registry entry uc-hr-cv-screening; all artefacts null (missing).
+id: uc-hr-cv-screening
+title: CV pre-screening for apprenticeships
+intended_purpose: rank applications and propose a shortlist for a human recruiter
+ai_system: true
+role: deployer
+annex_iii:
+  - 4(a)
+art6_3_exception: false
+profiling: true
+decision_effect: assists
+affected_persons:
+  - job applicants
+personal_data:
+  - cv
+  - contact
+  - education
+special_categories: []
+countries_of_processing:
+  - DE
+owner: hr-tech-lead
+human_overseer: recruiting-team-lead
+artefacts:
+  risk_management: null
+  dpia: null
+  fria: null
+  oversight_plan: null
+  eval_report: null
+  worker_information: null
+approvals: []

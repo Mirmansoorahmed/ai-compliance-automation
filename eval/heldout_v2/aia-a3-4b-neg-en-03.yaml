@@ -1,0 +1,8 @@
+id: aia-a3-4b-neg-en-03
+lang: en
+category: benign
+concept_id: AIA-A3-4b
+text: "Track aggregate team output for capacity planning, not per person."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic held-out (AIA-A3-4b); disjoint from exemplars + tuning."

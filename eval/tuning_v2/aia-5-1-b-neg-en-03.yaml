@@ -1,0 +1,8 @@
+id: tune-aia-5-1-b-neg-en-03
+lang: en
+category: benign
+concept_id: AIA-5-1-b
+text: "Simplify the transfer screen so older customers can use it more easily."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic tuning/dev case (AIA-5-1-b); disjoint from held-out + exemplars."

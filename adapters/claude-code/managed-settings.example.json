@@ -1,0 +1,21 @@
+{
+  "// doc": "Enterprise-managed Claude Code settings for the EU AI compliance guardrails. Deploy to the OS managed-settings path (see https://code.claude.com/docs/en/settings) so developers cannot remove or edit the hooks. allowManagedHooksOnly makes Claude Code run ONLY the hooks defined here and ignore project/user hooks, so the guardrail cannot be bypassed by editing a repo's .claude/settings.json. guardrails-hook must be on PATH and the policy service reachable at GUARDRAILS_URL (default http://127.0.0.1:8080).",
+  "allowManagedHooksOnly": true,
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          { "type": "command", "command": "guardrails-hook claude prompt" }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit|Bash|mcp__.*",
+        "hooks": [
+          { "type": "command", "command": "guardrails-hook claude tool" }
+        ]
+      }
+    ]
+  }
+}

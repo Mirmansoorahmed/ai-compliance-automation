@@ -1,0 +1,19 @@
+{
+  "concept_id": "AIA-A3-1c",
+  "pattern_id": "AIA-A3-1c/emotion-recognition-non-work",
+  "description": "High-risk Annex III 1(c): emotion-recognition systems outside the workplace and education (where Art. 5(1)(f) prohibition does not apply). High-risk (WARN + obligations). Illustrative only; synthetic text.",
+  "elements": [
+    "infers_emotional_state",
+    "outside_work_or_education_context"
+  ],
+  "positives": [
+    {"id": "pos-en-1", "lang": "en", "text": "Infer the emotional state of retail customers from in-store camera video to adapt offers at the shelf.", "elements_met": ["infers_emotional_state", "outside_work_or_education_context"]},
+    {"id": "pos-en-2", "lang": "en", "text": "Detect caller frustration from voice tone in the consumer hotline and route angry callers differently.", "elements_met": ["infers_emotional_state", "outside_work_or_education_context"]},
+    {"id": "pos-de-1", "lang": "de", "text": "Leite aus Kamera-Video im Laden den Gefühlszustand der Kunden ab, um Angebote am Regal anzupassen.", "elements_met": ["infers_emotional_state", "outside_work_or_education_context"]},
+    {"id": "pos-de-2", "lang": "de", "text": "Erkenne Frust aus dem Stimmklang in der Verbraucher-Hotline und leite verärgerte Anrufer anders weiter.", "elements_met": ["infers_emotional_state", "outside_work_or_education_context"]}
+  ],
+  "hard_negatives": [
+    {"id": "neg-en-1", "lang": "en", "text": "Count how many customers enter the store each hour, with no inference about feelings.", "elements_met": []},
+    {"id": "neg-de-1", "lang": "de", "text": "Zähle, wie viele Kunden pro Stunde den Laden betreten, ohne Rückschluss auf Gefühle.", "elements_met": []}
+  ]
+}

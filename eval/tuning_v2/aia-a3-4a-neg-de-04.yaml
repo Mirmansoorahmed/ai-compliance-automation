@@ -1,0 +1,8 @@
+id: tune-aia-a3-4a-neg-de-04
+lang: de
+category: benign
+concept_id: AIA-A3-4a
+text: "Speichere Lebensläufe in einem durchsuchbaren Archiv ohne Ranking."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic tuning/dev case (AIA-A3-4a); disjoint from held-out + exemplars."

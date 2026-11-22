@@ -1,0 +1,8 @@
+id: gdpr-9-neg-en-03
+lang: en
+category: benign
+concept_id: GDPR-9
+text: "Record the product category a customer browsed, with no special-category data."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic held-out (GDPR-9); disjoint from exemplars + tuning."

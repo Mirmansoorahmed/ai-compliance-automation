@@ -1,0 +1,41 @@
+{
+  "concept_id": "AIA-A3-4b",
+  "elements": {
+    "existing_worker_context": {
+      "positives": [
+        "The subjects are current employees.",
+        "It concerns staff already employed.",
+        "It is about the existing workforce.",
+        "Die Betroffenen sind aktuelle Mitarbeiter.",
+        "Es betrifft bereits beschäftigtes Personal.",
+        "Es geht um die bestehende Belegschaft."
+      ],
+      "negatives": [
+        "The subjects are external job applicants.",
+        "It concerns customers, not workers.",
+        "It is about machines, not staff.",
+        "Die Betroffenen sind externe Bewerber.",
+        "Es betrifft Kunden, keine Beschäftigten.",
+        "Es geht um Maschinen, nicht um Personal."
+      ]
+    },
+    "affects_promotion_termination_tasks_or_monitors_performance": {
+      "positives": [
+        "It recommends who to promote or dismiss.",
+        "It allocates tasks from a productivity model.",
+        "It monitors and scores performance.",
+        "Es empfiehlt, wen man befördert oder entlässt.",
+        "Es verteilt Aufgaben aus einem Produktivitätsmodell.",
+        "Es überwacht und bewertet die Leistung."
+      ],
+      "negatives": [
+        "It shows a leave calendar, no evaluation.",
+        "It publishes an already-decided rota.",
+        "It reports aggregate output only.",
+        "Es zeigt einen Urlaubskalender, keine Bewertung.",
+        "Es veröffentlicht einen bereits entschiedenen Plan.",
+        "Es berichtet nur die aggregierte Leistung."
+      ]
+    }
+  }
+}

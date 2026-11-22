@@ -1,0 +1,41 @@
+{
+  "concept_id": "AIA-A3-4a",
+  "elements": {
+    "employment_recruitment_context": {
+      "positives": [
+        "This is about hiring new applicants.",
+        "The setting is recruitment and selection.",
+        "It concerns job candidates applying.",
+        "Es geht um die Einstellung neuer Bewerber.",
+        "Der Rahmen ist Rekrutierung und Auswahl.",
+        "Es betrifft sich bewerbende Kandidaten."
+      ],
+      "negatives": [
+        "It concerns existing staff performance.",
+        "The setting is customer onboarding, not hiring.",
+        "It is about supplier selection, not people.",
+        "Es betrifft die Leistung bestehender Mitarbeiter.",
+        "Der Rahmen ist Kunden-Onboarding, keine Einstellung.",
+        "Es geht um Lieferantenauswahl, nicht um Personen."
+      ]
+    },
+    "evaluates_or_ranks_candidates": {
+      "positives": [
+        "It scores and ranks the applicants.",
+        "It shortlists candidates by a fit score.",
+        "It grades each application.",
+        "Es bewertet und reiht die Bewerber.",
+        "Es wählt Kandidaten nach einem Passungswert aus.",
+        "Es benotet jede Bewerbung."
+      ],
+      "negatives": [
+        "It only sends an acknowledgement email.",
+        "It stores CVs without evaluating them.",
+        "It schedules rooms, with no scoring.",
+        "Es sendet nur eine Eingangsbestätigung.",
+        "Es speichert Lebensläufe, ohne sie zu bewerten.",
+        "Es plant Räume, ohne Bewertung."
+      ]
+    }
+  }
+}

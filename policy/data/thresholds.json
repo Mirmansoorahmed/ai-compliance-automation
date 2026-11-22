@@ -1,7 +1,88 @@
 {
+  "_doc_thresholds": "Signed label-tier thresholds. ask_threshold (the Phase-A similarity ASK tier) is NOT set by default: the similarity tier stays OFF until the owner runs `python -m aca.eval.calibrate --write` on the real model, which writes a calibrated ask_threshold per concept (the value the joint calibrator actually evaluated). An absent ask_threshold means no ASK for that concept, and the adapter records ask_thresholds_loaded:false with the resolved path in the eval JSON.",
   "thresholds": {
-    "AIA-5-1-c": { "low": 0.45, "high": 0.8, "min_elements": 3 },
-    "AIA-5-1-f": { "low": 0.5, "high": 0.82, "min_elements": 2 },
-    "ISO-A-5-14": { "low": 0.5, "high": 0.85, "min_elements": 2 }
+    "AIA-5-1-a": {
+      "low": 0.45,
+      "high": 0.8,
+      "min_elements": 2,
+      "ask_threshold": 0.05
+    },
+    "AIA-5-1-b": {
+      "low": 0.45,
+      "high": 0.8,
+      "min_elements": 2,
+      "ask_threshold": 0.95
+    },
+    "AIA-5-1-c": {
+      "low": 0.45,
+      "high": 0.8,
+      "min_elements": 3,
+      "ask_threshold": 0.35
+    },
+    "AIA-5-1-d": {
+      "low": 0.45,
+      "high": 0.8,
+      "min_elements": 2,
+      "ask_threshold": 0.25
+    },
+    "AIA-5-1-f": {
+      "low": 0.5,
+      "high": 0.82,
+      "min_elements": 2,
+      "ask_threshold": 0.2
+    },
+    "AIA-5-1-g": {
+      "low": 0.45,
+      "high": 0.8,
+      "min_elements": 2,
+      "ask_threshold": 0.95
+    },
+    "AIA-A3-1c": {
+      "low": 0.45,
+      "high": 0.8,
+      "min_elements": 2,
+      "ask_threshold": 0.95
+    },
+    "AIA-A3-4a": {
+      "low": 0.45,
+      "high": 0.8,
+      "min_elements": 2,
+      "ask_threshold": 0.35
+    },
+    "AIA-A3-4b": {
+      "low": 0.45,
+      "high": 0.8,
+      "min_elements": 2,
+      "ask_threshold": 0.4
+    },
+    "AIA-A3-5b": {
+      "low": 0.45,
+      "high": 0.8,
+      "min_elements": 2,
+      "ask_threshold": 0.25
+    },
+    "AIA-A3-5c": {
+      "low": 0.45,
+      "high": 0.8,
+      "min_elements": 2,
+      "ask_threshold": 0.45
+    },
+    "GDPR-9": {
+      "low": 0.45,
+      "high": 0.8,
+      "min_elements": 2,
+      "ask_threshold": 0.3
+    },
+    "GDPR-22": {
+      "low": 0.45,
+      "high": 0.8,
+      "min_elements": 3,
+      "ask_threshold": 0.95
+    },
+    "ISO-A-5-14": {
+      "low": 0.5,
+      "high": 0.85,
+      "min_elements": 2
+    }
   }
 }

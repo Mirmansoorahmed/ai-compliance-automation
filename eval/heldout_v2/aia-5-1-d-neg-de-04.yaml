@@ -1,0 +1,8 @@
+id: aia-5-1-d-neg-de-04
+lang: de
+category: benign
+concept_id: AIA-5-1-d
+text: "Markiere eine konkrete Transaktion als verdächtig, wenn Betrag, Händler und Land zu einem bekannten Betrugsmuster passen, zur Prüfung durch einen Menschen."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic held-out (AIA-5-1-d); disjoint from exemplars + tuning."

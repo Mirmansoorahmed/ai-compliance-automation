@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://ai-compliance-automation/schemas/interpretation.schema.json",
+  "$id": "https://ai-semantic-guardrails-eu/schemas/interpretation.schema.json",
   "title": "Interpretation",
   "description": "A versioned, human-authored reading of a requirement (DESIGN.md §5.2). The only source of a hard deny. Immutable once approved; a change is a new version.",
   "type": "object",

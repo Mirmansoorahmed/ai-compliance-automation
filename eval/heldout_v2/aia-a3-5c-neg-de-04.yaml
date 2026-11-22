@@ -1,0 +1,8 @@
+id: aia-a3-5c-neg-de-04
+lang: de
+category: benign
+concept_id: AIA-A3-5c
+text: "Kalkuliere eine Frachtversicherung für eine Reederei aus Flotten- und Routendaten (keine natürliche Person)."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic held-out (AIA-A3-5c); disjoint from exemplars + tuning."

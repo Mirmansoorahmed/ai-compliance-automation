@@ -1,0 +1,5 @@
+{
+  "hook_event_name": "UserPromptSubmit",
+  "cwd": "/work/halvaro-hr",
+  "prompt": "Build a CV screening tool that scores applicants and shortlists the top 20."
+}

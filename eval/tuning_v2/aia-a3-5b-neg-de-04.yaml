@@ -1,0 +1,8 @@
+id: tune-aia-a3-5b-neg-de-04
+lang: de
+category: benign
+concept_id: AIA-A3-5b
+text: "Zeige dem Kunden eine Aufschlüsselung seiner eigenen Ausgaben."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic tuning/dev case (AIA-A3-5b); disjoint from held-out + exemplars."

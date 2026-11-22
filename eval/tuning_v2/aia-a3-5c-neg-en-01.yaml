@@ -1,0 +1,8 @@
+id: tune-aia-a3-5c-neg-en-01
+lang: en
+category: benign
+concept_id: AIA-A3-5c
+text: "Price fleet cargo cover for a logistics firm from route data."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic tuning/dev case (AIA-A3-5c); disjoint from held-out + exemplars."

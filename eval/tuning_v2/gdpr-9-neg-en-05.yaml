@@ -1,0 +1,8 @@
+id: tune-gdpr-9-neg-en-05
+lang: en
+category: benign
+concept_id: GDPR-9
+text: "Log which product pages a user viewed, no special categories."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic tuning/dev case (GDPR-9); disjoint from held-out + exemplars."

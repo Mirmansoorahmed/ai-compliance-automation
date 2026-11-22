@@ -1,0 +1,8 @@
+id: aia-5-1-a-neg-en-02
+lang: en
+category: benign
+concept_id: AIA-5-1-a
+text: "Run an honest, visible promotion the user can plainly accept or ignore."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic held-out (AIA-5-1-a); disjoint from exemplars + tuning."

@@ -1,0 +1,8 @@
+id: tune-aia-5-1-d-neg-de-04
+lang: de
+category: benign
+concept_id: AIA-5-1-d
+text: "Sperre ein Konto nach mehreren Fehlanmeldungen und benachrichtige den Inhaber."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic tuning/dev case (AIA-5-1-d); disjoint from held-out + exemplars."

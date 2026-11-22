@@ -1,0 +1,8 @@
+id: gdpr-9-neg-de-04
+lang: de
+category: benign
+concept_id: GDPR-9
+text: "Bewahre allein Kontonummer, Saldo und Transaktionshistorie des Kunden auf."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic held-out (GDPR-9); disjoint from exemplars + tuning."

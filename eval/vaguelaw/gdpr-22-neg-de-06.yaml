@@ -1,0 +1,6 @@
+id: gdpr-22-neg-de-06
+lang: de
+question_id: GDPR-22
+state: "Nur eine Erinnerungs-E-Mail wird automatisch gesendet; ohne erhebliche Wirkung."
+expect_yes: false
+source: "Synthetic vague-law case (GDPR-22); disjoint from exemplars + tuning."

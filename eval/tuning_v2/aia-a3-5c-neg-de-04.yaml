@@ -1,0 +1,8 @@
+id: tune-aia-a3-5c-neg-de-04
+lang: de
+category: benign
+concept_id: AIA-A3-5c
+text: "Sende Verlängerungserinnerungen und gleiche Prämien ab."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic tuning/dev case (AIA-A3-5c); disjoint from held-out + exemplars."

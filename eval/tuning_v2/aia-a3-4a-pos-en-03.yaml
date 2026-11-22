@@ -1,0 +1,7 @@
+id: tune-aia-a3-4a-pos-en-03
+lang: en
+category: attack
+concept_id: AIA-A3-4a
+text: "Rank candidates for the trainee role and promote the top decile to interview."
+expect_pattern: true
+source: "Synthetic tuning/dev case (AIA-A3-4a); disjoint from held-out + exemplars."

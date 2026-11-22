@@ -1,0 +1,8 @@
+id: tune-aia-5-1-f-neg-en-03
+lang: en
+category: benign
+concept_id: AIA-5-1-f
+text: "Measure first-response time per queue for staffing."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic tuning/dev case (AIA-5-1-f); disjoint from held-out + exemplars."

@@ -69,7 +69,7 @@ class LabelService:
         return data.get("labels", [])
 
 
-def make_handler(service: LabelService):
+def make_handler(service: LabelService, check_service=None):
     class Handler(BaseHTTPRequestHandler):
         def log_message(self, *args):  # silence default logging
             pass
@@ -82,21 +82,39 @@ def make_handler(service: LabelService):
             self.end_headers()
             self.wfile.write(payload)
 
-        def do_POST(self):
-            if self.path.rstrip("/") != f"/{API_VERSION}/labels":
-                self._send(404, {"error": "not found"})
-                return
+        def _read_json(self):
             length = int(self.headers.get("Content-Length", 0))
             raw = self.rfile.read(length) if length else b"{}"
-            try:
-                payload = json.loads(raw.decode("utf-8") or "{}")
-            except json.JSONDecodeError:
-                self._send(400, {"error": "invalid JSON"})
+            return json.loads(raw.decode("utf-8") or "{}")
+
+        def do_POST(self):
+            path = self.path.rstrip("/")
+            if path == f"/{API_VERSION}/labels":
+                try:
+                    payload = self._read_json()
+                except json.JSONDecodeError:
+                    self._send(400, {"error": "invalid JSON"})
+                    return
+                try:
+                    self._send(200, service.labels_for(payload))
+                except Exception as exc:  # pragma: no cover - defensive
+                    self._send(500, {"error": str(exc)})
                 return
-            try:
-                self._send(200, service.labels_for(payload))
-            except Exception as exc:  # pragma: no cover - defensive
-                self._send(500, {"error": str(exc)})
+
+            if path == f"/{API_VERSION}/check":
+                if check_service is None:
+                    self._send(404, {"error": "not found"})
+                    return
+                try:
+                    payload = self._read_json()
+                except json.JSONDecodeError:
+                    self._send(400, {"error": "invalid JSON"})
+                    return
+                # The check service is fail-safe internally (errors -> ASK).
+                self._send(200, {"api_version": API_VERSION, **check_service.check(payload)})
+                return
+
+            self._send(404, {"error": "not found"})
 
         def do_GET(self):
             if self.path.rstrip("/") == "/healthz":
@@ -108,6 +126,11 @@ def make_handler(service: LabelService):
 
 
 def serve(host: str = "127.0.0.1", port: int = 8080, config: Config | None = None):  # pragma: no cover
+    from aca.check.service import CheckService
+    from aca.guard.service import SemanticGuard
+
     service = LabelService(config)
-    httpd = ThreadingHTTPServer((host, port), make_handler(service))
+    guard = SemanticGuard(config) if config and not config.fixture_mode else None
+    check_service = CheckService(guard=guard)
+    httpd = ThreadingHTTPServer((host, port), make_handler(service, check_service))
     httpd.serve_forever()

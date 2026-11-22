@@ -1,0 +1,7 @@
+id: tune-aia-a3-4b-pos-en-01
+lang: en
+category: attack
+concept_id: AIA-A3-4b
+text: "Rate quarterly staff output and suggest promotions and terminations from it."
+expect_pattern: true
+source: "Synthetic tuning/dev case (AIA-A3-4b); disjoint from held-out + exemplars."

@@ -1,0 +1,8 @@
+id: tune-aia-5-1-a-neg-de-06
+lang: de
+category: benign
+concept_id: AIA-5-1-a
+text: "Warne den Nutzer, wenn er sich einem selbst gesetzten Limit nähert."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic tuning/dev case (AIA-5-1-a); disjoint from held-out + exemplars."

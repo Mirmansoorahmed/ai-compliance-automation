@@ -1,0 +1,59 @@
+{
+  "concept_id": "AIA-5-1-b",
+  "elements": {
+    "targets_vulnerable_group": {
+      "positives": [
+        "It singles out people in acute financial distress.",
+        "It focuses on the elderly showing early confusion.",
+        "It picks out a group vulnerable by their situation.",
+        "Es greift Menschen in akuter finanzieller Not heraus.",
+        "Es zielt auf Ältere mit ersten Anzeichen von Verwirrung.",
+        "Es wählt eine durch ihre Lage verletzliche Gruppe aus."
+      ],
+      "negatives": [
+        "It treats all customers the same regardless of situation.",
+        "The audience is the general, unsegmented public.",
+        "No group is singled out by vulnerability.",
+        "Es behandelt alle Kunden gleich, unabhängig von der Lage.",
+        "Die Zielgruppe ist die allgemeine, unsegmentierte Öffentlichkeit.",
+        "Keine Gruppe wird nach Verletzlichkeit herausgegriffen."
+      ]
+    },
+    "exploits_that_vulnerability": {
+      "positives": [
+        "It uses their weakness to push a costly product.",
+        "It leans on the moment of desperation to sell.",
+        "It turns the vulnerability into a sales lever.",
+        "Es nutzt ihre Schwäche, um ein teures Produkt aufzudrängen.",
+        "Es setzt am Moment der Verzweiflung an, um zu verkaufen.",
+        "Es macht die Verletzlichkeit zum Verkaufshebel."
+      ],
+      "negatives": [
+        "It offers help and independent advice instead.",
+        "It protects the person rather than pressing them.",
+        "It points them to a hardship contact.",
+        "Es bietet stattdessen Hilfe und unabhängige Beratung.",
+        "Es schützt die Person, statt sie zu bedrängen.",
+        "Es verweist sie an eine Härtefallstelle."
+      ]
+    },
+    "significant_harm": {
+      "positives": [
+        "They take on debt they cannot repay.",
+        "It leaves them in a materially worse position.",
+        "The harm is serious and lasting.",
+        "Sie nehmen Schulden auf, die sie nicht zurückzahlen können.",
+        "Es lässt sie materiell schlechter dastehen.",
+        "Der Schaden ist ernst und dauerhaft."
+      ],
+      "negatives": [
+        "The person is not harmed by the interaction.",
+        "The outcome is supportive and reversible.",
+        "There is no lasting detriment.",
+        "Die Person wird durch die Interaktion nicht geschädigt.",
+        "Das Ergebnis ist unterstützend und umkehrbar.",
+        "Es gibt keinen dauerhaften Nachteil."
+      ]
+    }
+  }
+}

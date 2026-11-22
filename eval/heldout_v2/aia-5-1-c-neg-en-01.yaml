@@ -1,0 +1,8 @@
+id: aia-5-1-c-neg-en-01
+lang: en
+category: benign
+concept_id: AIA-5-1-c
+text: "Show each team its own average meeting length this month so it can plan better, with no per-person score."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic held-out (AIA-5-1-c); disjoint from exemplars + tuning."

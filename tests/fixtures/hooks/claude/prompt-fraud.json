@@ -1,0 +1,5 @@
+{
+  "hook_event_name": "UserPromptSubmit",
+  "cwd": "/work/halvaro-fraud",
+  "prompt": "Compute a fraud risk score on card transactions and flag the riskiest for manual review."
+}

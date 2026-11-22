@@ -1,0 +1,64 @@
+name: release
+
+# Phase 8 release (owner-run): on a version tag, build the policy-service image
+# and a signed OPA bundle and publish both to GHCR, keyless-signed with cosign
+# (GitHub OIDC — no stored key). Nothing is published from a branch; this runs
+# only on a tag the owner pushes.
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+  packages: write
+  id-token: write   # keyless cosign signing via GitHub OIDC
+
+env:
+  IMAGE: ghcr.io/${{ github.repository_owner }}/ai-semantic-guardrails-eu
+  BUNDLE: ghcr.io/${{ github.repository_owner }}/ai-semantic-guardrails-eu-bundle
+
+jobs:
+  image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v6
+        id: build
+        with:
+          context: .
+          file: deploy/docker/Dockerfile
+          push: true
+          tags: "${{ env.IMAGE }}:${{ github.ref_name }},${{ env.IMAGE }}:latest"
+      - uses: sigstore/cosign-installer@v3
+      - name: Sign the image (keyless)
+        run: cosign sign --yes "${{ env.IMAGE }}@${{ steps.build.outputs.digest }}"
+
+  bundle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install OPA
+        run: |
+          curl -sSL -o /usr/local/bin/opa https://openpolicyagent.org/downloads/latest/opa_linux_amd64_static
+          chmod +x /usr/local/bin/opa
+      - name: Verify policy before packaging
+        run: opa test policy -v
+      - name: Build the signed-ready OPA bundle
+        run: opa build -b policy -o bundle.tar.gz
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: sigstore/cosign-installer@v3
+      - name: Push the bundle as an OCI artifact and sign it (keyless)
+        run: |
+          oras push "${{ env.BUNDLE }}:${{ github.ref_name }}" bundle.tar.gz:application/vnd.opa.bundle.layer.v1.tar+gzip
+          cosign sign --yes "${{ env.BUNDLE }}:${{ github.ref_name }}"

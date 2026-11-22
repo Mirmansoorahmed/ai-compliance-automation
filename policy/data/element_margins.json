@@ -1,0 +1,131 @@
+{
+  "_doc_element_margins": "Per-element similarity margins for Phase C. Calibrated on the tuning set only; margins are strictly > 0 (floor). A concept's full match fires only when EVERY element clears its margin; calibration drives the tuning false-full-match rate (incl. cross-concept) to 0, else the concept's full match is disabled (an element margin null -> falls back to the ASK tier). Regenerate with the single calibrate command (see docs/v2/DETECTION-DIAGNOSIS.md).",
+  "default_margin": 0.05,
+  "concepts": {
+    "AIA-5-1-a": {
+      "subliminal_or_deceptive_technique": {
+        "margin": 0.38
+      },
+      "material_behaviour_distortion": {
+        "margin": 0.29
+      },
+      "significant_harm": {
+        "margin": 0.38
+      }
+    },
+    "AIA-5-1-b": {
+      "targets_vulnerable_group": {
+        "margin": 0.56
+      },
+      "exploits_that_vulnerability": {
+        "margin": 0.32
+      },
+      "significant_harm": {
+        "margin": 0.47
+      }
+    },
+    "AIA-5-1-c": {
+      "person_identifiable_behaviour_join": {
+        "margin": 0.62
+      },
+      "aggregated_score_or_ranking": {
+        "margin": 0.38
+      },
+      "adverse_action": {
+        "margin": 0.41
+      }
+    },
+    "AIA-5-1-d": {
+      "predicts_individual_criminality": {
+        "margin": 0.29
+      },
+      "based_on_profiling_or_personality": {
+        "margin": 0.29
+      },
+      "not_grounded_in_objective_facts": {
+        "margin": 0.2
+      }
+    },
+    "AIA-5-1-f": {
+      "infers_emotional_state": {
+        "margin": 0.26
+      },
+      "in_workplace_or_education": {
+        "margin": 0.41
+      },
+      "not_medical_or_safety_purpose": {
+        "margin": 0.32
+      }
+    },
+    "AIA-5-1-g": {
+      "uses_biometric_data": {
+        "margin": 0.65
+      },
+      "categorises_individuals": {
+        "margin": 0.41
+      },
+      "infers_sensitive_trait": {
+        "margin": 0.59
+      }
+    },
+    "AIA-A3-1c": {
+      "infers_emotional_state": {
+        "margin": 0.41
+      },
+      "outside_work_or_education_context": {
+        "margin": 0.5
+      }
+    },
+    "AIA-A3-4a": {
+      "employment_recruitment_context": {
+        "margin": 0.47
+      },
+      "evaluates_or_ranks_candidates": {
+        "margin": 0.62
+      }
+    },
+    "AIA-A3-4b": {
+      "existing_worker_context": {
+        "margin": 0.32
+      },
+      "affects_promotion_termination_tasks_or_monitors_performance": {
+        "margin": 0.41
+      }
+    },
+    "AIA-A3-5b": {
+      "assesses_natural_person_creditworthiness": {
+        "margin": 0.47
+      },
+      "affects_access_to_credit": {
+        "margin": 0.53
+      }
+    },
+    "AIA-A3-5c": {
+      "life_or_health_insurance_context": {
+        "margin": 0.41
+      },
+      "risk_assessment_or_pricing_for_persons": {
+        "margin": 0.41
+      }
+    },
+    "GDPR-9": {
+      "processes_personal_data": {
+        "margin": 0.44
+      },
+      "data_is_special_category": {
+        "margin": 0.5
+      }
+    },
+    "GDPR-22": {
+      "solely_automated_decision": {
+        "margin": 0.47
+      },
+      "about_a_natural_person": {
+        "margin": 0.35
+      },
+      "legal_or_similarly_significant_effect": {
+        "margin": 0.59
+      }
+    }
+  }
+}

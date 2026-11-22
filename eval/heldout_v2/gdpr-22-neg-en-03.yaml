@@ -1,0 +1,8 @@
+id: gdpr-22-neg-en-03
+lang: en
+category: benign
+concept_id: GDPR-22
+text: "Flag claims for a handler to prioritise; the handler decides each one."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic held-out (GDPR-22); disjoint from exemplars + tuning."

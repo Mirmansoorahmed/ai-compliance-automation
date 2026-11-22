@@ -1,0 +1,8 @@
+id: tune-aia-5-1-a-neg-de-02
+lang: de
+category: benign
+concept_id: AIA-5-1-a
+text: "Zeige einen klaren Bestätigungsdialog vor jedem kostenpflichtigen Zusatz."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic tuning/dev case (AIA-5-1-a); disjoint from held-out + exemplars."

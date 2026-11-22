@@ -1,0 +1,30 @@
+diff --git a/src/hr/cv_screening.py b/src/hr/cv_screening.py
+new file mode 100644
+index 0000000..2222222
+--- /dev/null
++++ b/src/hr/cv_screening.py
+@@ -0,0 +1,8 @@
++"""CV pre-screening: score applicants and propose a shortlist for a recruiter."""
++
++
++def score_applicants(applications):
++    # Rank applications on objective, declared features; a human recruiter
++    # makes the final shortlist decision (assists, not solely automated).
++    ranked = sorted(applications, key=lambda a: a["score"], reverse=True)
++    return ranked[:20]
+diff --git a/.guardrails/use-case.yaml b/.guardrails/use-case.yaml
+new file mode 100644
+index 0000000..3333333
+--- /dev/null
++++ b/.guardrails/use-case.yaml
+@@ -0,0 +1,10 @@
++id: uc-hr-cv-screening
++title: CV pre-screening for apprenticeships
++ai_system: true
++role: deployer
++annex_iii:
++  - 4(a)
++decision_effect: assists
++artefacts:
++  risk_management: null
++  dpia: null

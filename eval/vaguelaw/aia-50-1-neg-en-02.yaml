@@ -1,0 +1,6 @@
+id: aia-50-1-neg-en-02
+lang: en
+question_id: AIA-50-1
+state: "Every AI-generated image carries a visible 'AI-generated' label."
+expect_yes: false
+source: "Synthetic vague-law case (AIA-50-1); disjoint from exemplars + tuning."

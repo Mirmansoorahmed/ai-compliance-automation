@@ -41,6 +41,16 @@ class Label:
     elements_total: int | None = None
     # True when some-but-not-all elements are present (a "partial pattern").
     partial_pattern: bool = False
+    # True when the similarity margin (pos - neg) is at/above the concept's
+    # ask_threshold but the full element match is NOT met. A signal that the
+    # text is close to this concept's positives (and far from its hard
+    # negatives) without a confirmed legal-element match — OPA routes this to
+    # ASK (a human), never BLOCK. A signal, not a verdict.
+    similarity_only: bool = False
+    # The concept's OFFICIAL legal-element set, so OPA / the mirror can intersect
+    # elements_met with it before counting a full match (a keyword/stage-A union
+    # name that is not a real element can never inflate the count). A signal.
+    official_elements: list[str] = field(default_factory=list)
 
     def __post_init__(self) -> None:
         if not (0.0 <= float(self.confidence) <= 1.0):
@@ -57,6 +67,10 @@ class Label:
             d.pop("elements_total")
         if not d.get("partial_pattern"):
             d.pop("partial_pattern")
+        if not d.get("similarity_only"):
+            d.pop("similarity_only")
+        if not d.get("official_elements"):
+            d.pop("official_elements")
         return d
 
 

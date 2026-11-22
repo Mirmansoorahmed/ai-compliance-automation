@@ -1,0 +1,8 @@
+id: tune-aia-a3-4b-neg-de-04
+lang: de
+category: benign
+concept_id: AIA-A3-4b
+text: "Verteile einen bereits vom Manager genehmigten Dienstplan."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic tuning/dev case (AIA-A3-4b); disjoint from held-out + exemplars."

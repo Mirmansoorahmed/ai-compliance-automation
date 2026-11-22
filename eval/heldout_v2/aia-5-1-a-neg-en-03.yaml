@@ -1,0 +1,8 @@
+id: aia-5-1-a-neg-en-03
+lang: en
+category: benign
+concept_id: AIA-5-1-a
+text: "Prompt a visible cooling-off pause before a large, user-initiated transfer."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic held-out (AIA-5-1-a); disjoint from exemplars + tuning."

@@ -1,0 +1,10 @@
+{
+  "// doc": "Example MCP client config registering the guardrails compliance_check tool. Works in any MCP client that reads this shape (Claude Code .mcp.json, Cursor, Codex, etc.). The server speaks JSON-RPC 2.0 over stdio and needs no running policy service (it runs the decision engine in-process). Ensure guardrails-mcp is on PATH (pip install -e .).",
+  "mcpServers": {
+    "guardrails": {
+      "command": "guardrails-mcp",
+      "args": [],
+      "env": {}
+    }
+  }
+}

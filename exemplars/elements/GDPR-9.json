@@ -1,0 +1,41 @@
+{
+  "concept_id": "GDPR-9",
+  "elements": {
+    "processes_personal_data": {
+      "positives": [
+        "It stores and uses data about identifiable people.",
+        "It processes customers' personal records.",
+        "It keeps per-person data.",
+        "Es speichert und nutzt Daten über identifizierbare Personen.",
+        "Es verarbeitet personenbezogene Kundendaten.",
+        "Es hält personenbezogene Daten."
+      ],
+      "negatives": [
+        "It handles only fully anonymised aggregates.",
+        "No personal data is processed.",
+        "It uses synthetic, non-personal records.",
+        "Es verarbeitet nur vollständig anonymisierte Aggregate.",
+        "Es werden keine personenbezogenen Daten verarbeitet.",
+        "Es nutzt synthetische, nicht personenbezogene Datensätze."
+      ]
+    },
+    "data_is_special_category": {
+      "positives": [
+        "The data includes health and medication.",
+        "It covers religion and ethnicity.",
+        "It holds trade-union membership.",
+        "Die Daten umfassen Gesundheit und Medikamente.",
+        "Es deckt Religion und Ethnie ab.",
+        "Es enthält die Gewerkschaftszugehörigkeit."
+      ],
+      "negatives": [
+        "The data is only account number and balance.",
+        "It holds a delivery address, nothing special.",
+        "It keeps a product category browsed.",
+        "Die Daten sind nur Kontonummer und Saldo.",
+        "Es hält eine Lieferadresse, nichts Besonderes.",
+        "Es speichert eine angesehene Produktkategorie."
+      ]
+    }
+  }
+}

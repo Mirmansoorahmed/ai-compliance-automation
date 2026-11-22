@@ -3,9 +3,9 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "ai-compliance-automation"
+name = "ai-semantic-guardrails-eu"
 version = "0.1.0"
-description = "AI Compliance Automation — GitHub-native compliance harness. Core component: Semantic Guard (emits labels; OPA decides)."
+description = "AI Semantic Guardrails EU — GitHub-native compliance harness. Core component: Semantic Guard (emits labels; OPA decides). Project: ai-semantic-guardrails-eu."
 requires-python = ">=3.11"
 # The oss profile runs on the Python standard library alone, so CI (and an
 # offline sandbox) can pass with no third-party install step. Optional
@@ -30,6 +30,16 @@ dev = [
     # PyYAML so tests/test_yamlio.py exercises the PyYAML path instead of skipping.
     "PyYAML>=6",
 ]
+
+[project.scripts]
+# Thin adapter that connects an AI coding tool's hook to POST /v1/check.
+guardrails-hook = "guardrails_hook.cli:main"
+# CI gate: scans a PR diff and runs the same decision engine in-process.
+guardrails-ci = "guardrails_ci.cli:main"
+# Deploy gate: checks obligations + two-person approvals before production.
+guardrails-deploy-gate = "guardrails_ci.deploy_gate:main"
+# MCP server exposing the compliance_check tool (stdio JSON-RPC).
+guardrails-mcp = "guardrails_mcp.server:main"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

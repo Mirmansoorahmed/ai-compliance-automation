@@ -1,0 +1,8 @@
+id: tune-aia-a3-5b-neg-en-05
+lang: en
+category: benign
+concept_id: AIA-A3-5b
+text: "Rate a company bond's risk from issuer filings."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic tuning/dev case (AIA-A3-5b); disjoint from held-out + exemplars."

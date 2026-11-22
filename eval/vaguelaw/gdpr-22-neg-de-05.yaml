@@ -1,0 +1,6 @@
+id: gdpr-22-neg-de-05
+lang: de
+question_id: GDPR-22
+state: "Das Modell reiht Fälle; ein Mensch entscheidet und kann jeden überstimmen."
+expect_yes: false
+source: "Synthetic vague-law case (GDPR-22); disjoint from exemplars + tuning."

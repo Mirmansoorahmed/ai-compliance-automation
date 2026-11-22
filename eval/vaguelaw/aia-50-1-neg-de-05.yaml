@@ -1,0 +1,6 @@
+id: aia-50-1-neg-de-05
+lang: de
+question_id: AIA-50-1
+state: "Jedes KI-generierte Bild trägt eine sichtbare Kennzeichnung 'KI-generiert'."
+expect_yes: false
+source: "Synthetic vague-law case (AIA-50-1); disjoint from exemplars + tuning."

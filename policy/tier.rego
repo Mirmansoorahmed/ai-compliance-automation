@@ -12,7 +12,8 @@ package compliance.tier
 #   never mutated at runtime.
 #
 # Input shape:
-#   { "labels": [ {concept_id, pattern_id?, elements_met[], confidence}, ... ] }
+#   { "labels": [ {concept_id, pattern_id?, elements_met[], confidence,
+#                  partial_pattern?, similarity_only?}, ... ] }
 #
 # Illustrative mapping only; not a conformity claim.
 
@@ -27,20 +28,27 @@ deny_match if {
 }
 
 # --- four-eyes: a full legal-element match, OR concept present at high
-# confidence with enough elements. A full element match routes to four-eyes
-# regardless of similarity confidence — the elements themselves are the signal,
-# so a correctly-detected attack is never allowed on a low embedding score. ---
+# confidence with enough elements. Four-eyes requires a FULL, VALIDATED element
+# match: every legal element is present (count == elements_total) AND the label
+# is not merely a similarity signal. A similarity_only label — or any label with
+# fewer than all elements — can never reach four-eyes; it is ASK at most. This is
+# the Phase-A/C safety invariant: BLOCK/four-eyes only on a full element match,
+# everything uncertain to ASK. ---
 four_eyes_match if {
 	some l in input.labels
 	l.elements_total
-	count(l.elements_met) >= l.elements_total
+	count(_official_met(l)) >= l.elements_total
+	not l.similarity_only
 }
 
-four_eyes_match if {
-	some l in input.labels
-	th := data.thresholds[l.concept_id]
-	l.confidence >= th.high
-	count(l.elements_met) >= th.min_elements
+# Fix #4: count only elements that belong to the concept's OFFICIAL element set
+# (when the label carries one). A name outside the official set cannot count
+# toward a full match. If official_elements is absent, fall back to elements_met.
+_official_met(l) := met if {
+	l.official_elements
+	met := {e | some e in l.elements_met; e in l.official_elements}
+} else := met if {
+	met := {e | some e in l.elements_met}
 }
 
 # --- ask: concept present at or above the low threshold, OR a partial pattern
@@ -55,6 +63,14 @@ ask_match if {
 ask_match if {
 	some l in input.labels
 	l.partial_pattern == true
+}
+
+# Phase A: a similarity_only signal (confident margin vs exemplars, but the full
+# legal-element match is NOT met) routes to ASK — a human review. It can never
+# reach four-eyes or deny, so it only ever adds review, never a BLOCK.
+ask_match if {
+	some l in input.labels
+	l.similarity_only == true
 }
 
 tier := "deny" if {

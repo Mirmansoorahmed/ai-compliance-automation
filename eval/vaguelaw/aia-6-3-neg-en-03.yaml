@@ -1,0 +1,6 @@
+id: aia-6-3-neg-en-03
+lang: en
+question_id: AIA-6-3
+state: "It extracts keywords for search and makes no assessment about any applicant."
+expect_yes: false
+source: "Synthetic vague-law case (AIA-6-3); disjoint from exemplars + tuning."

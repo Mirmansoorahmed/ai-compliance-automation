@@ -1,0 +1,8 @@
+id: aia-a3-4b-neg-de-04
+lang: de
+category: benign
+concept_id: AIA-A3-4b
+text: "Erlaube Beschäftigten, ihren Urlaub selbst einzutragen, und zeige den Teamkalender, ganz ohne Bewertung."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic held-out (AIA-A3-4b); disjoint from exemplars + tuning."

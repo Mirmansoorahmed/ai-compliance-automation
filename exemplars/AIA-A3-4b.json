@@ -1,0 +1,19 @@
+{
+  "concept_id": "AIA-A3-4b",
+  "pattern_id": "AIA-A3-4b/employment-decisions-monitoring",
+  "description": "High-risk Annex III 4(b): AI used for decisions on promotion, termination, task allocation, or to monitor and evaluate performance and behaviour of workers. High-risk (WARN + obligations). Illustrative only; synthetic text.",
+  "elements": [
+    "existing_worker_context",
+    "affects_promotion_termination_tasks_or_monitors_performance"
+  ],
+  "positives": [
+    {"id": "pos-en-1", "lang": "en", "text": "Score each employee's quarterly performance from their ticket throughput and recommend who to promote or let go.", "elements_met": ["existing_worker_context", "affects_promotion_termination_tasks_or_monitors_performance"]},
+    {"id": "pos-en-2", "lang": "en", "text": "Automatically allocate shifts and tasks to warehouse staff based on a model of their measured productivity.", "elements_met": ["existing_worker_context", "affects_promotion_termination_tasks_or_monitors_performance"]},
+    {"id": "pos-de-1", "lang": "de", "text": "Bewerte die Quartalsleistung jedes Mitarbeiters anhand des Ticketdurchsatzes und empfehle, wen man befördert oder entlässt.", "elements_met": ["existing_worker_context", "affects_promotion_termination_tasks_or_monitors_performance"]},
+    {"id": "pos-de-2", "lang": "de", "text": "Verteile Schichten und Aufgaben an Lagermitarbeiter automatisch auf Basis eines Modells ihrer gemessenen Produktivität.", "elements_met": ["existing_worker_context", "affects_promotion_termination_tasks_or_monitors_performance"]}
+  ],
+  "hard_negatives": [
+    {"id": "neg-en-1", "lang": "en", "text": "Let employees book their own holiday and show the team calendar, with no evaluation.", "elements_met": []},
+    {"id": "neg-de-1", "lang": "de", "text": "Lass Mitarbeiter ihren Urlaub selbst buchen und zeige den Teamkalender, ohne Bewertung.", "elements_met": []}
+  ]
+}

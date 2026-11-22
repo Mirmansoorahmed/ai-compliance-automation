@@ -1,0 +1,5 @@
+{
+  "hook_event_name": "UserPromptSubmit",
+  "cwd": "/work/halvaro-hr",
+  "session_id": "sess-fixture-0001"
+}

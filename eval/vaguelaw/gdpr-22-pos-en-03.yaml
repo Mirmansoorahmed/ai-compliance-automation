@@ -1,0 +1,6 @@
+id: gdpr-22-pos-en-03
+lang: en
+question_id: GDPR-22
+state: "The model alone sets each applicant's insurance acceptance, applied directly."
+expect_yes: true
+source: "Synthetic vague-law case (GDPR-22); disjoint from exemplars + tuning."

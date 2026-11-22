@@ -1,0 +1,8 @@
+id: tune-aia-a3-1c-neg-en-05
+lang: en
+category: benign
+concept_id: AIA-A3-1c
+text: "Survey satisfaction with a voluntary star rating."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic tuning/dev case (AIA-A3-1c); disjoint from held-out + exemplars."

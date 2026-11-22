@@ -1,0 +1,8 @@
+id: tune-aia-5-1-d-neg-en-03
+lang: en
+category: benign
+concept_id: AIA-5-1-d
+text: "Lock an account after several failed logins and notify the owner."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic tuning/dev case (AIA-5-1-d); disjoint from held-out + exemplars."

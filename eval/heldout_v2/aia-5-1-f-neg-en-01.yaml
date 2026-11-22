@@ -1,0 +1,8 @@
+id: aia-5-1-f-neg-en-01
+lang: en
+category: benign
+concept_id: AIA-5-1-f
+text: "Track average handle time and resolution rate per team to plan staffing, with no read of anyone's mood."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic held-out (AIA-5-1-f); disjoint from exemplars + tuning."

@@ -1,0 +1,5 @@
+{
+  "hook_event_name": "UserPromptSubmit",
+  "cwd": "/work/halvaro-hr",
+  "prompt": "Join badge logs, Slack activity and canteen data per employee into a reliability index and drop the bottom 10% from the bonus pool."
+}

@@ -1,0 +1,8 @@
+id: aia-5-1-f-neg-en-03
+lang: en
+category: benign
+concept_id: AIA-5-1-f
+text: "Run a voluntary, anonymous pulse survey and report only team totals."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic held-out (AIA-5-1-f); disjoint from exemplars + tuning."

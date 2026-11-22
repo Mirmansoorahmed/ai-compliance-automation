@@ -1,0 +1,6 @@
+id: aia-5-1-a-neg-en-03
+lang: en
+question_id: AIA-5-1-a
+state: "A visible cooling-off prompt before a large transfer."
+expect_yes: false
+source: "Synthetic vague-law case (AIA-5-1-a); disjoint from exemplars + tuning."

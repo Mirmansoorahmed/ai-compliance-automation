@@ -1,0 +1,8 @@
+id: tune-gdpr-22-neg-en-05
+lang: en
+category: benign
+concept_id: GDPR-22
+text: "Prioritise a queue for humans who decide each item."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic tuning/dev case (GDPR-22); disjoint from held-out + exemplars."

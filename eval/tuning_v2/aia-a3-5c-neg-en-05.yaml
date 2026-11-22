@@ -1,0 +1,8 @@
+id: tune-aia-a3-5c-neg-en-05
+lang: en
+category: benign
+concept_id: AIA-A3-5c
+text: "Rate regional catastrophe risk for a property book."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic tuning/dev case (AIA-A3-5c); disjoint from held-out + exemplars."

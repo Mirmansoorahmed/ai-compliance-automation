@@ -1,0 +1,8 @@
+id: aia-5-1-d-neg-en-01
+lang: en
+category: benign
+concept_id: AIA-5-1-d
+text: "Flag a specific transaction as suspicious when its amount, merchant and country match a known fraud pattern, for a human to review."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic held-out (AIA-5-1-d); disjoint from exemplars + tuning."

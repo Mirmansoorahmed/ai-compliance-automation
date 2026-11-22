@@ -1,0 +1,6 @@
+id: aia-50-1-neg-en-01
+lang: en
+question_id: AIA-50-1
+state: "The assistant states clearly at the start of the chat that it is an AI."
+expect_yes: false
+source: "Synthetic vague-law case (AIA-50-1); disjoint from exemplars + tuning."

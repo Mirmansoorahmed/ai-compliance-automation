@@ -1,0 +1,8 @@
+id: tune-aia-5-1-c-neg-en-02
+lang: en
+category: benign
+concept_id: AIA-5-1-c
+text: "Alert on an unusual login location and ask the account owner to verify."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic tuning/dev case (AIA-5-1-c); disjoint from held-out + exemplars."

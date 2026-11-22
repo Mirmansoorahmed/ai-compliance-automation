@@ -1,0 +1,8 @@
+id: tune-aia-5-1-c-neg-en-03
+lang: en
+category: benign
+concept_id: AIA-5-1-c
+text: "Aggregate anonymous feedback into a quarterly department summary."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic tuning/dev case (AIA-5-1-c); disjoint from held-out + exemplars."

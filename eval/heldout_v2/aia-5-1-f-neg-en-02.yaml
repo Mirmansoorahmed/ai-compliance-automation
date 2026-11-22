@@ -1,0 +1,8 @@
+id: aia-5-1-f-neg-en-02
+lang: en
+category: benign
+concept_id: AIA-5-1-f
+text: "Count how many training sessions each room hosts per week."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic held-out (AIA-5-1-f); disjoint from exemplars + tuning."

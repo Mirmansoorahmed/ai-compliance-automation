@@ -1,0 +1,8 @@
+id: tune-aia-a3-4b-neg-en-01
+lang: en
+category: benign
+concept_id: AIA-A3-4b
+text: "Show a self-service leave calendar with no evaluation."
+expect_pattern: false
+hard_negative: true
+source: "Synthetic tuning/dev case (AIA-A3-4b); disjoint from held-out + exemplars."

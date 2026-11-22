@@ -13,8 +13,10 @@ def test_names_semantic_guard_as_core():
 
 
 def test_has_skimmable_sections():
-    for heading in ("## Problem", "## Architecture", "## Semantic Guard", "## How to run",
-                    "## Results", "## Limitations"):
+    # v2 README headings (renamed from v1: "Problem" -> "The story in one paragraph",
+    # added a per-phase "Status" table).
+    for heading in ("## The story in one paragraph", "## Architecture", "## Status",
+                    "## Semantic Guard", "## How to run", "## Results", "## Limitations"):
         assert heading in README, f"missing section: {heading}"
 
 
@@ -24,9 +26,11 @@ def test_has_disclaimer_and_synthetic_data():
 
 
 def test_results_have_provenance_or_to_be_measured():
-    # Any numeric result row must sit under a Source provenance line, and the
-    # table must still carry TO BE MEASURED for the unmeasured stage-2/3 path.
-    assert "Source: committed eval run" in README
+    # The detection numbers are the frozen operating point from the owner's real
+    # run; the results prose names that provenance (model + tuning-only, no run
+    # timestamps/SHAs/paths after the freeze), and the table still carries TO BE
+    # MEASURED for the unmeasured vendor/stage-2-3 paths.
+    assert "frozen operating point" in README
     assert "TO BE MEASURED" in README
 
 
@@ -37,4 +41,5 @@ def test_no_employer_branding():
 
 
 def test_references_architecture_diagram_path():
-    assert "docs/diagrams/architecture.png" in README
+    # v2 hero image is the v2 architecture diagram under docs/v2/img/.
+    assert "docs/v2/img/architecture-v2.png" in README

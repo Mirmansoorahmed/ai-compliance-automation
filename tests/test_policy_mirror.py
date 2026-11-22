@@ -25,10 +25,24 @@ def test_deny_on_confirmed_pattern():
     assert decide(labels, TEST_DATA) == "deny"
 
 
-def test_four_eyes_on_high_conf_enough_elements():
+def test_four_eyes_requires_full_validated_match_not_just_confidence():
+    # Fix #2: high confidence + enough elements but NO elements_total (no full
+    # validated match) is now ASK, not four-eyes. The confidence-only four-eyes
+    # path is removed.
     labels = [{
         "concept_id": "AIA-5-1-c",
         "elements_met": ["join", "score", "adverse"],
+        "confidence": 0.85,
+    }]
+    assert decide(labels, TEST_DATA) == "ask"
+
+
+def test_four_eyes_on_full_validated_match():
+    # A full element match (count == total) with no similarity flag -> four-eyes.
+    labels = [{
+        "concept_id": "AIA-5-1-c",
+        "elements_met": ["join", "score", "adverse"],
+        "elements_total": 3,
         "confidence": 0.85,
     }]
     assert decide(labels, TEST_DATA) == "four-eyes"
@@ -73,6 +87,78 @@ def test_allow_on_empty_labels():
 
 def test_high_conf_few_elements_is_ask():
     labels = [{"concept_id": "AIA-5-1-c", "elements_met": ["join"], "confidence": 0.9}]
+    assert decide(labels, TEST_DATA) == "ask"
+
+
+def test_ask_on_similarity_only():
+    # Phase A: a similarity_only signal (no full element match) -> ask.
+    labels = [{
+        "concept_id": "AIA-5-1-c",
+        "elements_met": [],
+        "elements_total": 3,
+        "confidence": 0.6,
+        "similarity_only": True,
+    }]
+    assert decide(labels, TEST_DATA) == "ask"
+
+
+def test_similarity_only_never_blocks_at_high_conf():
+    # Phase A invariant: similarity_only cannot reach four-eyes/deny.
+    labels = [{
+        "concept_id": "AIA-5-1-c",
+        "elements_met": [],
+        "elements_total": 3,
+        "confidence": 0.99,
+        "similarity_only": True,
+    }]
+    assert decide(labels, TEST_DATA) == "ask"
+
+
+def test_similarity_only_with_partial_elements_is_ask():
+    # Fix #2: 1..n-1 elements + high confidence + similarity_only -> ASK.
+    labels = [{
+        "concept_id": "AIA-5-1-c",
+        "elements_met": ["join", "score"],
+        "elements_total": 3,
+        "confidence": 0.99,
+        "similarity_only": True,
+    }]
+    assert decide(labels, TEST_DATA) == "ask"
+
+
+def test_foreign_element_name_does_not_inflate_full_match():
+    # Fix #4: a name outside the official element set must not count.
+    labels = [{
+        "concept_id": "AIA-5-1-c",
+        "elements_met": ["join", "score", "not_an_element"],
+        "official_elements": ["join", "score", "adverse"],
+        "elements_total": 3,
+        "confidence": 0.85,
+    }]
+    assert decide(labels, TEST_DATA) == "ask"
+
+
+def test_all_official_elements_met_is_four_eyes_despite_foreign_name():
+    labels = [{
+        "concept_id": "AIA-5-1-c",
+        "elements_met": ["join", "score", "adverse", "foreign"],
+        "official_elements": ["join", "score", "adverse"],
+        "elements_total": 3,
+        "confidence": 0.1,
+    }]
+    assert decide(labels, TEST_DATA) == "four-eyes"
+
+
+def test_similarity_only_with_all_elements_is_still_ask():
+    # Fix #2: a similarity_only label never reaches four-eyes, even if all
+    # elements appear met — only a validated (non-similarity) full match does.
+    labels = [{
+        "concept_id": "AIA-5-1-c",
+        "elements_met": ["join", "score", "adverse"],
+        "elements_total": 3,
+        "confidence": 0.99,
+        "similarity_only": True,
+    }]
     assert decide(labels, TEST_DATA) == "ask"
 
 

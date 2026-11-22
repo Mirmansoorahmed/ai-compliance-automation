@@ -1,0 +1,12 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "EU AI compliance — prompt",
+      "description": "Checks every submitted prompt against the EU AI compliance policy service (POST /v1/check). BLOCK or ASK exit non-zero and block the submission (IDE; on CLI/Web a Prompt Submit hook cannot block, so the reason is shown as context). WARN exits 0 and adds the obligations to the agent context. Requires guardrails-hook on PATH and the service reachable at GUARDRAILS_URL (default http://127.0.0.1:8080). Copy to .kiro/hooks/ in the project (or ~/.kiro/hooks/ for every workspace).",
+      "trigger": "UserPromptSubmit",
+      "action": { "type": "command", "command": "guardrails-hook kiro prompt" },
+      "timeout": 10
+    }
+  ]
+}

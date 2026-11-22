@@ -1,0 +1,18 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cv-screening
+  annotations:
+    guardrails.eu/use-case: >-
+      {"id":"uc-hr-cv-screening","obligations":["dpia","oversight_plan"],"artefacts":{"dpia":null,"oversight_plan":null},"approvals":[]}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: cv-screening }
+  template:
+    metadata:
+      labels: { app: cv-screening }
+    spec:
+      containers:
+        - name: app
+          image: ghcr.io/example/cv-screening:1.0.0
