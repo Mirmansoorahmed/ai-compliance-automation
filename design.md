@@ -32,7 +32,7 @@ Gateway (PEP, exists) ──slow path──▶ /v1/labels ──▶ Semantic Gua
 ## 2. Component architecture
 
 ```
-ai-compliance-automation/
+ai-semantic-guardrails-eu/
 ├── requirements/                 # R1: one YAML per requirement
 ├── interpretations/              # R2: versioned, human-authored
 ├── schemas/                      # R1/R2: JSON Schema for requirement & interpretation

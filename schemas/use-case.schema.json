@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://ai-coding-compliance-guardrails-eu/schemas/use-case.schema.json",
+  "$id": "https://ai-semantic-guardrails-eu/schemas/use-case.schema.json",
   "title": "use-case.yaml",
   "description": "One AI feature's declaration: intended purpose, affected persons, data categories (incl. GDPR Art. 9 special categories), decision effect, human oversight, Annex III area, owner, and links to the artefacts the deploy gate checks.",
   "type": "object",

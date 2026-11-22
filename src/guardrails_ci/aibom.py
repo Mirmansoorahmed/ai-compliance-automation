@@ -122,7 +122,7 @@ def build_aibom(pyproject: Path | None = None) -> dict:
         "metadata": {
             "component": {
                 "type": "application",
-                "name": "ai-compliance-automation",
+                "name": "ai-semantic-guardrails-eu",
                 "description": "EU AI compliance guardrails (Semantic Guard + OPA). Synthetic data only; not a conformity claim.",
             },
             "properties": [

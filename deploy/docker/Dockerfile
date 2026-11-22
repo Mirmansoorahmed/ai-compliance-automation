@@ -4,7 +4,7 @@ FROM python:3.11-slim
 
 LABEL org.opencontainers.image.title="ai-semantic-guardrails-eu policy service" \
       org.opencontainers.image.description="Semantic Guard + /v1/check policy service (oss profile)." \
-      org.opencontainers.image.source="https://github.com/Mirmansoorahmed/ai-compliance-automation"
+      org.opencontainers.image.source="https://github.com/Mirmansoorahmed/ai-semantic-guardrails-eu"
 
 ENV PYTHONUNBUFFERED=1 \
     PYTHONPATH=/app/src \
