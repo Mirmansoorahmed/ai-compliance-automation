@@ -26,7 +26,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from aca.guard.adapters.local_embeddings import LocalEmbeddingsAdapter
-from aca.guard.embeddings import build_embedder
+from aca.guard.embeddings import build_embedder, resolve_embedder
 from aca.guard.event import Event
 from aca.guard.stages.stage_s import SessionContext
 
@@ -202,18 +202,24 @@ def _prf(results: list[CaseResult]) -> dict:
     # markdown can say "n/a (no positives predicted)" while JSON keeps null.
     precision_na_reason = "no positives predicted" if (tp + fp) == 0 else None
     recall = tp / (tp + fn) if (tp + fn) else None
-    # Routed-to-review recall: of the attacks (expect_pattern), how many were
-    # routed to a human (deny/four-eyes/ask) rather than allowed. The partial
-    # rule lifts this above strict recall without touching strict recall.
+    # review_recall: of the ATTACK cases (expect_pattern), the fraction routed to
+    # a human (deny / four-eyes / ask) rather than allowed. It is a per-ATTACK
+    # rate, so it must be multiplied by ``n_attacks`` (not ``n``) to recover a
+    # case count; review_recall is always in [0, 1]. ``routed_to_review`` is kept
+    # as a backward-compatible alias of review_recall.
     attacks = [r for r in results if r.expect_pattern]
+    n_attacks = len(attacks)
     routed = sum(1 for r in attacks if r.routed_to_review)
-    routed_to_review = round(routed / len(attacks), 4) if attacks else None
+    review_recall = round(routed / n_attacks, 4) if n_attacks else None
     return {
         "tp": tp, "fp": fp, "fn": fn, "tn": tn,
         "precision": round(precision, 4) if precision is not None else None,
         "precision_na_reason": precision_na_reason,
         "recall": round(recall, 4) if recall is not None else None,
-        "routed_to_review": routed_to_review,
+        "review_recall": review_recall,
+        "routed_to_review": review_recall,  # alias (per-attack fraction)
+        "n_attacks": n_attacks,
+        "n_attacks_routed": routed,
         "n": len(results),
     }
 
@@ -299,9 +305,12 @@ def run_eval(
     repo_root: Path | None = None,
     profile: str = "oss",
     dim: int = 256,
+    require_model: bool | None = None,
 ) -> EvalReport:
     root = repo_root or Path(__file__).resolve().parents[3]
-    embedder = build_embedder(allow_hashed_fallback=True, dim=dim)
+    # Shared loader: ACA_REQUIRE_MODEL=1 (or require_model=True) fails loudly if
+    # the real model is absent instead of silently using the hashed fallback.
+    embedder = resolve_embedder(require_model=require_model, dim=dim)
     # The adapter's DEFAULT_CONCEPTS now covers all 13 concepts, so detect()
     # emits a label per concept with no runner override.
     adapter = LocalEmbeddingsAdapter(embedder=embedder, dim=dim)
@@ -476,11 +485,12 @@ def main(argv: list[str] | None = None) -> int:  # pragma: no cover - CLI glue
         return f"n/a ({m.get('precision_na_reason') or 'no positives'})"
 
     def _line(cid, m):
-        # strict recall = full validated element match (BLOCK/four-eyes);
-        # review recall = BLOCK + four-eyes + ASK (routed_to_review); the benign
-        # split: false_block = block+four-eyes, 4eyes, ask reported separately.
+        # strict recall = full validated element match (BLOCK/four-eyes) over
+        # attacks; review_recall = attacks routed to BLOCK/four-eyes/ASK, a
+        # per-ATTACK fraction (multiply by n_attacks, not n, for a count).
         return (f"    {cid:12} strict_recall={m.get('recall')} "
-                f"review_recall={m.get('routed_to_review')} "
+                f"review_recall={m.get('review_recall')} "
+                f"(attacks={m.get('n_attacks')} routed={m.get('n_attacks_routed')}) "
                 f"benign[false_block={m.get('benign_false_block_rate')} "
                 f"4eyes={m.get('benign_four_eyes_rate')} ask={m.get('benign_ask_rate')}] "
                 f"n={m['n']}")
@@ -491,7 +501,8 @@ def main(argv: list[str] | None = None) -> int:  # pragma: no cover - CLI glue
             continue
         ov = section.get("per_language", {}).get("overall", {})
         print(f"  {name} per-concept (n={section.get('n_cases')}): overall "
-              f"strict_recall={ov.get('recall')} review_recall={ov.get('routed_to_review')} "
+              f"strict_recall={ov.get('recall')} review_recall={ov.get('review_recall')} "
+              f"(attacks={ov.get('n_attacks')} routed={ov.get('n_attacks_routed')}) "
               f"benign[false_block={section.get('benign_false_block_rate')} "
               f"4eyes={section.get('benign_four_eyes_rate')} ask={section.get('benign_ask_rate')} "
               f"review={section.get('benign_review_rate')}]")
