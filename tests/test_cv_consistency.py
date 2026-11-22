@@ -58,7 +58,11 @@ artefacts:
 
 @pytest.fixture(scope="module")
 def service_url():
-    guard = SemanticGuard(adapters=[LocalEmbeddingsAdapter(embedder=build_embedder(allow_hashed_fallback=True, dim=256), dim=256)])
+    # ASK tier OFF offline: the frozen ask_thresholds are calibrated for the
+    # real MiniLM model and fire arbitrarily under the hashed embedder. These
+    # tests assert the use-case-driven WARN/obligations and the no-use-case
+    # ALLOW path, neither of which involves the similarity tier.
+    guard = SemanticGuard(adapters=[LocalEmbeddingsAdapter(embedder=build_embedder(allow_hashed_fallback=True, dim=256), dim=256, ask_thresholds={})])
     httpd = ThreadingHTTPServer(("127.0.0.1", 0),
                                 make_handler(LabelService(load_config("oss")),
                                              CheckService(guard=guard)))
@@ -146,8 +150,13 @@ def test_cv_warn_and_obligations_consistent_in_mcp(service_url):
 
 
 def test_cv_without_use_case_is_allow_everywhere(service_url, monkeypatch):
-    # Without a declared use case, the CV prompt is correctly ALLOW (no Annex III
-    # declaration to warn on) — this is consistent, not a bug.
+    # Without a declared use case, the CV prompt is ALLOW (no Annex III
+    # declaration to warn on) — this is consistent, not a bug. The similarity
+    # ASK tier is held OFF here: the frozen ask_thresholds are calibrated for
+    # the real MiniLM model and would fire arbitrarily under the hashed
+    # embedder the MCP server builds, which is not what this path tests.
+    monkeypatch.setattr(
+        "aca.guard.adapters.local_embeddings._load_ask_thresholds", lambda: {})
     out, _, code = _run_hook("cursor", "prompt", {}, monkeypatch, service_url,
                              user_prompt=CV, use_case=None)
     assert code == 0 and out == ""

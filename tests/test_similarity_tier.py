@@ -67,11 +67,15 @@ def test_escalation_picks_highest_confidence_label():
     assert "0.7" in out["reasons"][0]["title"]
 
 
-def test_default_thresholds_do_not_fire_on_benign_offline():
-    # With the committed default ask_threshold (0.5) and the hashed embedder, a
-    # plainly benign prompt stays ALLOW (the tier does not over-fire offline).
+def test_ask_tier_off_leaves_benign_allow_offline():
+    # The frozen thresholds.json ships real per-concept ask_thresholds calibrated
+    # for the MiniLM model; under the meaningless hashed embedder those would
+    # fire arbitrarily, so the ASK tier is only trustworthy on the real model.
+    # With the tier explicitly OFF (no ask_thresholds), a plainly benign prompt
+    # stays ALLOW — the similarity tier adds review only when a threshold is set.
     guard = SemanticGuard(adapters=[LocalEmbeddingsAdapter(
-        embedder=build_embedder(allow_hashed_fallback=True, dim=256), dim=256)])
+        embedder=build_embedder(allow_hashed_fallback=True, dim=256),
+        dim=256, ask_thresholds={})])
     svc = CheckService(guard=guard)
     out = svc.check({"event": "prompt", "text": "convert this CSV to JSON"})
     assert out["decision"] == "ALLOW"
