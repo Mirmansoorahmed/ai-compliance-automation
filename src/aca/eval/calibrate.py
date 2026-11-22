@@ -22,15 +22,17 @@ import time
 from pathlib import Path
 
 from aca.eval import calibrate_ask, calibrate_elements
-from aca.guard.embeddings import build_embedder
+from aca.guard.embeddings import resolve_embedder
 
 _RESULTS_DIR = Path(__file__).resolve().parents[3] / "eval" / "results"
 
 
 def calibrate(*, floor: float = calibrate_elements.DEFAULT_FLOOR,
               cap: float = calibrate_ask.DEFAULT_BENIGN_REVIEW_CAP,
-              embedder=None) -> dict:
-    emb = embedder or build_embedder(allow_hashed_fallback=True, dim=256)
+              embedder=None, require_model: bool | None = None) -> dict:
+    # Fix 3: shared loader. require_model (or ACA_REQUIRE_MODEL=1) fails loudly
+    # if the real model is absent instead of silently using the hashed fallback.
+    emb = embedder or resolve_embedder(require_model=require_model, dim=256)
 
     # 1. Element margins first (cross-concept false-full-match -> 0, or disable).
     elem = calibrate_elements.calibrate(embedder=emb, floor=floor)
@@ -82,9 +84,13 @@ def main(argv: list[str] | None = None) -> int:  # pragma: no cover - CLI glue
                    help="minimum per-element margin (strictly > 0; default 0.05)")
     p.add_argument("--cap", type=float, default=calibrate_ask.DEFAULT_BENIGN_REVIEW_CAP,
                    help="max benign review rate (ASK + four-eyes) on tuning (default 0.15)")
+    p.add_argument("--require-model", action="store_true",
+                   help="fail loudly if the real sentence-transformers model is not available "
+                        "(also via ACA_REQUIRE_MODEL=1)")
     args = p.parse_args(argv)
 
-    report = calibrate(floor=args.floor, cap=args.cap)
+    report = calibrate(floor=args.floor, cap=args.cap,
+                       require_model=True if args.require_model else None)
     path = write_report(report)
     print("Combined calibration (tuning only): element margins -> ASK thresholds")
     print(f"  embedder: {report['embedder']}  floor={report['floor']}  "
