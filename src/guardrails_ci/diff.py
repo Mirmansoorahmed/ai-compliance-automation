@@ -42,6 +42,11 @@ class Diff:
                 return f
         return None
 
+    def keeping(self, paths: list[str]) -> "Diff":
+        """A new Diff with only the files whose path is in ``paths``."""
+        keep = set(paths)
+        return Diff(files=[f for f in self.files if f.path in keep])
+
 
 def _strip_ab_prefix(path: str) -> str:
     # git uses a/ and b/ prefixes; also tolerate quoted paths.

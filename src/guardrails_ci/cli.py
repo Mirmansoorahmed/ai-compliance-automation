@@ -24,6 +24,7 @@ from pathlib import Path
 
 from guardrails_ci import aibom as aibom_mod
 from guardrails_ci import diff as diff_mod
+from guardrails_ci import ignore as ignore_mod
 from guardrails_ci import report as report_mod
 from guardrails_ci import tools as tools_mod
 from guardrails_ci import usecase as usecase_mod
@@ -69,17 +70,26 @@ def run(argv: list[str]) -> int:
                              "pass --diff-file or check the refs.\n")
             return 1
 
-    # 2. Use case.
+    # 2. Optional .guardrails/ignore — drop excluded paths before any scan.
+    spec = ignore_mod.load_ignore(args.repo)
+    kept_paths, excluded_paths = ignore_mod.partition_paths(diff.changed_paths, spec)
+    scanned_diff = diff.keeping(kept_paths)
+    ignore_changed = ignore_mod.ignore_file_changed(diff.changed_paths)
+
+    # 3. Use case.
     use_case = usecase_mod.load_use_case(args.repo, explicit=args.use_case)
     use_case_id = use_case.get("id") if isinstance(use_case, dict) else None
 
-    # 3. Decision engine (in-process) + optional external scanners.
-    result = evaluate(diff, use_case)
-    scanners = tools_mod.run_optional_tools(diff.changed_paths)
+    # 4. Decision engine (in-process) + optional external scanners — excluded
+    #    paths never reach the secret scan or /v1/check.
+    result = evaluate(scanned_diff, use_case)
+    scanners = tools_mod.run_optional_tools(scanned_diff.changed_paths)
 
-    # 4. Outputs.
+    # 5. Outputs.
     report_text = report_mod.render_report(
-        result, tools=scanners, changed_paths=diff.changed_paths, use_case_id=use_case_id)
+        result, tools=scanners, changed_paths=scanned_diff.changed_paths,
+        use_case_id=use_case_id, excluded_paths=excluded_paths,
+        ignore_changed=ignore_changed)
     Path(args.report).write_text(report_text, encoding="utf-8")
 
     bom = aibom_mod.build_aibom()

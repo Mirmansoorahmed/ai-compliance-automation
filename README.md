@@ -60,6 +60,8 @@ make coverage  # requirement coverage report
 
 The Phase 1 API can be exercised with `scripts/demo_v1_check.sh` (four `POST /v1/check` calls: CV screening → WARN, social scoring → BLOCK, fraud score → ALLOW, secret diff → BLOCK).
 
+The CI gate reads an optional `.guardrails/ignore` (gitignore-style globs, `#` comments) to drop deliberate-bad test data — synthetic-secret and attack-text fixtures — from the diff before the secret scan and `/v1/check`; excluded paths are listed in `ci-report.md`, the ignore file itself is never excluded, and `src/`, `adapters/`, `deploy/`, `policy/` and `.github/` are never listed so real code is always scanned.
+
 ## Results
 
 The detection numbers below are the **frozen operating point** from the owner's final real-model run (multilingual MiniLM, calibration on the tuning set only, joint ASK cap 0.15). Vendor/hybrid paths that have no real credentialed run yet read `TO BE MEASURED`. The tuning set carries Art. 5 attacks (incl. keyword-free and multi-turn "salami"), lawful hard negatives (fraud/credit/HR analytics) and ambiguous cases, plus a separate **PROMPT-INJECTION** set (direct + indirect/document) scored by the vendor Prompt Shields path. Four splits are reported, including a 156-case **held-out v2** set the detector never saw while tuning.

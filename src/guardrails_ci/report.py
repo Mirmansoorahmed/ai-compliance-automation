@@ -90,8 +90,32 @@ def _files_section(changed_paths: list[str]) -> list[str]:
     return lines
 
 
+def _excluded_section(excluded_paths: list[str], ignore_changed: bool) -> list[str]:
+    lines: list[str] = []
+    if excluded_paths:
+        lines += [
+            "",
+            "### Excluded paths (by .guardrails/ignore)",
+            "",
+            f"{len(excluded_paths)} changed path(s) were dropped before the secret "
+            "scan and /v1/check because they match `.guardrails/ignore`:",
+            "",
+        ]
+        for p in excluded_paths:
+            lines.append(f"- `{p}`")
+    if ignore_changed:
+        lines += [
+            "",
+            "> ⚠️ This PR changes `.guardrails/ignore`. Review the exclusion list above: "
+            "widening it reduces what the gate scans.",
+        ]
+    return lines
+
+
 def render_report(result: CiResult, *, tools: list[ToolResult], changed_paths: list[str],
-                  use_case_id: str | None = None) -> str:
+                  use_case_id: str | None = None,
+                  excluded_paths: list[str] | None = None,
+                  ignore_changed: bool = False) -> str:
     lines: list[str] = []
     lines.append("## EU AI compliance — CI gate")
     lines.append("")
@@ -114,5 +138,6 @@ def render_report(result: CiResult, *, tools: list[ToolResult], changed_paths: l
     lines += _checklist_section(result)
     lines += _tools_section(tools)
     lines += _files_section(changed_paths)
+    lines += _excluded_section(excluded_paths or [], ignore_changed)
     lines.append("")
     return "\n".join(lines) + "\n"

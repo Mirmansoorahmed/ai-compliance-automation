@@ -1,0 +1,16 @@
+# guardrails-ci scan exclusions (gitignore-style globs; # starts a comment).
+#
+# Only deliberate-bad TEST DATA goes here: synthetic secrets and attack-text
+# fixtures that exist so the gate and the detector can be tested. Excluding them
+# stops the gate from BLOCKing on the project's own corpus. It never weakens the
+# gate for real code: src/, adapters/, deploy/, policy/ and .github/ are NEVER
+# listed here and are always scanned. The ignore file itself is always scanned.
+
+# Synthetic secrets used to prove the secret scanner fires.
+tests/fixtures/ci/secret.diff
+tests/fixtures/hooks/**/tool-write-secret.json
+
+# Detection eval corpora: these YAML cases contain deliberate attack prompts
+# (e.g. social-scoring under EU AI Act Art. 5) as test inputs, not real uses.
+eval/tuning_v2/**
+eval/heldout_v2/**
