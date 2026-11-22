@@ -65,7 +65,7 @@ def _load_tuning_cases(dirs=_TUNING_DIRS) -> list[dict]:
     return cases
 
 
-_CURVE_CAPS = [0.10, 0.15, 0.20, 0.30]
+_CURVE_CAPS = [0.05, 0.10, 0.15, 0.20, 0.30]
 
 
 def _case_cache(emb, concepts, cases, element_margins):
@@ -126,6 +126,45 @@ def _review_frac(cache, thresholds) -> float:
                if _tier_for_case(facts, thresholds) in ("ask", "four-eyes", "deny")) / len(cache)
 
 
+def _solve_joint(benign_cache, attack_cache, clist, candidates, top, cap):
+    """Greedy coordinate ascent (Fix #1): MAXIMISE combined review recall subject
+    to combined benign-review <= cap.
+
+    Start with ASK off everywhere (every threshold at ``top``, the most
+    conservative). For each concept in a fixed order, try EVERY candidate
+    threshold and keep the one giving the highest attack review recall while the
+    combined benign-review rate still holds <= cap, holding the others fixed.
+    Repeat full sweeps until no concept changes. Ties in recall break toward the
+    HIGHER threshold (spends less benign budget), so the result is deterministic.
+    Pure function over the precomputed caches — unit-testable without a model.
+    """
+    thr = {c: top for c in clist}
+    changed = True
+    while changed:
+        changed = False
+        for c in clist:
+            best_val = thr[c]
+            best_recall = _review_frac(attack_cache, thr)
+            best_benign = _review_frac(benign_cache, thr)
+            for v in candidates:
+                if v == thr[c]:
+                    continue
+                cand = dict(thr)
+                cand[c] = v
+                ben = _review_frac(benign_cache, cand)
+                if ben > cap:
+                    continue
+                rec = _review_frac(attack_cache, cand)
+                if rec > best_recall + 1e-12 or (
+                    abs(rec - best_recall) <= 1e-12 and v > best_val and ben <= best_benign
+                ):
+                    best_val, best_recall, best_benign = v, rec, ben
+            if best_val != thr[c]:
+                thr[c] = best_val
+                changed = True
+    return thr, _review_frac(attack_cache, thr), _review_frac(benign_cache, thr)
+
+
 def calibrate(*, benign_review_cap: float = DEFAULT_BENIGN_REVIEW_CAP,
               concepts: tuple[str, ...] = DEFAULT_CONCEPTS,
               embedder=None, element_margins: dict | None = None,
@@ -154,35 +193,17 @@ def calibrate(*, benign_review_cap: float = DEFAULT_BENIGN_REVIEW_CAP,
     benign_cache = _case_cache(emb, clist, benign, element_margins)
     attack_cache = _case_cache(emb, clist, attacks, element_margins)
 
-    def solve(cap):
-        thr = {c: top for c in clist}
-        cur_recall = _review_frac(attack_cache, thr)
-        improved = True
-        while improved:
-            improved = False
-            best = None
-            for c in clist:
-                lower = [g for g in _GRID if g < thr[c]]
-                if not lower:
-                    continue
-                cand = dict(thr)
-                cand[c] = lower[-1]
-                if _review_frac(benign_cache, cand) > cap:
-                    continue
-                r = _review_frac(attack_cache, cand)
-                if r > cur_recall and (best is None or r > best[1]):
-                    best = (c, r, cand)
-            if best is not None:
-                _c, r, cand = best
-                thr, cur_recall = cand, r
-                improved = True
-        return thr, cur_recall, _review_frac(benign_cache, thr)
+    # Candidate thresholds per concept, sorted ascending. ``top`` disables ASK
+    # (no threshold fires), so it is always an available option (fewest ASKs).
+    candidates = sorted(set(_GRID + [top]))
 
-    chosen_thr, recall_at_cap, benign_at_cap = solve(benign_review_cap)
+    chosen_thr, recall_at_cap, benign_at_cap = _solve_joint(
+        benign_cache, attack_cache, clist, candidates, top, benign_review_cap)
 
+    # Fix #2: tradeoff curve over the standard caps (now incl. 0.05).
     curve = []
     for cap in sorted(set(_CURVE_CAPS + [benign_review_cap])):
-        _thr, rec, ben = solve(cap)
+        _thr, rec, ben = _solve_joint(benign_cache, attack_cache, clist, candidates, top, cap)
         curve.append({"cap": cap, "review_recall": round(rec, 4),
                       "benign_review_rate": round(ben, 4)})
 
